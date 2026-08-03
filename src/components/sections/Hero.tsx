@@ -88,9 +88,11 @@ export function Hero() {
         while keeping it first when the row collapses to a column — so small
         screens still read headline, then description, without order utilities.
       */}
+      {/* `hero-copy` is the handle IntroExperience fades out as the next
+          section climbs over the pinned hero. */}
       <Container
         size="wide"
-        className="relative z-10 flex flex-1 flex-col justify-end pt-32 pb-16 md:pt-40 md:pb-20 lg:pb-24"
+        className="hero-copy relative z-10 flex flex-1 flex-col justify-end pt-32 pb-16 md:pt-40 md:pb-20 lg:pb-24"
       >
         <div className="flex flex-col gap-12 lg:flex-row-reverse lg:items-end lg:justify-between lg:gap-16">
           <div className="w-full text-center lg:w-auto lg:text-right">

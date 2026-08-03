@@ -17,21 +17,61 @@ import { CinemaLens } from './CinemaLens';
 import { HeroRevealContext } from './HeroRevealContext';
 import { ScrollIndicator } from './ScrollIndicator';
 
+/*
+ * The pin is three consecutive stretches, measured in viewport heights.
+ *
+ *   APERTURE_SPAN  the lens sequence, ending with the hero revealed
+ *   HOLD_SPAN      nothing moves — the hero simply sits there, arrived
+ *   COVER_SPAN     the next section climbs over the still-pinned hero
+ *
+ * The hold is the whole point of this arrangement: without it the covering
+ * section starts the instant the iris finishes, and the hero never gets a
+ * moment of its own.
+ *
+ * COVER_SPAN is load-bearing beyond this file — ServicesSection pulls itself
+ * up by exactly that much to create the overlap. Change one and the other has
+ * to follow.
+ */
+const APERTURE_SPAN = 2.8;
+const HOLD_SPAN = 0.7;
+const COVER_SPAN = 1;
+
+const PIN_SPAN = APERTURE_SPAN + HOLD_SPAN + COVER_SPAN;
+
+/** Where the aperture sequence ends, as a fraction of the whole pin. */
+const APERTURE_END = APERTURE_SPAN / PIN_SPAN;
+
+/** Where the covering section starts to appear, as a fraction of the pin. */
+const COVER_START = (APERTURE_SPAN + HOLD_SPAN) / PIN_SPAN;
+
+/** Rescales a beat expressed against the aperture sequence onto the full pin. */
+const beat = (fraction: number) => fraction * APERTURE_END;
+
 /**
- * Where each beat of the scroll sequence falls, as a fraction of the pinned
- * scroll distance. Keeping them in one table is what makes the choreography
- * legible — and the closed hold is a real gap in the timeline rather than a
- * tween, so the iris genuinely rests before it reopens.
+ * Where each beat falls, as a fraction of the pinned scroll distance. Keeping
+ * them in one table is what makes the choreography legible — and the closed
+ * hold is a real gap in the timeline rather than a tween, so the iris genuinely
+ * rests before it reopens.
+ *
+ * The first block is written against the aperture sequence and rescaled; the
+ * handoff block is already in whole-pin terms, since it belongs to the stretch
+ * after the aperture has finished.
  */
 const BEAT = {
-  indicatorOut: 0,
-  lensGrow: 0.06,
-  irisClose: 0.3,
-  lensOut: 0.48,
-  sealed: 0.64,
+  indicatorOut: beat(0),
+  lensGrow: beat(0.06),
+  irisClose: beat(0.3),
+  lensOut: beat(0.48),
+  sealed: beat(0.64),
   /** Intro is swapped for the hero here, hidden behind the closed blades. */
-  swap: 0.66,
-  irisOpen: 0.76,
+  swap: beat(0.66),
+  irisOpen: beat(0.76),
+
+  /* ── Handoff: the hero recedes as the next section covers it ───────────
+     Both are anchored past COVER_START so nothing here begins during the
+     hold — the hero must be completely still until the cover is underway. */
+  heroSettle: COVER_START + 0.02,
+  frameSquare: COVER_START + 0.12,
 } as const;
 
 interface IntroExperienceProps {
@@ -199,7 +239,7 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
             scrollTrigger: {
               trigger: element,
               start: 'top top',
-              end: '+=280%',
+              end: `+=${PIN_SPAN * 100}%`,
               pin: true,
               // A touch of smoothing so the blades trail the wheel rather than
               // snapping frame to frame.
@@ -243,6 +283,33 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
               { scale: 1 + 0.16 * k },
               { scale: 1, duration: 0.24, ease: 'power2.out' },
               BEAT.irisOpen,
+            )
+
+            /* ── Handoff ────────────────────────────────────────────────
+               The hero stays pinned while the section below climbs over it.
+               These recede it just enough to read as depth — the covering
+               section is what actually ends the shot. */
+            .to(
+              '.hero-reveal video',
+              { scale: 0.98, duration: 0.2, ease: 'power2.inOut' },
+              BEAT.heroSettle,
+            )
+            .to(
+              '.hero-darken',
+              { opacity: 0.35, duration: 0.2, ease: 'power1.inOut' },
+              BEAT.heroSettle,
+            )
+            .to(
+              ['.hero-copy', '.hero-reveal header'],
+              { opacity: 0, y: -18, duration: 0.14, ease: 'power2.in' },
+              BEAT.heroSettle,
+            )
+            // Square off only once the covering section has nearly reached the
+            // top, so the corners never straighten in open view.
+            .to(
+              '.intro-frame',
+              { borderRadius: 0, duration: 0.1, ease: 'power2.inOut' },
+              BEAT.frameSquare,
             );
 
           // Sync the blades from the whole timeline rather than from each
@@ -361,8 +428,11 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
       )}
     >
       {/* Everything is framed together, the iris included, so the blades are
-          clipped to the same rounded rectangle as the footage. */}
-      <div className="absolute inset-2 overflow-hidden rounded-[10px] md:inset-3">
+          clipped to the same rounded rectangle as the footage. The radius is
+          animated to 0 at the end of the pin, as the next section closes over
+          it — a rounded corner meeting a full-bleed section would show the
+          page ground through the gap. */}
+      <div className="intro-frame absolute inset-2 overflow-hidden rounded-[28px] md:inset-3">
         {/* The hero sits underneath from the start, hidden by the opaque intro
             layer. Nothing has to fade in, and if JavaScript never runs the
             visitor simply sees the intro. */}
@@ -370,6 +440,12 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
           <HeroRevealContext.Provider value={revealed}>
             {children}
           </HeroRevealContext.Provider>
+
+          {/* Deepens the hero as it recedes behind the incoming section. */}
+          <div
+            aria-hidden="true"
+            className="hero-darken pointer-events-none absolute inset-0 bg-[#0A131F] opacity-0"
+          />
         </div>
 
         <div className="intro-layer absolute inset-0 z-20 bg-[#BFA76F]">
