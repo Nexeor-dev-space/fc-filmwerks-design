@@ -1,0 +1,226 @@
+@import 'tailwindcss';
+
+/*
+ * Tailwind v4 is configured in CSS — there is no tailwind.config.ts.
+ * Design tokens live in `:root` below and are exposed to Tailwind through the
+ * `@theme inline` block, which is what turns them into utilities such as
+ * `bg-background`, `text-muted` and `border-border`.
+ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Brand primitives. These three are the only raw colours in the system —
+ * every semantic token below is mixed from them, so retuning the brand is a
+ * three-line change.
+ */
+:root {
+  --brand-navy: #0f1c2e;
+  --brand-gold: #bfa76f;
+  --brand-bone: #f8f7f4;
+
+  /* Deeper navy for full-bleed cinematic sections and video letterboxing. */
+  --brand-ink: #0a131f;
+
+  /*
+   * Gold is a 2.0:1 contrast against bone — it is an *accent*, never body or
+   * link text on a light surface. Use `--accent` for fills, rules, icons and
+   * hover states; use `--accent-ink` (4.8:1) on the rare occasion gold-family
+   * text is needed on a light background.
+   */
+  --accent: var(--brand-gold);
+  --accent-foreground: var(--brand-navy);
+  --accent-ink: #856a30;
+
+  --background: var(--brand-bone);
+  --foreground: var(--brand-navy);
+  --surface: color-mix(in oklab, var(--brand-navy) 4%, var(--brand-bone));
+  --surface-muted: color-mix(in oklab, var(--brand-navy) 8%, var(--brand-bone));
+  --muted: color-mix(in oklab, var(--brand-navy) 58%, var(--brand-bone));
+  --border: color-mix(in oklab, var(--brand-navy) 14%, var(--brand-bone));
+
+  /* Editorial rather than pill-shaped — reads closer to title cards. */
+  --radius: 0.125rem;
+}
+
+/*
+ * Navy-dominant surface. Gold reaches 7.9:1 here, so it can carry text and
+ * links as well as fills — this is where the accent is meant to live.
+ */
+.dark {
+  --background: var(--brand-navy);
+  --foreground: var(--brand-bone);
+  --surface: color-mix(in oklab, var(--brand-bone) 6%, var(--brand-navy));
+  --surface-muted: color-mix(
+    in oklab,
+    var(--brand-bone) 12%,
+    var(--brand-navy)
+  );
+  --muted: color-mix(in oklab, var(--brand-bone) 62%, var(--brand-navy));
+  --border: color-mix(in oklab, var(--brand-bone) 16%, var(--brand-navy));
+
+  --accent: var(--brand-gold);
+  --accent-foreground: var(--brand-navy);
+  --accent-ink: var(--brand-gold);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-ink: var(--accent-ink);
+
+  /* Brand primitives, for the cases that need the literal colour. */
+  --color-navy: var(--brand-navy);
+  --color-gold: var(--brand-gold);
+  --color-bone: var(--brand-bone);
+  --color-ink: var(--brand-ink);
+
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) - 1px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+
+  /* Matches EASE / GSAP_EASE in src/constants/animations.ts. */
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-out-quart: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --spacing-13: 3.25rem;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    /* Lenis drives scrolling; native smooth behaviour would fight it. */
+    scroll-behavior: auto;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Visible focus for keyboard users, suppressed for pointer clicks. */
+  :focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+  }
+
+  /* Media should never overflow its column. */
+  img,
+  video,
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@layer utilities {
+  /*
+   * Gold hairline. The brand's default divider — a full-strength gold rule
+   * across a wide layout is far too much of it.
+   */
+  .rule-accent {
+    border: 0;
+    height: 1px;
+    background-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  }
+
+  /*
+   * Link treatment: text stays in the readable foreground colour and the gold
+   * appears only as the underline, growing in on hover.
+   */
+  .link-accent {
+    position: relative;
+    color: var(--color-foreground);
+  }
+
+  .link-accent::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.15em;
+    height: 1px;
+    background-color: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s var(--ease-out-quart);
+  }
+
+  .link-accent:hover::after,
+  .link-accent:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  /* Hide scrollbars on horizontal galleries without disabling scrolling. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Removes the layout shift a text mask causes at the top of a line box. */
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/*
+ * Lenis — required for the smooth scroll container to size correctly.
+ * See https://github.com/darkroomengineering/lenis
+ */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* Respect the OS-level motion preference across every animation library. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
