@@ -137,7 +137,7 @@ export function FeaturedWorkSection() {
     <section
       id="featured-work"
       aria-labelledby="featured-work-heading"
-      className="bg-[#0F1C2E] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
+      className="relative z-10 bg-[#0f1012] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
     >
       <div className="w-full px-4 md:px-[3vw]">
         {/* Heading and its route-through on the left, standfirst pushed right

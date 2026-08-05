@@ -224,3 +224,57 @@ html.lenis body {
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * Marquee. Two identical copies of the track sit side by side and the pair is
+ * translated by exactly half its width, so the moment the first copy leaves
+ * the second is already in its place — the loop has no seam and no jump.
+ */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 60s linear infinite;
+}
+
+.animate-marquee:hover,
+.marquee-host:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+/*
+ * Idle float on review cards. Each card staggers its delay so the set breathes
+ * rather than bobbing in unison. The amplitude is deliberately small — 3px is
+ * enough to signal life without distracting from the text.
+ */
+@keyframes review-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.review-float {
+  animation: review-float 5s ease-in-out infinite;
+}
+
+/*
+ * Repeat visits skip the lens intro.
+ *
+ * The attribute is set by a blocking script in the head, so these rules apply
+ * in the first paint — before React hydrates and swaps to the intro-free tree.
+ * Without them the server-rendered intro would flash on every return visit.
+ */
+html[data-intro-seen='true'] .intro-layer,
+html[data-intro-seen='true'] .intro-iris {
+  display: none;
+}

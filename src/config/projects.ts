@@ -31,7 +31,7 @@ export const featuredProjects: Project[] = [
     location: 'Dubai',
     year: '2025',
     href: '/portfolio/beyond-the-horizon',
-    image: '/images/services/videography.jpg',
+    image: '/images/services/videography-mg.jpg',
   },
   {
     number: '02',

@@ -24,15 +24,18 @@ export const CinemaLens = forwardRef<HTMLDivElement, { className?: string }>(
         className={cn(
           'relative aspect-square',
           /*
-           * 280 / 450 / 750 as specified, but clamped against viewport height
-           * so a short laptop screen scales the lens down instead of cropping
-           * it. The viewport shares keep roughly 120px clear beneath the lens
-           * for the scroll cue — a centred lens taller than `100vh - 240px`
-           * runs into it. On a tall enough display the pixel value wins.
+           * One clamp per breakpoint band, so the lens grows with the viewport
+           * inside a floor and ceiling rather than jumping between fixed sizes:
+           * 180–240 phone, 260–300 tablet, 320–380 laptop, 380–450 desktop.
+           *
+           * Each is wrapped in `min(…, vh)` as well, because a clamp on width
+           * alone will happily exceed a short viewport's height — that is what
+           * would push the lens into the scroll cue on a laptop in landscape.
            */
-          'h-[min(280px,40vh)] w-[min(280px,40vh)]',
-          'md:h-[min(450px,50vh)] md:w-[min(450px,50vh)]',
-          'lg:h-[min(750px,54vh)] lg:w-[min(750px,54vh)]',
+          'h-[min(clamp(180px,55vw,240px),46vh)] w-[min(clamp(180px,55vw,240px),46vh)]',
+          'md:h-[min(clamp(260px,34vw,300px),52vh)] md:w-[min(clamp(260px,34vw,300px),52vh)]',
+          'lg:h-[min(clamp(320px,30vw,380px),56vh)] lg:w-[min(clamp(320px,30vw,380px),56vh)]',
+          'xl:h-[min(clamp(380px,28vw,450px),58vh)] xl:w-[min(clamp(380px,28vw,450px),58vh)]',
           className,
         )}
       >
