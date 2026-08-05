@@ -122,6 +122,20 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
   useIsomorphicLayoutEffect(() => {
     if (reduced || skipIntro || !root.current || !wrapperRef.current) return;
 
+    /*
+     * Marks the animated tree as live for as long as it is mounted.
+     *
+     * `markIntroSeen()` fires mid-scrub, the moment the iris opens, so that
+     * the floating nav can appear. That sets `data-intro-seen`, which a CSS
+     * rule uses to suppress the intro before React hydrates on a repeat
+     * visit — correct there, but catastrophic here: it would strip the gold
+     * layer and the blades out from under a timeline that is still running,
+     * and scrubbing back up would then expose the bare, scaled-up hero
+     * instead of a closed iris. The rule excludes this attribute so the
+     * pre-hydration guard cannot reach a tree React is already driving.
+     */
+    document.documentElement.setAttribute('data-intro-active', 'true');
+
     const mm = gsap.matchMedia(root);
 
     mm.add(
@@ -209,18 +223,10 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
           repeat: -1,
         });
 
-        gsap.fromTo(
-          '.scroll-dot',
-          { yPercent: -110, opacity: 0 },
-          {
-            yPercent: 280,
-            opacity: 1,
-            duration: 2.4,
-            ease: 'power2.inOut',
-            repeat: -1,
-            repeatDelay: 0.5,
-          },
-        );
+        /* The scroll cue used to be driven from here. It is CSS keyframes now
+           — see `.scroll-cue-*` in globals.css — so there is deliberately no
+           tween for it: GSAP writing `transform` on the same element would
+           overwrite the keyframe every frame. */
 
         /* ── Scroll sequence ──────────────────────────────────────────── */
 
@@ -269,7 +275,7 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
               {
                 y: -20 * k,
                 scale: 1.03,
-                opacity: 0.05,
+                opacity: 0.07,
                 duration: 0.4,
                 ease: 'power1.inOut',
               },
@@ -286,15 +292,26 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
               beats.lensOut,
             )
             .set('.intro-layer', { autoAlpha: 0 }, beats.swap)
+            /* The opening is deliberately slower than the close and rides a
+               sine curve rather than a power one. Closing is a shutter action
+               and wants a bit of snap; opening is the reveal, and any
+               acceleration in it reads as the frame being yanked apart. The
+               span is bounded by `heroSettle` — the widest it can run without
+               the hero starting to recede before it has finished arriving is
+               ~0.43 desktop / ~0.38 mobile. */
             .to(
               aperture,
-              { opening: IRIS.radius, duration: 0.24, ease: 'power2.inOut' },
+              { opening: IRIS.radius, duration: 0.34, ease: 'sine.inOut' },
               beats.irisOpen,
             )
+            /* Settles over exactly the same span so the push-in lands with the
+               blades, not after them. The starting scale is small on purpose:
+               a big punch here is what makes the reveal feel like a jump cut
+               rather than a lens pulling focus. */
             .fromTo(
               '.hero-reveal',
-              { scale: 1 + 0.16 * k },
-              { scale: 1, duration: 0.24, ease: 'power2.out' },
+              { scale: 1 + 0.09 * k },
+              { scale: 1, duration: 0.34, ease: 'power1.out' },
               beats.irisOpen,
             )
 
@@ -358,6 +375,7 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
 
     return () => {
       window.removeEventListener('load', refresh);
+      document.documentElement.removeAttribute('data-intro-active');
       mm.revert();
     };
   }, [reduced, skipIntro]);
@@ -380,7 +398,9 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-10 flex justify-center text-[#0F1C2E]">
+      {/* Clear of the bottom edge by 48px, 64px from `md` — enough that the
+          cue reads as its own element rather than as page furniture. */}
+      <div className="absolute inset-x-0 bottom-12 flex justify-center text-[#222] md:bottom-16">
         <ScrollIndicator className="intro-indicator" />
       </div>
     </>

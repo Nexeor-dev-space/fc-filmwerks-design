@@ -1,13 +1,20 @@
 'use client';
 
-import { motion, type Variants } from 'framer-motion';
+import {
+  motion,
+  useScroll,
+  useTransform,
+  type Transition,
+  type Variants,
+} from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Fragment } from 'react';
+import { Fragment, useMemo, useRef } from 'react';
 
 import { CtaButton } from '@/components/ui';
 import { featuredProjectRows, type Project } from '@/config/projects';
-import { EASE } from '@/constants';
+import { DURATION, EASE } from '@/constants';
+import { useIsMobile, usePrefersReducedMotion } from '@/hooks';
 
 /**
  * Film grain, as a data URI rather than an asset — one tiling turbulence patch
@@ -29,46 +36,216 @@ const fadeUp: Variants = {
   }),
 };
 
+/* -------------------------------------------------------------------------- */
+/* Entrance motion                                                            */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Resolved once in the section and handed to every animated node through
+ * Framer's `custom` prop, so nine cards share one media-query subscription
+ * rather than nine.
+ */
+interface CardMotion {
+  /** How far the card rises, in px. */
+  rise: number;
+  reduced: boolean;
+}
+
+/** Phone viewports are short — 52px of travel there reads as a lurch. */
+const RISE = { mobile: 36, desktop: 52 } as const;
+
+const DEFAULT_MOTION: CardMotion = { rise: RISE.desktop, reduced: false };
+
+/** Long enough between cards to read as a sequence, short enough not to drag. */
+const CARD_STAGGER = 0.12;
+
+/** ±10px against the card, so 20px of total parallax travel. */
+const PARALLAX = 10;
+
+/**
+ * Blur is fill-rate bound and several cards overlap mid-stagger, which is why
+ * both radii stay small and both are dropped the moment they reach zero.
+ */
+const CARD_BLUR = 6;
+const STILL_BLUR = 4;
+
+/**
+ * Reduced motion snaps everything except opacity to its resting value.
+ *
+ * Written as a zero-duration transition rather than as a second set of
+ * variants: the media query only resolves after mount, so the hidden state is
+ * already in the DOM by then. Snapping on the way out clears it whatever it
+ * was, where swapping variants would leave the transform stranded.
+ */
+const REDUCED_CARD_TRANSITION: Transition = {
+  duration: 0,
+  opacity: { duration: DURATION.base, ease: EASE.out },
+};
+
+const INSTANT: Transition = { duration: 0 };
+
 /** Cards arrive one after another rather than as a block. */
 const gridVariants: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+  visible: {
+    transition: { staggerChildren: CARD_STAGGER, delayChildren: 0.05 },
+  },
 };
 
+/**
+ * The card itself: rise, settle, sharpen.
+ *
+ * Its contents are sequenced with `delayChildren`/`staggerChildren` rather
+ * than per-element delays. A child's own `transition.delay` *replaces* the
+ * delay a parent stagger forwards down to it, so hand-written delays would
+ * make card six's still open while card six was still arriving. The child
+ * options add to the forwarded delay instead, which is what keeps the whole
+ * grid in order.
+ *
+ * DOM order decides the stagger index, and the still's mask is the card's
+ * first child — so the four lines of type land on 0.34s through 0.58s, over
+ * the tail of the reveal.
+ */
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE.out } },
+  hidden: ({ rise, reduced }: CardMotion = DEFAULT_MOTION) => ({
+    opacity: 0,
+    y: reduced ? 0 : rise,
+    scale: reduced ? 1 : 0.96,
+    filter: reduced ? 'none' : `blur(${CARD_BLUR}px)`,
+  }),
+  visible: ({ reduced }: CardMotion = DEFAULT_MOTION) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: reduced
+      ? REDUCED_CARD_TRANSITION
+      : {
+          duration: DURATION.slow,
+          ease: EASE.out,
+          delayChildren: 0.26,
+          staggerChildren: 0.08,
+        },
+    /* Drop the filter once it is worthless — a live `blur(0px)` still costs a
+       compositing pass on every hover repaint. */
+    transitionEnd: { filter: 'none' },
+  }),
+};
+
+/** The still opens from its bottom edge up, like a frame pulled into view. */
+const stillMaskVariants: Variants = {
+  hidden: ({ reduced }: CardMotion = DEFAULT_MOTION) => ({
+    clipPath: reduced ? 'inset(0% 0% 0% 0%)' : 'inset(100% 0% 0% 0%)',
+  }),
+  visible: ({ reduced }: CardMotion = DEFAULT_MOTION) => ({
+    clipPath: 'inset(0% 0% 0% 0%)',
+    transition: reduced
+      ? INSTANT
+      : { duration: DURATION.slow, ease: EASE.expo },
+  }),
+};
+
+/** Pulls focus with the mask: the frame opens on an image still settling. */
+const stillVariants: Variants = {
+  hidden: ({ reduced }: CardMotion = DEFAULT_MOTION) => ({
+    scale: reduced ? 1 : 1.08,
+    filter: reduced ? 'none' : `blur(${STILL_BLUR}px)`,
+  }),
+  visible: ({ reduced }: CardMotion = DEFAULT_MOTION) => ({
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: reduced ? INSTANT : { duration: DURATION.slow, ease: EASE.out },
+    transitionEnd: { filter: 'none' },
+  }),
+};
+
+/** One line of type. The delay is the card's stagger, not this variant's. */
+const textVariants: Variants = {
+  hidden: ({ reduced }: CardMotion = DEFAULT_MOTION) => ({
+    opacity: 0,
+    y: reduced ? 0 : 20,
+  }),
+  visible: ({ reduced }: CardMotion = DEFAULT_MOTION) => ({
+    opacity: 1,
+    y: 0,
+    transition: reduced ? INSTANT : { duration: DURATION.base, ease: EASE.out },
+  }),
 };
 
 /**
  * One project, as a poster.
  *
- * The lift and the image zoom live on separate elements: the `<Link>` owns the
- * card's own transform, and the wrapper inside owns the zoom. Putting both on
- * one node would mean the second silently overwriting the first's `transform`.
+ * Every transform gets its own element, because Framer and Tailwind both write
+ * `transform` wholesale and the second writer silently wins. Reading down:
  *
- * Hover is CSS rather than React state — nine cards re-rendering on every
+ *   li            entrance rise + settle scale (Framer, once)
+ *   a             hover lift                  (CSS)
+ *   mask          clip-path reveal            (Framer, once — no transform)
+ *   parallax      scroll-linked translate     (MotionValue, continuous)
+ *   still         entrance zoom-out           (Framer, once)
+ *   zoom          hover zoom                  (CSS)
+ *   img
+ *
+ * The parallax layer is overscanned top and bottom so its 20px of travel can
+ * never drag a bare edge into the frame.
+ *
+ * Hover stays CSS rather than React state — nine cards re-rendering on every
  * pointer move would cost far more than the effect is worth, and transform,
  * opacity and colour are all handled on the compositor.
  */
-function ProjectCard({ project }: { project: Project }) {
+function ProjectCard({
+  project,
+  cardMotion,
+}: {
+  project: Project;
+  cardMotion: CardMotion;
+}) {
+  const cardRef = useRef<HTMLLIElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ['start end', 'end start'],
+  });
+  const parallaxY = useTransform(
+    scrollYProgress,
+    [0, 1],
+    cardMotion.reduced ? [0, 0] : [PARALLAX, -PARALLAX],
+  );
+
   return (
-    <motion.li variants={cardVariants}>
+    <motion.li ref={cardRef} variants={cardVariants} custom={cardMotion}>
       <Link
         href={project.href}
         aria-label={`${project.title} — view project`}
         className="group relative block h-[420px] overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#13233A] shadow-[0_25px_60px_rgba(0,0,0,0.25)] transition-[transform,box-shadow] duration-[600ms] ease-out hover:-translate-y-2 hover:shadow-[0_40px_80px_rgba(0,0,0,0.45)] focus-visible:-translate-y-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F] md:h-[460px] lg:h-[520px]"
       >
-        <div className="absolute inset-0 transition-transform duration-[1200ms] ease-out group-hover:scale-[1.08] group-focus-visible:scale-[1.08]">
-          <Image
-            src={project.image}
-            alt=""
-            fill
-            loading="lazy"
-            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-            className="object-cover"
-          />
-        </div>
+        <motion.div
+          className="absolute inset-0 overflow-hidden"
+          variants={stillMaskVariants}
+          custom={cardMotion}
+        >
+          <motion.div
+            className="absolute -top-6 -bottom-6 left-0 w-full"
+            style={{ y: parallaxY }}
+          >
+            <motion.div
+              className="absolute inset-0"
+              variants={stillVariants}
+              custom={cardMotion}
+            >
+              <div className="absolute inset-0 transition-transform duration-[1200ms] ease-out group-hover:scale-[1.08] group-focus-visible:scale-[1.08]">
+                <Image
+                  src={project.image}
+                  alt=""
+                  fill
+                  loading="lazy"
+                  sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
 
         {/* Seats the type against whatever the still happens to be doing.
             Lightens on hover so the image gets its moment. */}
@@ -94,20 +271,40 @@ function ProjectCard({ project }: { project: Project }) {
         />
 
         <div className="absolute right-8 bottom-8 left-8 md:right-10 md:bottom-10 md:left-10">
-          <p className="text-[0.75rem] tracking-[0.25em] text-[#BFA76F] uppercase">
+          <motion.p
+            className="text-[0.75rem] tracking-[0.25em] text-[#BFA76F] uppercase"
+            variants={textVariants}
+            custom={cardMotion}
+          >
             {project.category}
-          </p>
+          </motion.p>
 
-          <h3 className="mt-3 text-[1.625rem] leading-[1.15] font-extralight tracking-tight text-white transition-transform duration-[600ms] ease-out group-hover:-translate-y-1 group-focus-visible:-translate-y-1 md:text-[1.875rem]">
-            {project.title}
-          </h3>
+          {/* The heading keeps its own hover transform, so the entrance rise
+              has to live on a wrapper or one would overwrite the other. */}
+          <motion.div
+            className="mt-3"
+            variants={textVariants}
+            custom={cardMotion}
+          >
+            <h3 className="text-[1.625rem] leading-[1.15] font-extralight tracking-tight text-white transition-transform duration-[600ms] ease-out group-hover:-translate-y-1 group-focus-visible:-translate-y-1 md:text-[1.875rem]">
+              {project.title}
+            </h3>
+          </motion.div>
 
-          <p className="mt-2 text-[0.8125rem] text-white/55">
+          <motion.p
+            className="mt-2 text-[0.8125rem] text-white/55"
+            variants={textVariants}
+            custom={cardMotion}
+          >
             {project.client} · {project.location}
-          </p>
+          </motion.p>
 
           {/* Not a nested link — the whole poster is the target. */}
-          <span className="mt-6 inline-flex items-center gap-2.5 text-[0.75rem] font-semibold tracking-[0.24em] text-white/70 uppercase transition-colors duration-[600ms] ease-out group-hover:text-[#BFA76F] group-focus-visible:text-[#BFA76F]">
+          <motion.span
+            className="mt-6 inline-flex items-center gap-2.5 text-[0.75rem] font-semibold tracking-[0.24em] text-white/70 uppercase transition-colors duration-[600ms] ease-out group-hover:text-[#BFA76F] group-focus-visible:text-[#BFA76F]"
+            variants={textVariants}
+            custom={cardMotion}
+          >
             View project
             <span
               aria-hidden="true"
@@ -115,7 +312,7 @@ function ProjectCard({ project }: { project: Project }) {
             >
               →
             </span>
-          </span>
+          </motion.span>
         </div>
       </Link>
     </motion.li>
@@ -133,6 +330,14 @@ function ProjectCard({ project }: { project: Project }) {
  * boundary between the two reads as one continuous page.
  */
 export function FeaturedWorkSection() {
+  const reduced = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
+
+  const cardMotion = useMemo<CardMotion>(
+    () => ({ rise: isMobile ? RISE.mobile : RISE.desktop, reduced }),
+    [isMobile, reduced],
+  );
+
   return (
     <section
       id="featured-work"
@@ -157,17 +362,6 @@ export function FeaturedWorkSection() {
               <br />
               work
             </motion.h2>
-
-            <motion.div
-              className="mt-10"
-              variants={fadeUp}
-              custom={0.12}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.6 }}
-            >
-              <CtaButton href="/portfolio">See more work →</CtaButton>
-            </motion.div>
           </div>
 
           <motion.p
@@ -183,6 +377,9 @@ export function FeaturedWorkSection() {
           </motion.p>
         </header>
 
+        {/* One trigger for the whole grid, fired once. Cards inherit it, so a
+            card in the third row never waits on its own intersection — and
+            nothing replays on a scroll back up. */}
         <motion.ul
           className="mt-16 grid grid-cols-1 gap-10 md:grid-cols-2 lg:mt-24 lg:grid-cols-3"
           variants={gridVariants}
@@ -193,7 +390,11 @@ export function FeaturedWorkSection() {
           {featuredProjectRows.map((row, rowIndex) => (
             <Fragment key={row[0]?.href ?? rowIndex}>
               {row.map((project) => (
-                <ProjectCard key={project.href} project={project} />
+                <ProjectCard
+                  key={project.href}
+                  project={project}
+                  cardMotion={cardMotion}
+                />
               ))}
 
               {/* Only after the final row — one route-through at the end of the
@@ -203,6 +404,7 @@ export function FeaturedWorkSection() {
                 <motion.li
                   className="col-span-full flex justify-center pt-6 lg:pt-10"
                   variants={cardVariants}
+                  custom={cardMotion}
                 >
                   <CtaButton href="/portfolio">See more work →</CtaButton>
                 </motion.li>

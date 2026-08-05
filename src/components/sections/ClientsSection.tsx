@@ -3,7 +3,6 @@
 import { motion, type Variants } from 'framer-motion';
 import Image from 'next/image';
 
-import { CtaButton } from '@/components/ui';
 import { clients, clientSectors } from '@/config/clients';
 import { EASE } from '@/constants';
 
@@ -168,17 +167,6 @@ export function ClientsSection() {
           Every partnership is built on trust, collaboration and a shared
           commitment to exceptional storytelling.
         </motion.p>
-
-        <motion.div
-          className="mt-12 flex justify-center lg:mt-16"
-          variants={fadeUp}
-          custom={0.08}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.6 }}
-        >
-          <CtaButton href="/clients">View all clients →</CtaButton>
-        </motion.div>
       </div>
     </section>
   );

@@ -3,7 +3,7 @@
 import { motion, useScroll, useTransform, type Variants } from 'framer-motion';
 import { useRef } from 'react';
 
-import { Button } from '@/components/ui';
+import { BackgroundVideo, Button } from '@/components/ui';
 import { EASE } from '@/constants';
 import { usePrefersReducedMotion } from '@/hooks';
 
@@ -53,9 +53,25 @@ export function CtaSection() {
     <section
       ref={sectionRef}
       aria-labelledby="cta-heading"
-      className="relative min-h-dvh overflow-hidden bg-[#0F1C2E]"
+      /* `z-[2]` keeps this above the lens plate (`z-1`) that is pulled up
+         beneath it, so the lens stays hidden until this scrolls clear of it. */
+      className="relative z-[2] min-h-dvh overflow-hidden bg-[#0F1C2E]"
     >
       {/* ── Ambient background layers ── */}
+
+      {/*
+       * Footage sits under everything else. The scrim is deliberately light so
+       * the shot reads — the layers stacked over it (gradient floor, vignette,
+       * grain) already contribute most of the darkening, and doubling up here
+       * was flattening the footage to a texture. Its own vignette stays off
+       * for the same reason.
+       */}
+      <BackgroundVideo
+        src="/videos/cta-video-1.mp4"
+        fallbackClassName="bg-[#0F1C2E]"
+        overlay="linear-gradient(rgba(15,28,46,0.38), rgba(10,19,31,0.48))"
+        vignette={false}
+      />
 
       {/* Radial key light — warm glow from upper-right, moves on scroll */}
       <motion.div
@@ -85,7 +101,7 @@ export function CtaSection() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'linear-gradient(to bottom, rgba(15,28,46,0) 0%, rgba(10,19,31,0.5) 60%, rgba(10,19,31,0.85) 100%)',
+            'linear-gradient(to bottom, rgba(15,28,46,0) 0%, rgba(10,19,31,0.34) 60%, rgba(10,19,31,0.62) 100%)',
         }}
       />
 

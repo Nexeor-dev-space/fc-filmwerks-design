@@ -2,7 +2,7 @@
 
 import { motion, type Variants } from 'framer-motion';
 
-import { CtaButton, EditorialRows } from '@/components/ui';
+import { EditorialRows } from '@/components/ui';
 import { manifesto } from '@/config/manifesto';
 import { EASE } from '@/constants';
 
@@ -93,17 +93,6 @@ export function ManifestoSection() {
         </header>
 
         <EditorialRows items={manifesto} className="mt-16 lg:mt-24" />
-
-        <motion.div
-          className="mt-16 flex justify-center lg:mt-24"
-          variants={fadeUp}
-          custom={0}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.6 }}
-        >
-          <CtaButton href="/studio">Our story →</CtaButton>
-        </motion.div>
       </div>
     </section>
   );

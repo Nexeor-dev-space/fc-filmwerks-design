@@ -268,13 +268,103 @@ html.lenis body {
 }
 
 /*
+ * Intro scroll cue — a dot descending a focus scale.
+ *
+ * Three loops on three separate elements so none of them shares a property
+ * with another. The dot travels `--cue-track`, set on the track element, since
+ * a percentage `translateY` would resolve against the dot's own 5px. It fades
+ * in off the top mark and out at the bottom one, so the restart is never seen.
+ */
+@keyframes scroll-cue-dot {
+  0% {
+    transform: translateY(0) scale(0.7);
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(calc(var(--cue-track) * 0.5)) scale(1.15);
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(var(--cue-track)) scale(0.7);
+    opacity: 0;
+  }
+}
+
+/* A couple of pixels of travel at the bottom end, anchored at the top mark —
+   a meter settling rather than a bar filling. */
+@keyframes scroll-cue-track {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.06);
+  }
+}
+
+@keyframes scroll-cue-label {
+  0%,
+  100% {
+    opacity: 0.78;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.scroll-cue-dot {
+  animation: scroll-cue-dot 2.4s linear infinite;
+  will-change: transform, opacity;
+}
+
+.scroll-cue-track {
+  animation: scroll-cue-track 4.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.scroll-cue-label {
+  opacity: 0.78;
+  animation: scroll-cue-label 4.8s ease-in-out infinite;
+}
+
+/*
+ * The transition lens between the closing CTA and the footer.
+ *
+ * A CSS keyframe rather than a JS-driven tween: it is the only thing moving on
+ * that screen, it runs for as long as the section is on-screen, and the
+ * compositor can own it outright without a rAF callback per frame. The
+ * reduced-motion block above already neutralises it.
+ *
+ * Deliberately slow and linear — the lens should read as a heavy mechanical
+ * part turning under its own weight, not as an animation playing.
+ */
+@keyframes lens-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.lens-spin-slow {
+  animation: lens-spin 40s linear infinite;
+  will-change: transform;
+}
+
+/*
  * Repeat visits skip the lens intro.
  *
  * The attribute is set by a blocking script in the head, so these rules apply
  * in the first paint — before React hydrates and swaps to the intro-free tree.
  * Without them the server-rendered intro would flash on every return visit.
  */
-html[data-intro-seen='true'] .intro-layer,
-html[data-intro-seen='true'] .intro-iris {
+html[data-intro-seen='true']:not([data-intro-active]) .intro-layer,
+html[data-intro-seen='true']:not([data-intro-active]) .intro-iris {
   display: none;
 }
