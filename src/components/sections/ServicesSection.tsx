@@ -8,7 +8,7 @@ import { useRef } from 'react';
 import { DragCarousel } from '@/components/ui';
 import { services, type Service } from '@/config/services';
 import { EASE } from '@/constants';
-import { usePrefersReducedMotion } from '@/hooks';
+import { useIsMobile, usePrefersReducedMotion } from '@/hooks';
 
 /** Header blocks rise in sequence as the section arrives. */
 const fadeUp: Variants = {
@@ -23,12 +23,44 @@ const fadeUp: Variants = {
 /** Cards arrive one after another rather than as a block. */
 const gridVariants: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
 };
 
+interface CardReveal {
+  /** How far the card rises, in px. Shorter on phones — see below. */
+  lift: number;
+  /** True when the visitor has asked for reduced motion. */
+  still: boolean;
+}
+
+/**
+ * Cards are unveiled rather than faded in: each rises, resolves out of a
+ * slight defocus and settles to full size. The blur is what separates the two
+ * — opacity alone reads as a page still loading, where pulling focus reads as
+ * something being shown to you.
+ *
+ * The lift comes in through `custom` rather than being a constant because the
+ * same 52px is a far larger share of a phone-width card than a desktop one,
+ * and reads there as a lurch rather than a rise.
+ *
+ * Under reduced motion this collapses to a plain opacity fade: no travel, no
+ * scale, and above all no blur, which is the part that provokes discomfort.
+ */
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE.out } },
+  hidden: ({ lift, still }: CardReveal) =>
+    still
+      ? { opacity: 0 }
+      : { opacity: 0, y: lift, scale: 0.96, filter: 'blur(5px)' },
+  visible: ({ still }: CardReveal) =>
+    still
+      ? { opacity: 1, transition: { duration: 0.4, ease: EASE.out } }
+      : {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          filter: 'blur(0px)',
+          transition: { duration: 0.9, ease: EASE.out },
+        },
 };
 
 /**
@@ -47,6 +79,7 @@ const cardVariants: Variants = {
 function ServiceCard({ service }: { service: Service }) {
   const cardRef = useRef<HTMLLIElement>(null);
   const reducedMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
 
   const { scrollYProgress } = useScroll({
     target: cardRef,
@@ -67,6 +100,7 @@ function ServiceCard({ service }: { service: Service }) {
     <motion.li
       ref={cardRef}
       variants={cardVariants}
+      custom={{ lift: isMobile ? 36 : 52, still: reducedMotion }}
       className="w-[88vw] shrink-0 snap-start md:w-[420px] lg:w-[540px]"
     >
       <Link

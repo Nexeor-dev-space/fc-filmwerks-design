@@ -17,107 +17,88 @@ export interface Project {
 }
 
 /**
- * Nine selected films for the homepage grid.
+ * Selected films for the homepage grid.
  *
  * A curated subset rather than the full portfolio: the grid ends in a route
  * through to `/portfolio` for everything else.
+ *
+ * One entry per still in `public/images/works`. The paths are URL-encoded
+ * because the filenames carry spaces — `next/image` passes `src` through to
+ * the optimiser query string, where a raw space would be dropped.
  */
 export const featuredProjects: Project[] = [
   {
     number: '01',
-    category: 'Commercial Film',
-    title: 'Beyond the Horizon',
+    category: 'Event Film',
+    title: 'Cleveland Clinic | Event',
     client: 'Luxury Brand',
     location: 'Dubai',
     year: '2025',
     href: '/portfolio/beyond-the-horizon',
-    image: '/images/services/videography-mg.jpg',
+    image: '/images/works/Cleveland%20Clinic-Event.jpg',
   },
   {
     number: '02',
-    category: 'Brand Story',
-    title: 'The Makers',
+    category: 'Social Media',
+    title: 'MalabarGold | Social Media',
     client: 'Heritage House',
     location: 'Milan',
     year: '2025',
     href: '/portfolio/the-makers',
-    image: '/images/services/photography.jpg',
+    image: '/images/works/MalabarGold-Social-Media.jpg',
   },
   {
     number: '03',
-    category: 'Luxury Campaign',
-    title: 'Night Architecture',
+    category: 'Advert',
+    title: 'Flydubai | Advert',
     client: 'Property Group',
     location: 'Singapore',
     year: '2024',
     href: '/portfolio/night-architecture',
-    image: '/images/services/corporate-ads.jpg',
+    image: '/images/works/flydubai-Advert.jpg',
   },
   {
     number: '04',
-    category: 'Music Video',
-    title: 'Static Bloom',
+    category: 'Advert',
+    title: 'ID Fresh - Blend | Advert',
     client: 'Independent Artist',
     location: 'London',
     year: '2024',
     href: '/portfolio/static-bloom',
-    image: '/images/services/music-label.jpg',
+    image: '/images/works/ID-Fresh-Blend-Advert.jpg',
   },
   {
     number: '05',
-    category: 'Documentary',
-    title: 'The Long Room',
+    category: 'Advert',
+    title: 'Go Sands | Advert',
     client: 'Arts Foundation',
     location: 'Lisbon',
     year: '2024',
     href: '/portfolio/the-long-room',
-    image: '/images/services/audio-solutions.jpg',
+    image: '/images/works/Go-Sands-Advert.jpg',
   },
   {
     number: '06',
-    category: 'Corporate Production',
-    title: 'Quiet Machinery',
+    category: 'Advert',
+    title: 'M & S Cosmetics | Advert',
     client: 'Engineering Group',
     location: 'Munich',
     year: '2024',
     href: '/portfolio/quiet-machinery',
-    image: '/images/services/post-production.jpg',
-  },
-  {
-    number: '07',
-    category: 'Branded Content',
-    title: 'Open Frequency',
-    client: 'Audio Label',
-    location: 'Berlin',
-    year: '2023',
-    href: '/portfolio/open-frequency',
-    image: '/images/services/podcast-production.jpg',
-  },
-  {
-    number: '08',
-    category: 'Event Film',
-    title: 'One Night Only',
-    client: 'Festival Series',
-    location: 'Amsterdam',
-    year: '2023',
-    href: '/portfolio/one-night-only',
-    image: '/images/services/event-coverage.jpg',
-  },
-  {
-    number: '09',
-    category: 'Commercial Film',
-    title: 'The Private Screening',
-    client: 'Hospitality Brand',
-    location: 'Geneva',
-    year: '2023',
-    href: '/portfolio/the-private-screening',
-    image: '/images/services/home-theater-solutions.jpg',
+    image: '/images/works/M-S-Cosmetics-Advert.jpg',
   },
 ];
 
-/** Rows of three, so the grid can drop a route-through button after each. */
-export const featuredProjectRows: Project[][] = [
-  featuredProjects.slice(0, 3),
-  featuredProjects.slice(3, 6),
-  featuredProjects.slice(6, 9),
-];
+const ROW_SIZE = 3;
+
+/**
+ * Rows of three, so the grid can drop a route-through button after the last.
+ *
+ * Chunked from the list rather than hard-sliced: a fixed set of slices leaves
+ * an empty trailing row whenever the project count is not a multiple of three,
+ * which would still render the end-of-grid button under nothing.
+ */
+export const featuredProjectRows: Project[][] = Array.from(
+  { length: Math.ceil(featuredProjects.length / ROW_SIZE) },
+  (_, row) => featuredProjects.slice(row * ROW_SIZE, (row + 1) * ROW_SIZE),
+);
