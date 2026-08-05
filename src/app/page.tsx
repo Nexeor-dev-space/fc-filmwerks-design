@@ -1,5 +1,7 @@
 import { IntroExperience } from '@/components/intro';
+import { FeaturedWorkSection } from '@/components/sections/FeaturedWorkSection';
 import { Hero } from '@/components/sections/Hero';
+import { ManifestoSection } from '@/components/sections/ManifestoSection';
 import { ServicesSection } from '@/components/sections/ServicesSection';
 import { createMetadata } from '@/lib/seo';
 
@@ -15,6 +17,10 @@ export default function HomePage() {
       </IntroExperience>
 
       <ServicesSection />
+
+      <FeaturedWorkSection />
+
+      <ManifestoSection />
     </>
   );
 }

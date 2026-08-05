@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRef } from 'react';
 
+import { DragCarousel } from '@/components/ui';
 import { services, type Service } from '@/config/services';
 import { EASE } from '@/constants';
 import { usePrefersReducedMotion } from '@/hooks';
@@ -57,12 +58,28 @@ function ServiceCard({ service }: { service: Service }) {
   const parallaxY = useTransform(scrollYProgress, [0, 1], [12, -12]);
 
   return (
-    <motion.li ref={cardRef} variants={cardVariants}>
+    /*
+     * Fixed track sizes rather than grid columns: a carousel item has to have a
+     * width of its own, since a flex row gives it none. `shrink-0` is what stops
+     * nine cards compressing to fit instead of overflowing — the overflow is the
+     * whole point.
+     */
+    <motion.li
+      ref={cardRef}
+      variants={cardVariants}
+      className="w-[88vw] shrink-0 snap-start md:w-[420px] lg:w-[540px]"
+    >
       <Link
         href={service.href}
         /* The card itself never moves or resizes on hover — all the motion
            happens to the image inside it. Only the border colour responds. */
-        className="group relative block h-[400px] overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#13233A] shadow-[0_25px_60px_rgba(0,0,0,0.25)] transition-[border-color] duration-[600ms] ease-out hover:border-[rgba(191,167,111,0.45)] focus-visible:border-[rgba(191,167,111,0.45)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F] md:h-[460px] lg:h-[520px] xl:h-[560px]"
+        /*
+         * The card itself never moves, resizes or changes its border on hover —
+         * the scroller clips vertically (an `overflow-x` container computes
+         * `overflow-y` to `auto`), so any lift would crop the card's own top
+         * edge. All the hover motion lives on the image inside instead.
+         */
+        className="group relative block h-[72vh] overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#13233A] shadow-[0_25px_60px_rgba(0,0,0,0.25)] transition-[box-shadow] duration-[600ms] ease-out hover:shadow-[0_40px_80px_rgba(0,0,0,0.45)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F] md:h-[560px] lg:h-[660px]"
       >
         {/* Parallax. Overscanned top and bottom so the travel stays covered. */}
         <motion.div
@@ -205,9 +222,9 @@ export function ServicesSection() {
               whileInView="visible"
               viewport={{ once: true, amount: 0.6 }}
             >
-              Creative solutions
+              What we
               <br />
-              for every frame
+              do
             </motion.h2>
           </div>
 
@@ -224,9 +241,24 @@ export function ServicesSection() {
             storytelling and world-class production.
           </motion.p>
         </header>
+      </div>
 
+      {/*
+       * The carousel sits outside the padded wrapper on purpose. Its own gutter
+       * is applied inside the scroller instead, so the first card lines up with
+       * the heading while the rest run past the edge of the screen — that
+       * cut-off card is the only affordance saying there is more to see.
+       *
+       * `scroll-px` matches the gutter so a snapped card lands on the same line
+       * as the heading rather than flush against the viewport.
+       */}
+      <DragCarousel
+        label="Services"
+        className="mt-16 lg:mt-24"
+        edgeClassName="px-4 py-6 scroll-px-4 md:px-[3vw] md:scroll-px-[3vw]"
+      >
         <motion.ul
-          className="mt-16 grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:mt-24 lg:grid-cols-3 lg:gap-8"
+          className="flex gap-5 md:gap-6 lg:gap-8"
           variants={gridVariants}
           initial="hidden"
           whileInView="visible"
@@ -236,7 +268,7 @@ export function ServicesSection() {
             <ServiceCard key={service.href} service={service} />
           ))}
         </motion.ul>
-      </div>
+      </DragCarousel>
     </section>
   );
 }
