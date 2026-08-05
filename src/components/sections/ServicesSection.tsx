@@ -79,7 +79,7 @@ function ServiceCard({ service }: { service: Service }) {
          * `overflow-y` to `auto`), so any lift would crop the card's own top
          * edge. All the hover motion lives on the image inside instead.
          */
-        className="group relative block h-[72vh] overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#13233A] shadow-[0_25px_60px_rgba(0,0,0,0.25)] transition-[box-shadow] duration-[600ms] ease-out hover:shadow-[0_40px_80px_rgba(0,0,0,0.45)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F] md:h-[560px] lg:h-[660px]"
+        className="group relative block h-[72vh] overflow-hidden rounded-[24px] border border-white/[0.08] shadow-[0_25px_60px_rgba(0,0,0,0.25)] transition-[box-shadow] duration-[600ms] ease-out hover:shadow-[0_40px_80px_rgba(0,0,0,0.45)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F] md:h-[560px] lg:h-[660px]"
       >
         {/* Parallax. Overscanned top and bottom so the travel stays covered. */}
         <motion.div
@@ -174,23 +174,22 @@ function ServiceCard({ service }: { service: Service }) {
 export function ServicesSection() {
   return (
     /*
-     * Full-bleed, and pulled up by one viewport so it overlaps the final
-     * stretch of the hero's pin. The hero is held fixed through that stretch,
-     * so this section reads as climbing over it — and because it is opaque and
-     * edge to edge, no strip of the page ground shows between the two.
+     * Pulled up by the `cover` span so it overlaps the final stretch of
+     * the hero's sticky wrapper. The hero stays at `position: sticky; top: 0`
+     * inside a tall wrapper; this section slides upward over it — and because
+     * it is opaque and edge to edge, no gap shows between the two.
      *
-     * The offset must stay in step with `COVER_SPAN` in IntroExperience: that
-     * is the pinned distance reserved for exactly this move.
+     * The offset must stay in step with `cover` in IntroExperience's SPANS:
+     *   mobile  cover 1.2 → -mt-[120dvh]
+     *   desktop cover 1.6 → -mt-[160dvh]
      *
-     * `motion-reduce:mt-0` is not cosmetic. Reduced motion drops the pin and
-     * stacks the intro and hero as ordinary sections, so a negative margin
-     * would drag this straight over a hero that is no longer fixed — burying
-     * it completely.
+     * `motion-reduce:mt-0` cancels the margin when the sticky wrapper is
+     * absent and sections stack in normal flow.
      */
     <section
       id="services"
       aria-labelledby="services-heading"
-      className="relative z-10 -mt-[100dvh] overflow-hidden bg-[#161616] pt-16 pb-20 motion-reduce:mt-0 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
+      className="relative z-10 -mt-[120dvh] overflow-hidden bg-[#0f1012] pt-16 pb-20 motion-reduce:!mt-0 md:-mt-[160dvh] md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
     >
       {/* Gutters are the reference site's own container value — a flat 16px on
           phones, then a fluid 3vw — so the grid tracks the viewport instead of

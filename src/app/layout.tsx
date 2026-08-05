@@ -40,6 +40,7 @@ export default function RootLayout({
         padding, which silently removes the scroll distance a pinned section
         needs. Column layout belongs to the route layouts, not here.
       */}
+      <head />
       <body className="min-h-dvh antialiased">
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
         <Providers>{children}</Providers>

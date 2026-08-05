@@ -3,13 +3,7 @@
 import { motion, type Variants } from 'framer-motion';
 
 import { useHeroRevealed } from '@/components/intro/HeroRevealContext';
-import { FloatingNav } from '@/components/layout/FloatingNav';
-import {
-  BackgroundVideo,
-  Button,
-  Container,
-  RotatingWord,
-} from '@/components/ui';
+import { BackgroundVideo, Button, RotatingWord } from '@/components/ui';
 import { EASE } from '@/constants';
 
 /** First two lines of the headline; fixed. */
@@ -79,8 +73,6 @@ export function Hero() {
         }}
       />
 
-      <FloatingNav />
-
       {/*
         Everything sits on one bottom band: description bottom-left, headline
         bottom-right, both aligned to the same baseline edge.
@@ -90,10 +82,7 @@ export function Hero() {
       */}
       {/* `hero-copy` is the handle IntroExperience fades out as the next
           section climbs over the pinned hero. */}
-      <Container
-        size="wide"
-        className="hero-copy relative z-10 flex flex-1 flex-col justify-end pt-32 pb-16 md:pt-40 md:pb-20 lg:pb-24"
-      >
+      <div className="hero-copy relative z-10 flex w-full flex-1 flex-col justify-end px-4 pt-32 pb-16 md:px-[3vw] md:pt-40 md:pb-20 lg:pb-24">
         <div className="flex flex-col gap-12 lg:flex-row-reverse lg:items-end lg:justify-between lg:gap-16">
           <div className="w-full text-center lg:w-auto lg:text-right">
             {/* Lines 1–2: fixed. Line 3: a single word that keeps cycling long
@@ -177,7 +166,7 @@ export function Hero() {
             </div>
           </div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

@@ -6,25 +6,40 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 
-import { useHeroRevealed } from '@/components/intro/HeroRevealContext';
-import { Container } from '@/components/ui';
 import { mainNav } from '@/config/navigation';
 import { siteConfig } from '@/config/site';
 import { DURATION, EASE } from '@/constants';
+import { INTRO_SEEN_EVENT, hasSeenIntro } from '@/lib/intro-seen';
 
 /**
- * Transparent navigation floating over the hero video.
+ * Transparent site navigation, fixed above everything.
  *
- * It is absolutely positioned so the footage runs full-bleed underneath it,
- * and it waits for the aperture to open before fading in — otherwise its
- * entrance is spent behind the intro.
+ * Rendered at page level rather than inside the hero, for two reasons: it has
+ * to survive past the hero to stay on screen for the whole page, and a `fixed`
+ * element nested inside the hero would be trapped anyway — the reveal scale on
+ * its wrapper makes that wrapper the containing block for fixed descendants.
+ *
+ * Visibility is driven by an event rather than React context because it now
+ * sits outside the intro's tree entirely. It stays hidden through the lens
+ * sequence, which is meant to carry no navigation at all.
  *
  * MENU opens a full-screen overlay rather than being decorative: a control
  * that looks like a button should behave like one.
  */
 export function FloatingNav() {
-  const revealed = useHeroRevealed();
+  const [revealed, setRevealed] = useState(false);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (hasSeenIntro()) {
+      setRevealed(true);
+      return;
+    }
+
+    const onSeen = () => setRevealed(true);
+    window.addEventListener(INTRO_SEEN_EVENT, onSeen);
+    return () => window.removeEventListener(INTRO_SEEN_EVENT, onSeen);
+  }, []);
 
   // Nothing behind the overlay should scroll while it is up, and Escape is the
   // expected way out of a full-screen layer.
@@ -47,12 +62,13 @@ export function FloatingNav() {
   return (
     <>
       <motion.header
-        className="absolute inset-x-0 top-0 z-50"
+        className="fixed inset-x-0 top-0 z-50"
         initial={{ opacity: 0, y: -16 }}
         animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: -16 }}
         transition={{ duration: DURATION.slow, ease: EASE.out, delay: 0.1 }}
+        style={{ pointerEvents: revealed ? 'auto' : 'none' }}
       >
-        <Container size="wide" className="py-8 md:py-10 lg:py-12">
+        <div className="w-full px-4 py-8 md:px-[3vw] md:py-10 lg:py-12">
           <nav
             aria-label="Main"
             className="flex items-center justify-between gap-6"
@@ -78,7 +94,7 @@ export function FloatingNav() {
               Menu
             </button>
           </nav>
-        </Container>
+        </div>
       </motion.header>
 
       <AnimatePresence>
@@ -91,7 +107,7 @@ export function FloatingNav() {
             exit={{ opacity: 0 }}
             transition={{ duration: DURATION.fast, ease: EASE.out }}
           >
-            <Container size="wide" className="py-8 md:py-10 lg:py-12">
+            <div className="w-full px-4 py-8 md:px-[3vw] md:py-10 lg:py-12">
               <div className="flex items-center justify-between gap-6">
                 <Image
                   src="/images/logo-2.png"
@@ -110,9 +126,9 @@ export function FloatingNav() {
                   <X size={18} />
                 </button>
               </div>
-            </Container>
+            </div>
 
-            <Container size="wide" className="mt-16 md:mt-24">
+            <div className="mt-16 w-full px-4 md:mt-24 md:px-[3vw]">
               <ul className="flex flex-col gap-6 md:gap-8">
                 {mainNav.map((item, index) => (
                   <motion.li
@@ -135,7 +151,7 @@ export function FloatingNav() {
                   </motion.li>
                 ))}
               </ul>
-            </Container>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
