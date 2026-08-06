@@ -1,0 +1,208 @@
+FC FILMWERKS – HOMEPAGE DESIGN GUIDELINES
+=========================================
+Stack: Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Framer Motion
+Tailwind v4 is CSS-first. There is no tailwind.config.ts — tokens live in src/app/globals.css.
+
+
+1. LAYOUT
+---------
+Max container width      None. Homepage sections are full-bleed.
+                         Wrapper is: w-full + horizontal padding (below).
+                         (A <Container> component exists with max-w presets but
+                         is NOT used by homepage sections.)
+
+Page padding – Desktop   3vw   (fluid, from 768px up)
+Page padding – Tablet    3vw   (same token, ≥768px)
+Page padding – Mobile    16px  (1rem)
+
+Section spacing          Mobile   top 64px  / bottom 80px
+                         Tablet   top 80px  / bottom 96px
+                         Desktop  top 96px  / bottom 112px
+
+Grid / card gaps         Services carousel   20px → 24px (md)
+                         Featured Work grid  40px
+                         Client logo grid    16px → 20px (md)
+                         Header ↔ grid       64px → 96px (lg)
+
+Border radius            48px   footer card (md+)
+                         28px   intro frame, footer card (mobile), menu panel
+                         24px   service + project cards
+                         16px   client logo tiles (rounded-2xl)
+                         Full   all buttons (rounded-full)
+                         2px    global --radius token (base UI default)
+
+
+2. TYPOGRAPHY
+-------------
+Primary font       Geist (next/font/google), var(--font-sans)
+Secondary font     Geist Mono, var(--font-mono) — utility only, not in homepage UI
+
+H1 (Hero)          clamp(40px, 11vw, 64px)  →  lg: clamp(56px, 6.5vw, 120px)
+                   weight 700 · line-height 0.92 · tracking -0.02em · uppercase
+
+H2 (Section)       40px → 52px (md) → 64px (lg) → 72px (xl)
+                   weight 600 · line-height 0.95 · tracking -0.02em · uppercase
+
+H3 (Card title)    26px → 30px (md) → 34px (lg)
+                   weight 200 (extralight) · line-height 1.15 · tracking tight
+
+Body               16px → 17px (md) → 18px (lg) · line-height 1.8
+Card description   13px → 14px (md) · line-height 1.65 · max-width 46ch
+Small label        14px · weight 600 · tracking 0.28em · uppercase
+Micro / meta       12px–13px · tracking 0.22em–0.28em · uppercase
+Button text        12px (sm, md) · 14px (lg) · weight 500 · tracking 0.12em · uppercase
+
+Font weights in use    200 · 300 · 400 · 500 · 600 · 700
+Line heights in use    0.92 / 0.95 (display) · 1.15 (card titles) · 1.6–1.8 (body)
+Letter spacing         -0.02em  display headings
+                       0.12em   buttons
+                       0.22em   copyright / meta
+                       0.28em   section labels, uppercase micro-copy
+                       0.70em   scroll cue label
+
+
+3. COLOR PALETTE
+----------------
+Brand primitives
+  Navy              #0F1C2E
+  Gold (accent)     #BFA76F
+  Bone              #F8F7F4
+  Ink (deep navy)   #0A131F
+
+Backgrounds
+  Primary bg        #0F1012   Services, Featured Work, About, Testimonials
+  Secondary bg      #0F1C2E   Clients, CTA
+  Footer card       #07192A
+  Card surface      #13233A   (project cards)
+  Client tile       rgba(255,255,255,0.02)
+  Gold plate        #BFA76F   (lens transition, footer frame)
+
+Text
+  Primary text      #FFFFFF
+  Secondary text    rgba(255,255,255,0.72)
+  Tertiary / meta   rgba(255,255,255,0.55) – 0.35
+  Accent text       #BFA76F
+  On light surface  #0F1C2E
+
+Borders
+  Default           rgba(255,255,255,0.08)
+  Subtle            rgba(255,255,255,0.06)
+  Hover             rgba(191,167,111,0.35)
+
+Hover colors
+  Accent            #BFA76F  (text, borders, icons)
+  Button ivory      #FFFFFF  (from #F8F7F4)
+
+NOTE: Gold is 2.0:1 on bone — accent only, never body text on light surfaces.
+      On navy it reaches 7.9:1 and may carry text.
+
+
+4. BUTTONS
+----------
+Shape              rounded-full · inline-flex · centered · gap 8px
+Text               uppercase · weight 500 · tracking 0.12em
+Sizes              sm  36px height · 20px h-padding · 12px text
+                   md  44px height · 28px h-padding · 12px text
+                   lg  52px height · 36px h-padding · 14px text
+
+Primary            bg #F8F7F4 · text #0F1C2E
+                   hover: bg #FFFFFF, translateY(-2px),
+                          shadow 0 8px 30px rgba(248,247,244,0.15)
+
+Secondary/Outline  1px border rgba(191,167,111,0.40) · text #FFFFFF
+                   hover: border #BFA76F, text #BFA76F, translateY(-2px),
+                          shadow 0 8px 30px rgba(191,167,111,0.08)
+
+Route-through      1px border rgba(255,255,255,0.70) · text #FFFFFF
+(CtaButton)        hover: border + text → #BFA76F, translateY(-2px)
+
+Transition         500ms ease-out
+Focus              2px outline #BFA76F, offset 2px
+
+
+5. CARDS
+--------
+Service card       height 72vh → 560px (md) → 660px (lg)
+                   radius 24px · border 1px rgba(255,255,255,0.08)
+                   content padding 32px → 40px (md)
+                   shadow 0 25px 60px rgba(0,0,0,0.25)
+                   hover: shadow → 0 40px 80px rgba(0,0,0,0.45)
+                          image scale 1.08 (700ms)
+                          scrim #0A131F/45 fades in (600ms)
+                          title → #BFA76F, translateY(-4px)
+
+Project card       height 420px → 460px (md) → 520px (lg)
+                   radius 24px · bg #13233A · border 1px rgba(255,255,255,0.08)
+                   shadow 0 25px 60px rgba(0,0,0,0.25)
+                   hover: translateY(-8px), shadow 0 40px 80px rgba(0,0,0,0.45)
+
+Client tile        height 180px → 200px (md) · padding 16px → 20px (md)
+                   radius 16px · bg rgba(255,255,255,0.02)
+                   border 1px rgba(255,255,255,0.06)
+                   logo max-height 140px → 150px (md), object-contain
+                   hover: border → rgba(191,167,111,0.35), logo scale 1.05
+                   Logos render in brand colour — no filters applied.
+
+Card hover timing  600ms ease-out (transform, shadow, colour)
+                   700ms ease-out (image zoom)
+
+
+6. MOTION
+---------
+Easing (Framer)    out    cubic-bezier(0.16, 1, 0.3, 1)     default UI
+                   expo   cubic-bezier(0.19, 1, 0.22, 1)    cinematic settle
+                   inOut  cubic-bezier(0.65, 0, 0.35, 1)
+Easing (GSAP)      power3.out · power2.inOut · expo.out
+
+Durations          fast 0.3s · base 0.6s · slow 0.9s · slower 1.4s
+                   Section reveals in practice: 0.8s–0.9s
+
+Scroll reveal      Framer whileInView · viewport { once: true, amount: 0.1–0.6 }
+                   Standard: opacity 0→1, translateY 32–40px→0
+                   Cards: + scale 0.96→1, blur 5px→0
+                   Stagger: 0.05 / 0.08 / 0.10 / 0.12 between siblings
+
+Parallax           Scroll-driven (useScroll + useTransform), 24–60px travel.
+                   Image wrappers must be overscanned beyond the travel distance.
+
+Hover transitions  300ms  colour only (buttons base)
+                   500ms  borders, links, logo scale
+                   600ms  card transform + shadow
+                   700ms  image zoom
+
+RULES
+  - One transform per element. Framer writes `transform` wholesale; two
+    animations on one node silently overwrite each other. Nest wrappers.
+  - Never use a mask/clip that starts closed for required content — a missed
+    trigger hides it permanently. Use scroll-driven motion values instead.
+  - Respect prefers-reduced-motion: collapse to opacity-only fades.
+  - Import GSAP from @/lib/gsap only. Every GSAP effect must clean up.
+
+
+7. RESPONSIVE BREAKPOINTS
+-------------------------
+Tailwind v4 defaults — not overridden.
+
+  Mobile     < 768px          base styles
+  Tablet     ≥ 768px   (md)   gutters switch to 3vw
+  Laptop     ≥ 1024px  (lg)   3-column grids, largest type step
+  Desktop    ≥ 1280px  (xl)   final display sizes
+  Wide       ≥ 1536px  (2xl)  available, sparingly used
+
+  (sm ≥ 640px exists but is not used on the homepage.)
+
+
+8. NOTES
+--------
+- Maintain consistent spacing throughout the homepage. Every section uses the
+  same rhythm: px-4 md:px-[3vw] gutters, pt-16/pb-20 → lg:pt-24/pb-28.
+- Keep all sections visually aligned. Section headers share one pattern:
+  gold uppercase label → large uppercase H2 → right-aligned standfirst.
+- Preserve the cinematic premium aesthetic: dark grounds, gold as accent only,
+  film grain and vignette overlays, generous whitespace, slow understated motion.
+- Colour comes from tokens where they exist (bg-background, text-muted,
+  border-border, bg-accent). Section-specific literals are listed in §3.
+- The intro, lens transition and footer are coupled by scroll geometry
+  (sticky wrappers + negative margins). Do not change one in isolation —
+  see the comments in IntroExperience.tsx, LensTransition.tsx and
+  CinematicFooter.tsx before adjusting heights or margins.

@@ -217,7 +217,10 @@ function ProjectCard({
       <Link
         href={project.href}
         aria-label={`${project.title} — view project`}
-        className="group relative block h-[420px] overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#13233A] shadow-[0_25px_60px_rgba(0,0,0,0.25)] transition-[transform,box-shadow] duration-[600ms] ease-out hover:-translate-y-2 hover:shadow-[0_40px_80px_rgba(0,0,0,0.45)] focus-visible:-translate-y-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F] md:h-[460px] lg:h-[520px]"
+        /* The card itself stays put on hover — no lift. All the response
+           happens inside it: the still zooms and a scrim fades up under the
+           copy, matching the service cards. */
+        className="group relative block h-[420px] overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#13233A] shadow-[0_25px_60px_rgba(0,0,0,0.25)] transition-[box-shadow] duration-[600ms] ease-out hover:shadow-[0_40px_80px_rgba(0,0,0,0.45)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F] md:h-[460px] lg:h-[520px]"
       >
         <motion.div
           className="absolute inset-0 overflow-hidden"
@@ -247,15 +250,25 @@ function ProjectCard({
           </motion.div>
         </motion.div>
 
-        {/* Seats the type against whatever the still happens to be doing.
-            Lightens on hover so the image gets its moment. */}
+        {/* Seats the type against whatever the still happens to be doing. */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 opacity-100 transition-opacity duration-[600ms] ease-out group-hover:opacity-[0.82] group-focus-visible:opacity-[0.82]"
+          className="absolute inset-0"
           style={{
             background:
               'linear-gradient(to top, rgba(0,0,0,0.86), rgba(0,0,0,0.35), transparent)',
           }}
+        />
+
+        {/* Hover scrim, same treatment as the service cards. The gradient
+            above is pitched for a title and a short meta line; the summary
+            sentence needs more of the still knocked back to read, and pitching
+            the base that heavy would bury the photograph at rest. This
+            previously ran the other way — lightening on hover — which is the
+            opposite of what reading a sentence wants. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[#0A131F]/45 opacity-0 transition-opacity duration-[600ms] ease-out group-hover:opacity-100 group-focus-visible:opacity-100"
         />
 
         <div
@@ -291,12 +304,15 @@ function ProjectCard({
             </h3>
           </motion.div>
 
+          {/* Capped measure: this was a two-word client/location line and is
+              now a full sentence, which would otherwise run the width of the
+              card and read as a paragraph against the still. */}
           <motion.p
-            className="mt-2 text-[0.8125rem] text-white/55"
+            className="mt-2 max-w-[42ch] text-[0.8125rem] leading-[1.6] text-white/[0.68]"
             variants={textVariants}
             custom={cardMotion}
           >
-            {project.client} · {project.location}
+            {project.description}
           </motion.p>
 
           {/* Not a nested link — the whole poster is the target. */}

@@ -4,10 +4,8 @@ export interface Project {
   /** Small gold line above the title. */
   category: string;
   title: string;
-  /** Client, then where it was shot. Rendered as one light-grey line. */
-  client: string;
-  location: string;
-  year: string;
+  /** One-line summary of the work, shown beneath the title. */
+  description: string;
   href: string;
   /**
    * Placeholder stills for now — paths are stable, so the files can be swapped
@@ -29,11 +27,10 @@ export interface Project {
 export const featuredProjects: Project[] = [
   {
     number: '01',
-    category: 'Event Film',
+    category: 'Event',
     title: 'Cleveland Clinic | Event',
-    client: 'Luxury Brand',
-    location: 'Dubai',
-    year: '2025',
+    description:
+      'Cinematic coverage of Cleveland Clinic and Steppi’s launch event.',
     href: '/portfolio/beyond-the-horizon',
     image: '/images/works/Cleveland%20Clinic-Event.jpg',
   },
@@ -41,9 +38,8 @@ export const featuredProjects: Project[] = [
     number: '02',
     category: 'Social Media',
     title: 'MalabarGold | Social Media',
-    client: 'Heritage House',
-    location: 'Milan',
-    year: '2025',
+    description:
+      'Influencer campaign with cinematic adverts for Malabar Gold’s social media.',
     href: '/portfolio/the-makers',
     image: '/images/works/MalabarGold-Social-Media.jpg',
   },
@@ -51,9 +47,8 @@ export const featuredProjects: Project[] = [
     number: '03',
     category: 'Advert',
     title: 'Flydubai | Advert',
-    client: 'Property Group',
-    location: 'Singapore',
-    year: '2024',
+    description:
+      'Cinematic advert showcasing flydubai’s sports culture and team spirit.',
     href: '/portfolio/night-architecture',
     image: '/images/works/flydubai-Advert.jpg',
   },
@@ -61,9 +56,7 @@ export const featuredProjects: Project[] = [
     number: '04',
     category: 'Advert',
     title: 'ID Fresh - Blend | Advert',
-    client: 'Independent Artist',
-    location: 'London',
-    year: '2024',
+    description: 'Cinematic advert celebrating the launch of ID Fresh Blend.',
     href: '/portfolio/static-bloom',
     image: '/images/works/ID-Fresh-Blend-Advert.jpg',
   },
@@ -71,9 +64,8 @@ export const featuredProjects: Project[] = [
     number: '05',
     category: 'Advert',
     title: 'Go Sands | Advert',
-    client: 'Arts Foundation',
-    location: 'Lisbon',
-    year: '2024',
+    description:
+      'Stylish cinematic advert showcasing Dubai through the Go Sands experience.',
     href: '/portfolio/the-long-room',
     image: '/images/works/Go-Sands-Advert.jpg',
   },
@@ -81,9 +73,8 @@ export const featuredProjects: Project[] = [
     number: '06',
     category: 'Advert',
     title: 'M & S Cosmetics | Advert',
-    client: 'Engineering Group',
-    location: 'Munich',
-    year: '2024',
+    description:
+      'Cinematic B2B advert highlighting M&S Cosmetics’ unique ingredients.',
     href: '/portfolio/quiet-machinery',
     image: '/images/works/M-S-Cosmetics-Advert.jpg',
   },
