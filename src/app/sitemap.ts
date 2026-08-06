@@ -11,9 +11,12 @@ import { absoluteUrl } from '@/config/site';
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
 
-  const routes = ['/', ...mainNav.map((item) => item.href)].filter(
-    (href) => !sitemapExclude.includes(href),
-  );
+  /* De-duplicated: the home route is seeded here and the navigation may also
+     list it, which would otherwise emit `/` twice. A Set also keeps the first
+     occurrence's order, so the home page stays at the top of the sitemap. */
+  const routes = [
+    ...new Set(['/', ...mainNav.map((item) => item.href)]),
+  ].filter((href) => !sitemapExclude.includes(href));
 
   return routes.map((href) => ({
     url: absoluteUrl(href),

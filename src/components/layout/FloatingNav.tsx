@@ -101,7 +101,17 @@ export function FloatingNav() {
         {open && (
           <motion.div
             id="site-menu"
-            className="fixed inset-0 z-100 bg-navy"
+            /*
+             * Inset and rounded to the same measure as the intro frame
+             * (`inset-2 md:inset-3`), so the menu reads as the same floating
+             * panel language rather than a full-bleed takeover.
+             *
+             * `overflow-y-auto` rather than `overflow-hidden`: the radius needs
+             * a clipping context either way, but on a short landscape phone the
+             * link list can outrun the panel, and hidden would strand it with
+             * no way to reach the last item.
+             */
+            className="fixed inset-2 z-100 overflow-y-auto rounded-[28px] bg-navy md:inset-3"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -144,7 +154,7 @@ export function FloatingNav() {
                     <Link
                       href={item.href}
                       onClick={() => setOpen(false)}
-                      className="inline-block text-4xl font-medium tracking-tight text-bone transition-colors duration-300 hover:text-[#BFA76F] md:text-6xl"
+                      className="inline-block text-3xl font-medium tracking-tight text-bone transition-colors duration-300 hover:text-[#BFA76F] md:text-5xl"
                     >
                       {item.label}
                     </Link>

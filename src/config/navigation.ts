@@ -6,9 +6,9 @@ import type { NavItem, NavSection } from '@/types';
  * folders under `src/app/(site)`.
  */
 export const mainNav: NavItem[] = [
+  { label: 'Home', href: '/' },
   { label: 'Work', href: '/work' },
-  { label: 'Services', href: '/services' },
-  { label: 'Studio', href: '/studio' },
+  { label: 'About', href: '/studio' },
   { label: 'Contact', href: '/contact' },
 ];
 
