@@ -150,15 +150,30 @@ function ServiceCard({ service }: { service: Service }) {
           </div>
         </motion.div>
 
-        {/* Seats the type against whatever the still happens to be doing.
-            Lightens on hover so the image gets its moment. */}
+        {/* Seats the type against whatever the still happens to be doing. */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 opacity-100 transition-opacity duration-[600ms] ease-out group-hover:opacity-[0.82] group-focus-visible:opacity-[0.82]"
+          className="absolute inset-0"
           style={{
             background:
               'linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0.35), transparent)',
           }}
+        />
+
+        {/*
+         * A second scrim that only exists on hover. The gradient above is
+         * pitched for a title and a few words; the description needs a good
+         * deal more of the still knocked back before it is comfortable to
+         * read, and pitching the base gradient that heavy would bury the
+         * photograph for everyone who never points at the card.
+         *
+         * This used to run the other way — the gradient lightened on hover so
+         * the image got its moment — which is the opposite of what reading a
+         * paragraph wants.
+         */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[#0A131F]/45 opacity-0 transition-opacity duration-[600ms] ease-out group-hover:opacity-100 group-focus-visible:opacity-100"
         />
 
         <span className="absolute top-8 left-8 text-[0.875rem] tracking-[0.28em] text-white/35 md:top-10 md:left-10">
@@ -170,27 +185,12 @@ function ServiceCard({ service }: { service: Service }) {
             {service.title}
           </h3>
 
-          <ul className="flex flex-wrap gap-x-3 gap-y-1">
-            {service.keywords.map((keyword) => (
-              <li
-                key={keyword}
-                className="text-[0.75rem] tracking-[0.28em] text-white/60 uppercase"
-              >
-                {keyword}
-              </li>
-            ))}
-          </ul>
-
-          {/* Not a nested link — the whole poster is the target. */}
-          <span className="mt-7 inline-flex items-center gap-2.5 text-[0.75rem] font-semibold tracking-[0.24em] text-[#BFA76F] uppercase">
-            View service
-            <span
-              aria-hidden="true"
-              className="inline-block transition-transform duration-[600ms] ease-out group-hover:translate-x-2 group-focus-visible:translate-x-2"
-            >
-              →
-            </span>
-          </span>
+          {/* Capped rather than full-bleed: the copy runs to very different
+              lengths across the nine, and a measure this wide would set the
+              longest ones as a wall of text against the still. */}
+          <p className="max-w-[46ch] text-[0.8125rem] leading-[1.65] text-white/[0.78] md:text-[0.875rem]">
+            {service.description}
+          </p>
         </div>
       </Link>
     </motion.li>
