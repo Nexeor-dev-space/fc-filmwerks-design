@@ -98,14 +98,40 @@ export function ClientsSection() {
             <motion.li key={client.name} variants={logoVariants}>
               {/* Not a link: these are proof, not navigation. A whole grid of
                   dead anchors would be worse than none. */}
-              <div className="group flex h-[120px] items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 transition-colors duration-500 ease-out hover:border-[rgba(191,167,111,0.35)] md:p-10">
+              {/*
+               * Logos render in their own colours — no `grayscale`, no dimming
+               * opacity. Client marks are brand assets and the studio does not
+               * get to restyle them, so the only hover left is the lift.
+               *
+               * The trade-off is legibility: several of these are near-black
+               * artwork on transparency (Pavanito, Mindspace, Heartland, and
+               * ADCP's navy), and on this dark tile they sit close to their own
+               * background. Anything that would fix that — a light chip behind
+               * them, an invert, a drop shadow — alters the mark, which is the
+               * thing being avoided here.
+               */}
+              {/*
+               * Padding is the thing that actually sizes these, not the cap on
+               * the image. The tile was 120px tall with `p-10`, which left only
+               * 40px of usable height — so a `max-h-16` logo was clamped to a
+               * third of its cap and read as a speck. The tile is taller and
+               * the padding much tighter, and only then does raising the cap
+               * do anything.
+               */}
+              <div className="group flex h-[180px] items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 transition-colors duration-500 ease-out hover:border-[rgba(191,167,111,0.35)] md:h-[200px] md:p-5">
                 <Image
                   src={client.logo}
                   alt={client.name}
-                  width={220}
-                  height={48}
+                  width={352}
+                  height={352}
                   loading="lazy"
-                  className="h-auto max-h-10 w-auto max-w-full opacity-60 grayscale transition-[opacity,filter,transform] duration-500 ease-out group-hover:scale-105 group-hover:opacity-100 group-hover:grayscale-0"
+                  /* Square 352×352 artboards, not the wide 220×48 wordmarks the
+                     placeholders were — hence `object-contain` and a cap set
+                     against the tile's height rather than its width.
+                     The tile must clear the cap plus both paddings or the
+                     padding silently wins and the logo shrinks: 200 − 40 = 160
+                     of usable height for a 150px mark. */
+                  className="h-auto max-h-[140px] w-auto max-w-full object-contain transition-transform duration-500 ease-out group-hover:scale-105 md:max-h-[150px]"
                 />
               </div>
             </motion.li>
@@ -155,18 +181,6 @@ export function ClientsSection() {
             ))}
           </div>
         </motion.div>
-
-        <motion.p
-          className="mx-auto mt-16 max-w-[700px] text-center text-[1.25rem] leading-[1.6] font-normal text-white/[0.8] lg:mt-24"
-          variants={fadeUp}
-          custom={0}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.6 }}
-        >
-          Every partnership is built on trust, collaboration and a shared
-          commitment to exceptional storytelling.
-        </motion.p>
       </div>
     </section>
   );

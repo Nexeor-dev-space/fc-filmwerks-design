@@ -55,13 +55,24 @@ export function LensBackdrop() {
          * the wordmark dissolves toward its own edges instead of ending on a
          * hard crop, so only the middle, which the lens sits over, is present.
          */}
+        {/*
+         * Phones carry the most opacity of the three. It is not an
+         * inconsistency: the wordmark is far narrower there, so the same value
+         * puts much less ink on screen and the lockup stops being legible
+         * before it stops being subtle.
+         *
+         * The mask holds more of the middle than it used to — the wordmark now
+         * has to be recognisable at a glance, not merely sensed — while still
+         * dissolving before its own edges so it never reads as a pasted
+         * watermark.
+         */}
         <div
-          className="lens-logo w-[clamp(280px,92vw,560px)] opacity-[0.09] mix-blend-multiply blur-[2px] contrast-[0.85] md:w-[80vw] md:opacity-[0.12] md:blur-[3px] lg:w-[70vw] lg:opacity-[0.14] xl:w-[68vw] xl:max-w-[1100px]"
+          className="lens-logo w-[clamp(280px,92vw,560px)] opacity-[0.18] mix-blend-multiply blur-[2px] contrast-[0.85] md:w-[80vw] md:opacity-[0.16] md:blur-[3px] lg:w-[70vw] lg:opacity-[0.16] xl:w-[68vw] xl:max-w-[1100px]"
           style={{
             maskImage:
-              'radial-gradient(68% 130% at 50% 50%, #000 30%, rgba(0,0,0,0.35) 62%, transparent 88%)',
+              'radial-gradient(78% 140% at 50% 50%, #000 44%, rgba(0,0,0,0.5) 74%, transparent 95%)',
             WebkitMaskImage:
-              'radial-gradient(68% 130% at 50% 50%, #000 30%, rgba(0,0,0,0.35) 62%, transparent 88%)',
+              'radial-gradient(78% 140% at 50% 50%, #000 44%, rgba(0,0,0,0.5) 74%, transparent 95%)',
           }}
         >
           <Image

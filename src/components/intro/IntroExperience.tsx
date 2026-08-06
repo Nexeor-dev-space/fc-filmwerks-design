@@ -11,7 +11,11 @@ import {
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { hasSeenIntro, markIntroSeen } from '@/lib/intro-seen';
 import { cn } from '@/lib/utils';
-import { useIsomorphicLayoutEffect, usePrefersReducedMotion } from '@/hooks';
+import {
+  useIsomorphicLayoutEffect,
+  useLenis,
+  usePrefersReducedMotion,
+} from '@/hooks';
 
 import { ApertureIris } from './ApertureIris';
 import { CinemaLens } from './CinemaLens';
@@ -50,6 +54,15 @@ interface Timing {
     sealed: number;
     swap: number;
     irisOpen: number;
+    /**
+     * The intro has nothing left to show — the iris is fully open and the
+     * hero's settle has landed. This is where the intro tree is retired, and
+     * it must sit AFTER those tweens end, not where they begin: retiring at
+     * `irisOpen` tears the timeline down mid-reveal and cuts the opening to a
+     * single frame. It must also stay before `heroSettle`, which the mobile
+     * spans only clear by ~0.01 — check both breakpoints when retiming.
+     */
+    introSpent: number;
     heroSettle: number;
     frameSquare: number;
   };
@@ -80,6 +93,10 @@ function buildTiming(spans: (typeof SPANS)[keyof typeof SPANS]): Timing {
       /** Intro is swapped for the hero here, hidden behind the blades. */
       swap: beat(0.66),
       irisOpen: beat(0.76),
+      /* The iris-open and hero-settle tweens are 0.34 long; 0.35 is the first
+         moment both are certainly finished. Desktop clears heroSettle by
+         ~0.07, mobile by ~0.01 — see the note on the interface. */
+      introSpent: beat(0.76) + 0.35,
 
       heroSettle: coverStart + 0.02,
       frameSquare: coverStart + 0.12,
@@ -115,12 +132,72 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
 
   const [skipIntro, setSkipIntro] = useState(false);
 
+  /*
+   * Set once the iris has opened and the hero is on screen. From then on the
+   * intro is spent for this page view: the tree swaps to the hero-only layout
+   * below, so scrolling back to the top lands on the hero rather than
+   * replaying the opening.
+   *
+   * Deliberately React state and nothing else. `sessionStorage` would survive
+   * a reload, and the intro is meant to play again on refresh, in a new tab
+   * and on a fresh visit — all of which remount this component and reset the
+   * flag on their own. "Once per page view" is exactly a state variable's
+   * lifetime, so there is nothing to persist or clear.
+   */
+  const [introComplete, setIntroComplete] = useState(false);
+
+  /* The GSAP wrapper's height, read just before the swap unmounts it. The
+     scroll remap below needs the before/after difference, and by the time the
+     layout effect runs the old tree is gone. */
+  const preSwapWrapperHeight = useRef(0);
+
+  const lenis = useLenis();
+
   useIsomorphicLayoutEffect(() => {
     if (hasSeenIntro()) setSkipIntro(true);
   }, []);
 
+  /*
+   * Swapping the tree drops the intro's scroll distance — the wrapper goes
+   * from ~740dvh to ~380dvh — so the page under the reader gets shorter by
+   * several viewports. Left alone, the section below would jump up and cover
+   * the hero the instant the swap lands.
+   *
+   * The reader's scroll is therefore shifted by exactly the height the page
+   * lost, not sent to the top. Subtracting the delta keeps every visible
+   * relationship: mid-hold it clamps to 0 with the hero pinned identically on
+   * both sides of the swap, and if the scrub's one-second lag meant the reader
+   * was already deep into the cover phase when the beat fired, the section
+   * covering the hero stays exactly where they see it. A plain `scrollTo(0)`
+   * here would teleport a fast scroller back to the top of the page.
+   *
+   * A layout effect so it lands in the same commit as the swap, before paint.
+   * Lenis is told directly — it keeps its own scroll position and would
+   * otherwise animate back to where it thought it was.
+   */
   useIsomorphicLayoutEffect(() => {
-    if (reduced || skipIntro || !root.current || !wrapperRef.current) return;
+    if (!introComplete) return;
+
+    const newWrapperHeight = root.current?.parentElement?.offsetHeight ?? 0;
+    const removed = Math.max(
+      0,
+      preSwapWrapperHeight.current - newWrapperHeight,
+    );
+    const target = Math.max(0, window.scrollY - removed);
+
+    lenis?.scrollTo(target, { immediate: true, force: true });
+    window.scrollTo(0, target);
+  }, [introComplete, lenis]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (
+      reduced ||
+      skipIntro ||
+      introComplete ||
+      !root.current ||
+      !wrapperRef.current
+    )
+      return;
 
     /*
      * Marks the animated tree as live for as long as it is mounted.
@@ -346,6 +423,27 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
               setRevealed(true);
               markIntroSeen();
             }
+            /*
+             * Retire the intro only once `introSpent` — after the iris-open
+             * and settle tweens have fully landed, not where they begin. An
+             * earlier revision swapped at `irisOpen` and the reveal played as
+             * a single frame: the swap tears this timeline down, so anything
+             * still animating at that moment is simply cut.
+             *
+             * Compared against `tl.time()`, not `progress()`: beat positions
+             * are absolute timeline times, and the timeline's total duration
+             * is not exactly 1, so progress comparisons drift early. The
+             * `revealed` check above keeps the fuzzier progress form on
+             * purpose — firing a little early is harmless there and its
+             * threshold predates the distinction.
+             *
+             * The wrapper's height is captured here, before the swap unmounts
+             * it — the layout effect needs it to keep the reader's place.
+             */
+            if (tl.time() >= beats.introSpent) {
+              preSwapWrapperHeight.current = wrapper.offsetHeight;
+              setIntroComplete(true);
+            }
           });
         };
 
@@ -378,7 +476,7 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
       document.documentElement.removeAttribute('data-intro-active');
       mm.revert();
     };
-  }, [reduced, skipIntro]);
+  }, [reduced, skipIntro, introComplete]);
 
   const intro = (
     <>
@@ -407,15 +505,20 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
   );
 
   /*
-   * Returning visitor: the hero is the landing section outright, held in a
-   * tall wrapper so CSS sticky keeps it pinned. ServicesSection's negative
-   * margin pulls it into the last stretch of the wrapper, creating the
-   * slide-over effect without any JavaScript scroll handling.
+   * The hero as the landing section outright, held in a tall wrapper so CSS
+   * sticky keeps it pinned. ServicesSection's negative margin pulls it into
+   * the last stretch of the wrapper, creating the slide-over effect without
+   * any JavaScript scroll handling.
+   *
+   * Two ways in. `skipIntro` is the returning visitor, decided before first
+   * paint. `introComplete` is this page view having already played the
+   * opening — from here the intro is gone from the scroll flow entirely, so
+   * the top of the page is the hero and nothing replays on the way back up.
    *
    * Mobile wrapper: 300dvh  → ~80dvh of pure hero hold
    * Desktop wrapper: 380dvh → ~120dvh of pure hero hold
    */
-  if (skipIntro) {
+  if (skipIntro || introComplete) {
     return (
       <div
         className={cn('relative h-[300dvh] w-full md:h-[380dvh]', className)}

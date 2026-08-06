@@ -2,8 +2,8 @@ export interface Service {
   /** Zero-padded display number, 01–09. */
   number: string;
   title: string;
-  /** Two or three supporting terms shown beneath the title. */
-  keywords: string[];
+  /** Sales copy shown beneath the title on the card. */
+  description: string;
   /** Route for the service's own page. */
   href: string;
   /** Still revealed on hover. Lives in /public/images/services. */
@@ -23,63 +23,72 @@ export const services: Service[] = [
   {
     number: '01',
     title: 'Photography',
-    keywords: ['Editorial', 'Product', 'Portrait'],
+    description:
+      'Custom photography crafted for brands, products, portraits and events, delivering timeless visuals tailored to every unique story.',
     href: '/services/photography',
     image: '/images/services/photography.jpg',
   },
   {
     number: '02',
     title: 'Videography',
-    keywords: ['Cinematography', 'Direction', 'Crew'],
+    description:
+      'Tailor-made films and cinematic storytelling for brands, businesses and personal projects, designed to inspire and engage audiences.',
     href: '/services/videography',
-    image: '/images/services/videography.jpg',
+    image: '/images/services/videography-mg.jpg',
   },
   {
     number: '03',
     title: 'Corporate Ads',
-    keywords: ['Brand films', 'Campaigns', 'Strategy'],
+    description:
+      'Cinematic corporate commercials created from concept to delivery, helping brands connect, engage and leave lasting impressions.',
     href: '/services/corporate-ads',
     image: '/images/services/corporate-ads.jpg',
   },
   {
     number: '04',
     title: 'Audio Solutions',
-    keywords: ['Recording', 'Mixing', 'Sound design'],
+    description:
+      'Professional audio production, recording and sound design for commercials, events, podcasts and creative media projects.',
     href: '/services/audio-solutions',
     image: '/images/services/audio-solutions.jpg',
   },
   {
     number: '05',
     title: 'Post Production',
-    keywords: ['Editing', 'Colour', 'Finishing'],
+    description:
+      'Expert video editing, colour grading and finishing that transforms raw footage into polished cinematic stories.',
     href: '/services/post-production',
     image: '/images/services/post-production.jpg',
   },
   {
     number: '06',
     title: 'Podcast Production',
-    keywords: ['Studio', 'Series', 'Distribution'],
+    description:
+      'Complete podcast production with recording, audio engineering, editing and delivery, creating exceptional sound for every episode.',
     href: '/services/podcast-production',
     image: '/images/services/podcast-production.jpg',
   },
   {
     number: '07',
     title: 'Event Coverage',
-    keywords: ['Live', 'Multi-camera', 'Highlights'],
+    description:
+      'End-to-end technical AV and lighting solutions, with expertise on location, for all kinds of events — big or small.',
     href: '/services/event-coverage',
     image: '/images/services/event-coverage.jpg',
   },
   {
     number: '08',
     title: 'Home Theater Solutions',
-    keywords: ['Design', 'Calibration', 'Install'],
+    description:
+      '7.1, ten to twenty seater, full-fledged home theater setups and installations, tailor made to customer preferences.',
     href: '/services/home-theater-solutions',
     image: '/images/services/home-theater-solutions.jpg',
   },
   {
     number: '09',
     title: 'Music Label',
-    keywords: ['A&R', 'Production', 'Release'],
+    description:
+      'Our premium record label, from God’s Own Country. We are destined to take original music production to levels unfathomed.',
     href: '/services/music-label',
     image: '/images/services/music-label.jpg',
   },
