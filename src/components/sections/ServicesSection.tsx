@@ -113,7 +113,12 @@ function ServiceCard({ service }: { service: Service }) {
          * `overflow-y` to `auto`), so any lift would crop the card's own top
          * edge. All the hover motion lives on the image inside instead.
          */
-        className="group relative block h-[72vh] overflow-hidden rounded-[24px] border border-white/[0.08] shadow-[0_25px_60px_rgba(0,0,0,0.25)] transition-[box-shadow] duration-[600ms] ease-out hover:shadow-[0_40px_80px_rgba(0,0,0,0.45)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F] md:h-[560px] lg:h-[660px]"
+        /* No drop shadow. Each card used to carry a 60px black halo, and nine
+           of them side by side merged into one continuous dark haze around
+           the whole strip — it read as the carousel having its own darker
+           background laid over the section's. The cards sit flat on the
+           ground now; the border alone draws the edge. */
+        className="group relative block h-[72vh] overflow-hidden rounded-[24px] border border-white/[0.08] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F] md:h-[560px] lg:h-[660px]"
       >
         {/* Parallax. Overscanned top and bottom so the travel stays covered. */}
         <motion.div
