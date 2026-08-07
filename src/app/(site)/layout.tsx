@@ -18,11 +18,11 @@ export default function SiteLayout({
       >
         Skip to content
       </a>
-      <Header />
+      {/* <Header /> */}
       <main id="main" className="flex-1">
         {children}
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

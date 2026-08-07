@@ -88,7 +88,7 @@ export function AboutSection() {
     <section
       id="about"
       aria-labelledby="about-heading"
-      className="bg-[#0F1012] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
+      className="relative z-10 bg-[#0F1012] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
     >
       <div className="w-full px-4 md:px-[3vw]">
         <header className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-20">
