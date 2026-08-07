@@ -1,4 +1,4 @@
-import { Footer, Header } from '@/components/layout';
+// import { Footer, Header } from '@/components/layout';
 
 /**
  * Chrome shared by every public marketing page. Routes that need different
