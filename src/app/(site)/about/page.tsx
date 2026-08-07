@@ -11,7 +11,7 @@ export default function AboutPage() {
   return (
     <>
       <FloatingNav />
-      <AboutSection />
+      <AboutSection isStandalone />
       <LensTransition />
       <CinematicFooter />
     </>

@@ -251,13 +251,13 @@ export function CinematicFooter() {
             always clears it whatever the viewport height. The band now sits on
             the card's bottom edge rather than lifted off it, so the clearance
             is that much smaller — 11vh + 2, 12vh + 2. */}
-        <div className="relative z-10 flex min-h-0 flex-1 flex-col px-6 pt-10 pb-[20vh] md:px-12 md:pt-12 md:pb-[22vh] lg:px-16 lg:pt-8">
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col px-6 pt-10 pb-[20vh] max-[340px]:px-2.5 md:px-12 md:pt-12 md:pb-[22vh] lg:px-16 lg:pt-8">
           <div className="flex flex-1 flex-col justify-center">
             <div className="flex flex-col gap-16 lg:flex-row lg:items-end lg:justify-between lg:gap-24">
               {/* Heading, standfirst and CTAs */}
               <div className="max-w-[720px]">
                 <motion.h2
-                  className="text-[clamp(44px,9vw,64px)] leading-[0.94] font-bold tracking-[-0.02em] text-[#BFA76F] lg:text-[clamp(56px,5.4vw,96px)]"
+                  className="text-[clamp(24px,9vw,64px)] leading-[0.94] font-bold tracking-[-0.02em] text-[#BFA76F] lg:text-[clamp(56px,5.4vw,96px)]"
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.4 }}
@@ -300,7 +300,7 @@ export function CinematicFooter() {
                 >
                   <Button
                     href="/contact"
-                    className="group rounded-full bg-[#F8F7F4] text-[#0F1C2E] transition-[background-color,transform,box-shadow] duration-500 ease-out hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_8px_30px_rgba(248,247,244,0.15)]"
+                    className="group rounded-full bg-[#F8F7F4] text-[#0F1C2E] transition-[background-color,transform,box-shadow] duration-500 ease-out hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_8px_30px_rgba(248,247,244,0.15)] max-[340px]:h-8 max-[340px]:px-4 max-[340px]:text-[10px]"
                     size="lg"
                   >
                     Start a project
@@ -313,9 +313,9 @@ export function CinematicFooter() {
                   </Button>
 
                   <Button
-                    href="/work"
+                    href="/portfolio"
                     variant="outline"
-                    className="group rounded-full border-[#BFA76F]/40 text-white transition-[color,border-color,transform,box-shadow] duration-500 ease-out hover:-translate-y-0.5 hover:border-[#BFA76F] hover:text-[#BFA76F] hover:shadow-[0_8px_30px_rgba(191,167,111,0.08)]"
+                    className="group rounded-full border-[#BFA76F]/40 text-white transition-[color,border-color,transform,box-shadow] duration-500 ease-out hover:-translate-y-0.5 hover:border-[#BFA76F] hover:text-[#BFA76F] hover:shadow-[0_8px_30px_rgba(191,167,111,0.08)] max-[340px]:h-8 max-[340px]:px-4 max-[340px]:text-[10px]"
                     size="lg"
                   >
                     View our work

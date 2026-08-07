@@ -91,7 +91,7 @@ export function Hero() {
                 h1's size, weight and colour since it sets none of its own. */}
             {/* Gold reads 7.9:1 against the navy scrim over the footage —
                 the rotating word inherits it along with the rest. */}
-            <h1 className="text-[clamp(40px,11vw,64px)] leading-[0.92] font-bold tracking-[-0.02em] text-[#BFA76F] lg:text-[clamp(56px,6.5vw,120px)]">
+            <h1 className="text-[clamp(24px,11vw,64px)] leading-[0.92] font-bold tracking-[-0.02em] text-[#BFA76F] lg:text-[clamp(56px,6.5vw,120px)]">
               {HEADLINE_FIXED_LINES.map((line, index) => (
                 <span key={line} className="block overflow-hidden pb-[0.08em]">
                   <motion.span
@@ -142,8 +142,8 @@ export function Hero() {
                 {/* Pill, to match the MENU control in the nav above — the
                     system default is the near-square editorial radius. */}
                 <Button
-                  href="/work"
-                  className="rounded-full bg-[#F8F7F4] text-[#0F1C2E] hover:bg-white"
+                  href="/portfolio"
+                  className="rounded-full bg-[#F8F7F4] text-[#0F1C2E] hover:bg-white max-[340px]:h-8 max-[340px]:px-4 max-[340px]:text-[10px]"
                 >
                   View our work
                 </Button>
@@ -158,7 +158,7 @@ export function Hero() {
                 <Button
                   href="/contact"
                   variant="outline"
-                  className="rounded-full border-white/35 text-[#F8F7F4] hover:border-[#BFA76F]"
+                  className="rounded-full border-white/35 text-[#F8F7F4] hover:border-[#BFA76F] max-[340px]:h-8 max-[340px]:px-4 max-[340px]:text-[10px]"
                 >
                   Start a project
                 </Button>

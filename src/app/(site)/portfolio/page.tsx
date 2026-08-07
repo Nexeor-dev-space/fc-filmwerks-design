@@ -1,5 +1,3 @@
-
-
 import { PortfolioGrid } from '@/components/sections/PortfolioGrid';
 import { LensTransition } from '@/components/sections/LensTransition';
 import { createMetadata } from '@/lib/seo';

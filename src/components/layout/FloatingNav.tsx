@@ -68,10 +68,10 @@ export function FloatingNav() {
         transition={{ duration: DURATION.slow, ease: EASE.out, delay: 0.1 }}
         style={{ pointerEvents: revealed ? 'auto' : 'none' }}
       >
-        <div className="w-full px-4 py-8 md:px-[3vw] md:py-10 lg:py-12">
+        <div className="w-full px-4 py-8 max-[340px]:px-2.5 max-[340px]:py-4 md:px-[3vw] md:py-10 lg:py-12">
           <nav
             aria-label="Main"
-            className="flex items-center justify-between gap-6"
+            className="flex items-center justify-between gap-6 max-[340px]:gap-2"
           >
             <Link href="/" className="inline-flex" aria-label={siteConfig.name}>
               <Image
@@ -80,7 +80,7 @@ export function FloatingNav() {
                 width={2040}
                 height={393}
                 priority
-                className="h-6 w-auto md:h-7 lg:h-8"
+                className="h-6 w-auto max-[340px]:h-4.5 max-[280px]:h-4 md:h-7 lg:h-8"
               />
             </Link>
 
@@ -89,7 +89,7 @@ export function FloatingNav() {
               onClick={() => setOpen(true)}
               aria-expanded={open}
               aria-controls="site-menu"
-              className="rounded-full bg-[#F8F7F4] px-7 py-3 text-[0.6875rem] font-semibold tracking-[0.28em] text-[#0F1C2E] uppercase transition-colors duration-300 ease-out hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F] md:px-9 md:py-3.5 md:text-xs"
+              className="rounded-full bg-[#F8F7F4] px-7 py-3 text-[0.6875rem] font-semibold tracking-[0.28em] text-[#0F1C2E] uppercase transition-colors duration-300 ease-out hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F] max-[340px]:px-3.5 max-[340px]:py-2 max-[340px]:text-[9px] max-[340px]:tracking-[0.1em] md:px-9 md:py-3.5 md:text-xs"
             >
               Menu
             </button>

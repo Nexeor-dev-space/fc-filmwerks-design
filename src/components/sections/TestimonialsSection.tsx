@@ -253,7 +253,7 @@ export function TestimonialsSection() {
 
             <motion.h2
               id="testimonials-heading"
-              className="text-[2.625rem] leading-[0.95] font-semibold tracking-[-0.02em] text-white uppercase md:text-[3.375rem] lg:text-[4rem] xl:text-[4.5rem]"
+              className="text-[clamp(1.75rem,8vw,2.625rem)] leading-[0.95] font-semibold tracking-[-0.02em] text-white uppercase md:text-[3.375rem] lg:text-[4rem] xl:text-[4.5rem]"
               variants={fadeUp}
               custom={0.08}
               initial="hidden"

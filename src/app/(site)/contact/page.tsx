@@ -1,5 +1,3 @@
-
-
 import { ContactForm } from '@/components/sections/ContactForm';
 import { LensTransition } from '@/components/sections/LensTransition';
 import { createMetadata } from '@/lib/seo';

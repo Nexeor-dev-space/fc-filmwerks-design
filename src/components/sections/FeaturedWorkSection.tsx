@@ -367,7 +367,7 @@ export function FeaturedWorkSection() {
           <div>
             <motion.h2
               id="featured-work-heading"
-              className="text-[2.5rem] leading-[0.95] font-semibold tracking-[-0.02em] text-white uppercase md:text-[3.25rem] lg:text-[4rem] xl:text-[4.5rem]"
+              className="text-[clamp(1.75rem,8vw,2.5rem)] leading-[0.95] font-semibold tracking-[-0.02em] text-white uppercase md:text-[3.25rem] lg:text-[4rem] xl:text-[4.5rem]"
               variants={fadeUp}
               custom={0}
               initial="hidden"

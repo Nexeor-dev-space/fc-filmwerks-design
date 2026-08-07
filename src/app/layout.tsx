@@ -41,7 +41,7 @@ export default function RootLayout({
         needs. Column layout belongs to the route layouts, not here.
       */}
       <head />
-      <body className="min-h-dvh antialiased">
+      <body className="min-h-dvh overflow-x-hidden antialiased">
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
         <Providers>{children}</Providers>
       </body>

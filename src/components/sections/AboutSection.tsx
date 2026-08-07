@@ -34,7 +34,11 @@ const fadeUp: Variants = {
  * Padding and gutters mirror every other homepage section so the run of them
  * reads as one continuous page.
  */
-export function AboutSection() {
+export function AboutSection({
+  isStandalone = false,
+}: {
+  isStandalone?: boolean;
+} = {}) {
   const reducedMotion = usePrefersReducedMotion();
   const stillRef = useRef<HTMLDivElement>(null);
 
@@ -88,7 +92,9 @@ export function AboutSection() {
     <section
       id="about"
       aria-labelledby="about-heading"
-      className="relative z-10 bg-[#0F1012] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
+      className={`relative z-10 bg-[#0F1012] pb-20 md:pb-24 lg:pb-28 ${
+        isStandalone ? 'pt-32 md:pt-40 lg:pt-48' : 'pt-16 md:pt-20 lg:pt-24'
+      }`}
     >
       <div className="w-full px-4 md:px-[3vw]">
         <header className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-20">
@@ -106,7 +112,7 @@ export function AboutSection() {
 
             <motion.h2
               id="about-heading"
-              className="text-[2.5rem] leading-[0.95] font-semibold tracking-[-0.02em] text-white uppercase md:text-[3.375rem] lg:text-[4rem] xl:text-[4.5rem]"
+              className="text-[clamp(1.75rem,8vw,2.5rem)] leading-[0.95] font-semibold tracking-[-0.02em] text-white uppercase md:text-[3.375rem] lg:text-[4rem] xl:text-[4.5rem]"
               variants={fadeUp}
               custom={0.08}
               initial="hidden"

@@ -257,14 +257,14 @@ export function PortfolioGrid() {
     <section
       id="portfolio-grid"
       aria-labelledby="portfolio-heading"
-      className="relative z-10 bg-[#0f1012] pt-32 pb-20 md:pt-40 md:pb-24 lg:pt-48 lg:pb-28 min-h-screen"
+      className="relative z-10 min-h-screen bg-[#0f1012] pt-32 pb-20 md:pt-40 md:pb-24 lg:pt-48 lg:pb-28"
     >
       <div className="w-full px-4 md:px-[3vw]">
         <header className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-20">
           <div>
             <motion.h1
               id="portfolio-heading"
-              className="text-[2.5rem] leading-[0.95] font-semibold tracking-[-0.02em] text-white uppercase md:text-[3.25rem] lg:text-[4rem] xl:text-[4.5rem]"
+              className="text-[clamp(1.75rem,8vw,2.5rem)] leading-[0.95] font-semibold tracking-[-0.02em] text-white uppercase md:text-[3.25rem] lg:text-[4rem] xl:text-[4.5rem]"
               variants={fadeUp}
               custom={0}
               initial="hidden"
@@ -285,7 +285,8 @@ export function PortfolioGrid() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.6 }}
           >
-            Explore our curated selection of films, commercials, and brand stories. Every frame is crafted to leave a lasting impression.
+            Explore our curated selection of films, commercials, and brand
+            stories. Every frame is crafted to leave a lasting impression.
           </motion.p>
         </header>
 

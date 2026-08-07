@@ -25,14 +25,13 @@ export function ContactForm() {
   };
 
   return (
-    <section className="relative z-10 bg-[#0f1012] pt-32 pb-20 md:pt-40 md:pb-24 lg:pt-48 lg:pb-28 min-h-screen">
+    <section className="relative z-10 min-h-screen bg-[#0f1012] pt-32 pb-20 md:pt-40 md:pb-24 lg:pt-48 lg:pb-28">
       <div className="w-full px-4 md:px-[3vw]">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
-          
+        <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:gap-24">
           {/* Left Column: Typography & Info */}
           <div>
             <motion.h1
-              className="text-[2.5rem] leading-[0.95] font-semibold tracking-[-0.02em] text-white uppercase md:text-[3.25rem] lg:text-[4rem] xl:text-[4.5rem]"
+              className="text-[clamp(1.75rem,8vw,2.5rem)] leading-[0.95] font-semibold tracking-[-0.02em] text-white uppercase md:text-[3.25rem] lg:text-[4rem] xl:text-[4.5rem]"
               variants={fadeUp}
               custom={0}
               initial="hidden"
@@ -54,7 +53,9 @@ export function ContactForm() {
               whileInView="visible"
               viewport={{ once: true, amount: 0.6 }}
             >
-              Whether you&rsquo;re launching a brand, telling a story, or creating a campaign, we&rsquo;re ready to bring your vision to life.
+              Whether you&rsquo;re launching a brand, telling a story, or
+              creating a campaign, we&rsquo;re ready to bring your vision to
+              life.
             </motion.p>
 
             <motion.div
@@ -76,7 +77,7 @@ export function ContactForm() {
                   {siteConfig.contact.email}
                 </a>
               </div>
-              
+
               {siteConfig.contact.phone && (
                 <div>
                   <p className="mb-2 text-[0.6875rem] font-semibold tracking-[0.28em] text-[#BFA76F] uppercase">
@@ -112,53 +113,53 @@ export function ContactForm() {
             viewport={{ once: true, amount: 0.4 }}
           >
             <form onSubmit={handleSubmit} className="flex flex-col gap-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div className="relative group">
+              <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
+                <div className="group relative">
                   <input
                     type="text"
                     name="firstName"
                     placeholder="First Name *"
                     required
-                    className="w-full bg-transparent border-b border-white/[0.15] px-0 py-3 text-[1.125rem] text-white placeholder:text-white/40 focus:border-[#BFA76F] focus:outline-none focus:ring-0 transition-colors duration-300"
+                    className="w-full border-b border-white/[0.15] bg-transparent px-0 py-3 text-[1.125rem] text-white transition-colors duration-300 placeholder:text-white/40 focus:border-[#BFA76F] focus:ring-0 focus:outline-none"
                   />
                 </div>
-                <div className="relative group">
+                <div className="group relative">
                   <input
                     type="text"
                     name="lastName"
                     placeholder="Last Name *"
                     required
-                    className="w-full bg-transparent border-b border-white/[0.15] px-0 py-3 text-[1.125rem] text-white placeholder:text-white/40 focus:border-[#BFA76F] focus:outline-none focus:ring-0 transition-colors duration-300"
+                    className="w-full border-b border-white/[0.15] bg-transparent px-0 py-3 text-[1.125rem] text-white transition-colors duration-300 placeholder:text-white/40 focus:border-[#BFA76F] focus:ring-0 focus:outline-none"
                   />
                 </div>
               </div>
-              
-              <div className="relative group">
+
+              <div className="group relative">
                 <input
                   type="email"
                   name="email"
                   placeholder="Email Address *"
                   required
-                  className="w-full bg-transparent border-b border-white/[0.15] px-0 py-3 text-[1.125rem] text-white placeholder:text-white/40 focus:border-[#BFA76F] focus:outline-none focus:ring-0 transition-colors duration-300"
+                  className="w-full border-b border-white/[0.15] bg-transparent px-0 py-3 text-[1.125rem] text-white transition-colors duration-300 placeholder:text-white/40 focus:border-[#BFA76F] focus:ring-0 focus:outline-none"
                 />
               </div>
 
-              <div className="relative group">
+              <div className="group relative">
                 <input
                   type="tel"
                   name="phone"
                   placeholder="Phone Number"
-                  className="w-full bg-transparent border-b border-white/[0.15] px-0 py-3 text-[1.125rem] text-white placeholder:text-white/40 focus:border-[#BFA76F] focus:outline-none focus:ring-0 transition-colors duration-300"
+                  className="w-full border-b border-white/[0.15] bg-transparent px-0 py-3 text-[1.125rem] text-white transition-colors duration-300 placeholder:text-white/40 focus:border-[#BFA76F] focus:ring-0 focus:outline-none"
                 />
               </div>
 
-              <div className="relative group">
+              <div className="group relative">
                 <textarea
                   name="message"
                   placeholder="Tell us about your project *"
                   rows={4}
                   required
-                  className="w-full bg-transparent border-b border-white/[0.15] px-0 py-3 text-[1.125rem] text-white placeholder:text-white/40 focus:border-[#BFA76F] focus:outline-none focus:ring-0 transition-colors duration-300 resize-none"
+                  className="w-full resize-none border-b border-white/[0.15] bg-transparent px-0 py-3 text-[1.125rem] text-white transition-colors duration-300 placeholder:text-white/40 focus:border-[#BFA76F] focus:ring-0 focus:outline-none"
                 />
               </div>
 
@@ -169,7 +170,11 @@ export function ContactForm() {
                   className="group rounded-full bg-[#F8F7F4] text-[#0F1C2E] transition-[background-color,transform,box-shadow] duration-500 ease-out hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_8px_30px_rgba(248,247,244,0.15)] disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
                   size="lg"
                 >
-                  {status === 'submitting' ? 'Sending...' : status === 'sent' ? 'Message Sent' : 'Send Message'}
+                  {status === 'submitting'
+                    ? 'Sending...'
+                    : status === 'sent'
+                      ? 'Message Sent'
+                      : 'Send Message'}
                   {status === 'idle' && (
                     <span
                       aria-hidden="true"
@@ -182,7 +187,6 @@ export function ContactForm() {
               </div>
             </form>
           </motion.div>
-          
         </div>
       </div>
     </section>

@@ -27,6 +27,7 @@ export function CtaButton({ href, children, className }: CtaButtonProps) {
         'transition-[color,border-color,transform] duration-500 ease-out',
         'hover:-translate-y-0.5 hover:border-[#BFA76F] hover:text-[#BFA76F]',
         'focus-visible:outline-[#BFA76F]',
+        'max-[340px]:h-8 max-[340px]:px-4 max-[340px]:text-[10px]',
         className,
       )}
     >
