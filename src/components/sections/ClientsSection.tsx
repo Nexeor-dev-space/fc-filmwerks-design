@@ -3,7 +3,7 @@
 import { motion, type Variants } from 'framer-motion';
 import Image from 'next/image';
 
-import { clients, clientSectors } from '@/config/clients';
+import { clients } from '@/config/clients';
 import { EASE } from '@/constants';
 
 const fadeUp: Variants = {
@@ -15,25 +15,13 @@ const fadeUp: Variants = {
   }),
 };
 
-/** Logos arrive in sequence rather than as one block. */
-const wallVariants: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.05 } },
-};
-
-const logoVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE.out } },
-};
-
 /**
  * Trusted by — a quiet statement of credibility between the studio
  * introduction and the testimonials.
  *
- * Deliberately restrained: a still grid rather than a sliding logo belt, since
- * a carousel here would compete with the services carousel further up the page
- * and read as filler. The marquee underneath carries sectors, not logos, so it
- * adds texture without becoming the layout.
+ * A single drifting belt of client marks. The sectors ticker that used to run
+ * beneath it has been removed; `clientSectors` is still exported from the
+ * config and now has no consumer.
  *
  * Padding and gutters mirror every other homepage section.
  */
@@ -87,67 +75,29 @@ export function ClientsSection() {
           </motion.p>
         </header>
 
-        <motion.ul
-          className="mt-16 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:mt-24 lg:grid-cols-5"
-          variants={wallVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          {clients.map((client) => (
-            <motion.li key={client.name} variants={logoVariants}>
-              {/* Not a link: these are proof, not navigation. A whole grid of
-                  dead anchors would be worse than none. */}
-              {/*
-               * Logos render in their own colours — no `grayscale`, no dimming
-               * opacity. Client marks are brand assets and the studio does not
-               * get to restyle them, so the only hover left is the lift.
-               *
-               * The trade-off is legibility: several of these are near-black
-               * artwork on transparency (Pavanito, Mindspace, Heartland, and
-               * ADCP's navy), and on this dark tile they sit close to their own
-               * background. Anything that would fix that — a light chip behind
-               * them, an invert, a drop shadow — alters the mark, which is the
-               * thing being avoided here.
-               */}
-              {/*
-               * Padding is the thing that actually sizes these, not the cap on
-               * the image. The tile was 120px tall with `p-10`, which left only
-               * 40px of usable height — so a `max-h-16` logo was clamped to a
-               * third of its cap and read as a speck. The tile is taller and
-               * the padding much tighter, and only then does raising the cap
-               * do anything.
-               */}
-              <div className="group flex h-[180px] items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 transition-colors duration-500 ease-out hover:border-[rgba(191,167,111,0.35)] md:h-[200px] md:p-5">
-                <Image
-                  src={client.logo}
-                  alt={client.name}
-                  width={352}
-                  height={352}
-                  loading="lazy"
-                  /* Square 352×352 artboards, not the wide 220×48 wordmarks the
-                     placeholders were — hence `object-contain` and a cap set
-                     against the tile's height rather than its width.
-                     The tile must clear the cap plus both paddings or the
-                     padding silently wins and the logo shrinks: 200 − 40 = 160
-                     of usable height for a 150px mark. */
-                  className="h-auto max-h-[140px] w-auto max-w-full object-contain transition-transform duration-500 ease-out group-hover:scale-105 md:max-h-[150px]"
-                />
-              </div>
-            </motion.li>
-          ))}
-        </motion.ul>
-
-        {/* Sectors, drifting. Two identical tracks so the loop is seamless. */}
+        {/*
+         * The logo belt. Two identical tracks translated by exactly half the
+         * pair's width, so the moment the first copy leaves the second is
+         * already in its place — the loop has no seam and no reset to see.
+         *
+         * No tiles, borders or backgrounds: the marks sit directly on the
+         * section ground, held in line by a shared height cap rather than by
+         * a box. Because the artboards are square, capping the height also
+         * settles the width, which is what keeps the rhythm even.
+         *
+         * Grayscale is a client instruction and it overrides the earlier note
+         * about never restyling brand assets — worth knowing that it is a
+         * decision, not an oversight, before anyone "restores" the colour.
+         */}
         <motion.div
-          className="marquee-host relative mt-14 overflow-hidden lg:mt-20"
+          className="marquee-host relative mt-16 overflow-hidden lg:mt-24"
           variants={fadeUp}
           custom={0}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.6 }}
+          viewport={{ once: true, amount: 0.3 }}
         >
-          {/* Feathered edges, so the run appears out of and into the ground
+          {/* Feathered edges, so the belt appears out of and into the ground
               rather than being cut off by an invisible box. */}
           <div
             aria-hidden="true"
@@ -158,7 +108,7 @@ export function ClientsSection() {
             className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[#0F1C2E] to-transparent md:w-32"
           />
 
-          <div className="animate-marquee flex w-max">
+          <div className="animate-marquee-logos flex w-max">
             {[0, 1].map((copy) => (
               <ul
                 key={copy}
@@ -166,15 +116,35 @@ export function ClientsSection() {
                 // The duplicate is presentational; only the first is announced.
                 aria-hidden={copy === 1}
               >
-                {clientSectors.map((sector) => (
+                {clients.map((client) => (
                   <li
-                    key={sector}
-                    className="flex items-center text-[0.8125rem] tracking-[0.28em] text-white/40 uppercase"
+                    key={client.name}
+                    className="flex shrink-0 items-center justify-center px-10 md:px-14"
                   >
-                    <span className="px-6 md:px-9">{sector}</span>
-                    <span aria-hidden="true" className="text-[#BFA76F]/50">
-                      •
-                    </span>
+                    {/* Not a link: these are proof, not navigation. A whole
+                        belt of dead anchors would be worse than none.
+                        Monochrome at rest, full colour on hover — the mark is
+                        restyled only while it is being looked at. */}
+                    <Image
+                      src={client.logo}
+                      alt={client.name}
+                      width={352}
+                      height={352}
+                      loading="lazy"
+                      /*
+                       * `contrast(0.45) brightness(1.85)` is doing the real
+                       * work, not the grayscale. These artboards range from
+                       * near-black (Pavanito reads a mean luminance of 6) to
+                       * fairly light, and plain `grayscale` left the dark half
+                       * invisible on this navy. Brightness alone cannot fix
+                       * that — it is multiplicative, so black stays black.
+                       * Dropping contrast first pulls every tone toward mid
+                       * grey, and only then does the brightness lift land on
+                       * something it can raise. Internal detail survives:
+                       * knocked-out text inside a filled disc still separates.
+                       */
+                      className="h-auto max-h-[120px] w-auto max-w-none object-contain opacity-80 brightness-[1.85] contrast-[0.45] grayscale transition-[opacity,filter] duration-500 ease-out hover:opacity-100 hover:brightness-100 hover:contrast-100 hover:grayscale-0 md:max-h-[150px]"
+                    />
                   </li>
                 ))}
               </ul>
