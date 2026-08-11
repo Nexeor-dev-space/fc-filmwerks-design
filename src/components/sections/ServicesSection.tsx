@@ -290,23 +290,35 @@ export function ServicesSection() {
        * `scroll-px` matches the gutter so a snapped card lands on the same line
        * as the heading rather than flush against the viewport.
        */}
-      <HorizontalCarousel
-        label="Services"
+      {/*
+       * The reveal is driven from here rather than from the list itself. The
+       * carousel loops by rendering its children twice, and the second copy
+       * starts far off to the right where `whileInView` would never fire — it
+       * would sit at opacity 0 and tear a hole in the loop. Framer propagates
+       * variants down through the tree, so both copies' cards take their cue
+       * from this wrapper, which is on screen.
+       */}
+      <motion.div
         className="mt-16 lg:mt-24"
-        edgeClassName="px-4 py-6 scroll-px-4 md:px-[3vw] md:scroll-px-[3vw]"
+        variants={gridVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.1 }}
       >
-        <motion.ul
-          className="flex gap-5 md:gap-6 lg:gap-8"
-          variants={gridVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
+        <HorizontalCarousel
+          label="Services"
+          edgeClassName="px-4 py-6 scroll-px-4 md:px-[3vw] md:scroll-px-[3vw]"
+          // Same gap the list uses internally, so the seam of the loop is
+          // indistinguishable from every other join between cards.
+          gapClassName="gap-5 md:gap-6 lg:gap-8"
         >
-          {services.map((service) => (
-            <ServiceCard key={service.href} service={service} />
-          ))}
-        </motion.ul>
-      </HorizontalCarousel>
+          <ul className="flex gap-5 md:gap-6 lg:gap-8">
+            {services.map((service) => (
+              <ServiceCard key={service.href} service={service} />
+            ))}
+          </ul>
+        </HorizontalCarousel>
+      </motion.div>
     </section>
   );
 }
