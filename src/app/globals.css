@@ -249,6 +249,19 @@ html.lenis body {
 }
 
 /*
+ * The logo belt runs slower than the sector strip — the marks are much wider,
+ * so the same duration would sweep them past before they can be read.
+ */
+.animate-marquee-logos {
+  animation: marquee 90s linear infinite;
+}
+
+.animate-marquee-logos:hover,
+.marquee-host:hover .animate-marquee-logos {
+  animation-play-state: paused;
+}
+
+/*
  * Idle float on review cards. Each card staggers its delay so the set breathes
  * rather than bobbing in unison. The amplitude is deliberately small — 3px is
  * enough to signal life without distracting from the text.
