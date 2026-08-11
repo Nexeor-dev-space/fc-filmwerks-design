@@ -243,8 +243,20 @@ html.lenis body {
   animation: marquee 60s linear infinite;
 }
 
+/*
+ * The logo belt runs the same keyframe at a slower rate. Logos are read one at
+ * a time rather than scanned as texture, so the sectors' pace would hurry
+ * them; and being images rather than text, the track earns a compositor hint.
+ */
+.animate-marquee-logos {
+  animation: marquee 90s linear infinite;
+  will-change: transform;
+}
+
 .animate-marquee:hover,
-.marquee-host:hover .animate-marquee {
+.marquee-host:hover .animate-marquee,
+.animate-marquee-logos:hover,
+.marquee-host:hover .animate-marquee-logos {
   animation-play-state: paused;
 }
 

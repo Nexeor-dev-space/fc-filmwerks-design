@@ -3,7 +3,7 @@
 import { motion, type Variants } from 'framer-motion';
 import Image from 'next/image';
 
-import { clients, clientSectors } from '@/config/clients';
+import { clients } from '@/config/clients';
 import { EASE } from '@/constants';
 
 const fadeUp: Variants = {
@@ -143,14 +143,14 @@ export function ClientsSection() {
 
         {/* Sectors, drifting. Two identical tracks so the loop is seamless. */}
         <motion.div
-          className="marquee-host relative mt-14 overflow-hidden lg:mt-20"
+          className="marquee-host relative mt-16 overflow-hidden lg:mt-24"
           variants={fadeUp}
           custom={0}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.6 }}
+          viewport={{ once: true, amount: 0.3 }}
         >
-          {/* Feathered edges, so the run appears out of and into the ground
+          {/* Feathered edges, so the belt appears out of and into the ground
               rather than being cut off by an invisible box. */}
           <div
             aria-hidden="true"
@@ -161,7 +161,7 @@ export function ClientsSection() {
             className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[#0F1C2E] to-transparent md:w-32"
           />
 
-          <div className="animate-marquee flex w-max">
+          <div className="animate-marquee-logos flex w-max">
             {[0, 1].map((copy) => (
               <ul
                 key={copy}
@@ -169,15 +169,35 @@ export function ClientsSection() {
                 // The duplicate is presentational; only the first is announced.
                 aria-hidden={copy === 1}
               >
-                {clientSectors.map((sector) => (
+                {clients.map((client) => (
                   <li
-                    key={sector}
-                    className="flex items-center text-[0.8125rem] tracking-[0.28em] text-white/40 uppercase"
+                    key={client.name}
+                    className="flex shrink-0 items-center justify-center px-10 md:px-14"
                   >
-                    <span className="px-6 md:px-9">{sector}</span>
-                    <span aria-hidden="true" className="text-[#BFA76F]/50">
-                      •
-                    </span>
+                    {/* Not a link: these are proof, not navigation. A whole
+                        belt of dead anchors would be worse than none.
+                        Monochrome at rest, full colour on hover — the mark is
+                        restyled only while it is being looked at. */}
+                    <Image
+                      src={client.logo}
+                      alt={client.name}
+                      width={352}
+                      height={352}
+                      loading="lazy"
+                      /*
+                       * `contrast(0.45) brightness(1.85)` is doing the real
+                       * work, not the grayscale. These artboards range from
+                       * near-black (Pavanito reads a mean luminance of 6) to
+                       * fairly light, and plain `grayscale` left the dark half
+                       * invisible on this navy. Brightness alone cannot fix
+                       * that — it is multiplicative, so black stays black.
+                       * Dropping contrast first pulls every tone toward mid
+                       * grey, and only then does the brightness lift land on
+                       * something it can raise. Internal detail survives:
+                       * knocked-out text inside a filled disc still separates.
+                       */
+                      className="h-auto max-h-[120px] w-auto max-w-none object-contain opacity-80 brightness-[1.85] contrast-[0.45] grayscale transition-[opacity,filter] duration-500 ease-out hover:opacity-100 hover:brightness-100 hover:contrast-100 hover:grayscale-0 md:max-h-[150px]"
+                    />
                   </li>
                 ))}
               </ul>
