@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRef } from 'react';
 
-import { DragCarousel } from '@/components/ui';
+import { HorizontalCarousel } from '@/components/ui';
 import { services, type Service } from '@/config/services';
 import { EASE } from '@/constants';
 import { useIsMobile, usePrefersReducedMotion } from '@/hooks';
@@ -290,7 +290,7 @@ export function ServicesSection() {
        * `scroll-px` matches the gutter so a snapped card lands on the same line
        * as the heading rather than flush against the viewport.
        */}
-      <DragCarousel
+      <HorizontalCarousel
         label="Services"
         className="mt-16 lg:mt-24"
         edgeClassName="px-4 py-6 scroll-px-4 md:px-[3vw] md:scroll-px-[3vw]"
@@ -306,7 +306,7 @@ export function ServicesSection() {
             <ServiceCard key={service.href} service={service} />
           ))}
         </motion.ul>
-      </DragCarousel>
+      </HorizontalCarousel>
     </section>
   );
 }
