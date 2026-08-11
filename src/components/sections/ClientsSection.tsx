@@ -132,7 +132,7 @@ export function ClientsSection() {
                       height={352}
                       loading="lazy"
                       /*
-                       * `contrast(0.45) brightness(1.85)` is doing the real
+                       * `contrast(0.35) brightness(2.3)` is doing the real
                        * work, not the grayscale. These artboards range from
                        * near-black (Pavanito reads a mean luminance of 6) to
                        * fairly light, and plain `grayscale` left the dark half
@@ -140,10 +140,15 @@ export function ClientsSection() {
                        * that — it is multiplicative, so black stays black.
                        * Dropping contrast first pulls every tone toward mid
                        * grey, and only then does the brightness lift land on
-                       * something it can raise. Internal detail survives:
-                       * knocked-out text inside a filled disc still separates.
+                       * something it can raise.
+                       *
+                       * 2.3 is a ceiling, not a preference. Past roughly 2.5
+                       * the filled-disc marks — Mindspace, Heartland — blow out
+                       * into featureless white circles and lose the knocked-out
+                       * text inside them. Full opacity at rest for the same
+                       * reason: dimming is what made this belt hard to read.
                        */
-                      className="h-auto max-h-[120px] w-auto max-w-none object-contain opacity-80 brightness-[1.85] contrast-[0.45] grayscale transition-[opacity,filter] duration-500 ease-out hover:opacity-100 hover:brightness-100 hover:contrast-100 hover:grayscale-0 md:max-h-[150px]"
+                      className="h-auto max-h-[120px] w-auto max-w-none object-contain brightness-[2.3] contrast-[0.35] grayscale transition-[filter] duration-500 ease-out hover:brightness-100 hover:contrast-100 hover:grayscale-0 md:max-h-[150px]"
                     />
                   </li>
                 ))}
