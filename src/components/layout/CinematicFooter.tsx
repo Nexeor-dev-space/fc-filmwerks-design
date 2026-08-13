@@ -115,48 +115,22 @@ export function CinematicFooter() {
   const year = new Date().getFullYear();
 
   return (
-    /*
-     * Pulled up by exactly one viewport so it overlaps the last stretch of
-     * LensTransition's sticky wrapper. The lens stays pinned while this climbs
-     * over it — the reveal is the scroll itself, not a tween, which is why
-     * there is no transform here to fight it. `z-[5]` puts it above the
-     * lens plate's `z-[1]`.
-     *
-     * The offset must stay in step with the wrapper height in LensTransition.
-     */
     <footer
       aria-label="Site footer"
       /*
-       * The footer ELEMENT stays exactly one viewport tall. That is not a
-       * style choice: the negative margin above is a full `100dvh`, so any
-       * shortfall would leave the still-pinned gold lens plate showing below
-       * the card at the end of the page.
+       * The footer ELEMENT stays exactly one viewport tall, shortened from
+       * inside by an even gutter on all four edges so the card floats in
+       * page background the way the intro's frame floats in it. The gutter
+       * deliberately matches that frame's `inset-2 md:inset-3` exactly, so
+       * the two bookend the page at the same measure — change it there and
+       * it has to change here.
        *
-       * The card is shortened from inside instead: an even gutter on all four
-       * edges, so it floats in gold the way the intro's frame floats in the
-       * page background. The gutter deliberately matches that frame's
-       * `inset-2 md:inset-3` exactly, so the two bookend the page at the same
-       * measure — change it there and it has to change here.
-       *
-       * Gutter and card height are one number split in two. Move either and
-       * the other has to follow, or the footer stops totalling a viewport and
-       * the lens shows through beneath it:
+       * Gutter and card height are one number split in two:
        *
        *   base  0.5rem  + (100dvh − 1rem)   + 0.5rem  = 100dvh
        *   md    0.75rem + (100dvh − 1.5rem) + 0.75rem = 100dvh
        */
-      /*
-       * No background of its own. The gutter used to be painted the same gold
-       * as the plate behind it, which read as a flat band slicing across the
-       * lens. Leaving it transparent lets the plate — and the lens turning on
-       * it — carry straight through to the card's edge.
-       *
-       * Safe because the footer is exactly as tall as its own negative margin,
-       * so it begins and ends inside LensTransition's wrapper: there is always
-       * plate behind the gutter, never page background. If either number ever
-       * stops matching the other, this needs a colour back.
-       */
-      className="relative z-[5] -mt-[100dvh] p-2 md:p-3"
+      className="relative z-[5] bg-[#07192A] p-2 md:p-3"
     >
       {/*
        * A viewport less the gutter above and below — see the arithmetic above.

@@ -33,13 +33,18 @@ import { ScrollIndicator } from './ScrollIndicator';
  * exactly that much to create the overlap, and its negative margin has to be
  * changed in step at the same breakpoint.
  *
+ * `aperture` is kept short on purpose: the lens-grow → iris-close → swap →
+ * iris-open sequence is meant to read in about two mouse-wheel notches, not
+ * a long dedicated scroll of its own — the hold is what gives the reader a
+ * pause, not the aperture.
+ *
  * Wrapper heights must match: (aperture + hold + cover + 1) * 100dvh.
- *   mobile:  (2.8 + 1.2 + 1.2 + 1) = 6.2 → 620dvh
- *   desktop: (2.8 + 2.0 + 1.6 + 1) = 7.4 → 740dvh
+ *   mobile:  (0.6 + 1.2 + 1.2 + 1) = 4.0 → 400dvh
+ *   desktop: (0.6 + 2.0 + 1.6 + 1) = 5.2 → 520dvh
  */
 const SPANS = {
-  desktop: { aperture: 2.8, hold: 2.0, cover: 1.6 },
-  mobile: { aperture: 2.8, hold: 1.2, cover: 1.2 },
+  desktop: { aperture: 2, hold: 2.0, cover: 1.6 },
+  mobile: { aperture: 2, hold: 1.2, cover: 1.2 },
 } as const;
 
 interface Timing {
@@ -565,12 +570,12 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
      * range (top-top to bottom-bottom) — no `pin: true` needed.
      *
      * Wrapper height = (pin + 1) * 100dvh:
-     *   mobile:  620dvh  (5.2 + 1 viewport heights)
-     *   desktop: 740dvh  (6.4 + 1 viewport heights)
+     *   mobile:  400dvh  (3.0 + 1 viewport heights)
+     *   desktop: 520dvh  (4.2 + 1 viewport heights)
      */
     <div
       ref={wrapperRef}
-      className={cn('relative h-[620dvh] w-full md:h-[740dvh]', className)}
+      className={cn('relative h-[400dvh] w-full md:h-[520dvh]', className)}
     >
       <div
         ref={root}
