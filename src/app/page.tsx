@@ -9,7 +9,6 @@ import { ManifestoSection } from '@/components/sections/ManifestoSection';
 import { ServicesSection } from '@/components/sections/ServicesSection';
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
 import { CtaSection } from '@/components/sections/CtaSection';
-import { LensTransition } from '@/components/sections/LensTransition';
 import { createMetadata } from '@/lib/seo';
 
 export const metadata = createMetadata({ path: '/' });
@@ -38,10 +37,6 @@ export default function HomePage() {
       <TestimonialsSection />
 
       <CtaSection />
-
-      {/* Gold plate held by CSS sticky; the footer's negative margin is what
-          climbs over it. The two are a pair — see LensTransition's note. */}
-      <LensTransition />
 
       <CinematicFooter />
     </>
