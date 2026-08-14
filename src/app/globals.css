@@ -133,6 +133,32 @@
     max-width: 100%;
     height: auto;
   }
+
+  /*
+   * Buttons get the hand cursor that links already have.
+   *
+   * Tailwind v4's preflight deliberately leaves `<button>` on the browser
+   * default, which is `cursor: default` — so every button on the site read as
+   * inert text while every anchor read as clickable. Set once here rather than
+   * as a utility on each control, so anything added later inherits it.
+   *
+   * `[role]` selectors cover controls built on non-button elements; the
+   * disabled exclusions keep an unavailable control from claiming to be
+   * actionable.
+   */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  [role='radio']:not([aria-disabled='true']),
+  [role='tab']:not([aria-disabled='true']),
+  label[for],
+  summary {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled='true'] {
+    cursor: default;
+  }
 }
 
 @layer utilities {

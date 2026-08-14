@@ -7,8 +7,8 @@ import type { NavItem, NavSection } from '@/types';
  */
 export const mainNav: NavItem[] = [
   { label: 'Home', href: '/' },
-  { label: 'Work', href: '/work' },
-  { label: 'About', href: '/studio' },
+  { label: 'Portfolio', href: '/portfolio' },
+  { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
 

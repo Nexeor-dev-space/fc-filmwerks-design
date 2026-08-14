@@ -30,15 +30,39 @@ const lineReveal: Variants = {
 
 const HEADLINE_LINES = ["LET'S BUILD", 'SOMETHING', 'UNFORGETTABLE.'];
 
+interface CtaSectionProps {
+  /** Small gold line above the headline. */
+  label?: string;
+  /** Rendered one line per entry, each masked and revealed in turn. */
+  headline?: readonly string[];
+  body?: string;
+  /** Set false on pages where the locations line would just repeat itself. */
+  showLocations?: boolean;
+  primary?: { label: string; href: string };
+  /** Pass `null` to render a single action instead of the usual pair. */
+  secondary?: { label: string; href: string } | null;
+}
+
 /**
  * Closing CTA — the emotional conclusion before the footer.
  *
- * Two-column editorial layout on desktop: heavyweight heading + buttons on the
- * left, a cinematic lens visual on the right. The visual uses layered ambient
- * effects (radial glow, grain, vignette, breathing scale, light leak) rather
- * than a static image — everything stays alive without demanding attention.
+ * Centred editorial layout over a cinematic still, with layered ambient
+ * effects (radial glow, grain, vignette, drifting light leak) so the ground
+ * stays alive without demanding attention.
+ *
+ * Parameterised rather than duplicated: the portfolio and the homepage close
+ * on the same treatment with different words, and forking the component would
+ * let the two drift apart. Every prop defaults to the homepage's copy, so the
+ * bare `<CtaSection />` is unchanged.
  */
-export function CtaSection() {
+export function CtaSection({
+  label = 'Ready when you are',
+  headline = HEADLINE_LINES,
+  body = 'Every great production begins with a conversation. Whether you’re launching a brand, telling a story, or creating a campaign, let’s craft something people will remember.',
+  showLocations = true,
+  primary = { label: 'Start a project', href: '/contact' },
+  secondary = { label: 'View our work', href: '/portfolio' },
+}: CtaSectionProps = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const reducedMotion = usePrefersReducedMotion();
 
@@ -166,7 +190,7 @@ export function CtaSection() {
               whileInView="visible"
               viewport={{ once: true, amount: 0.6 }}
             >
-              Ready when you are
+              {label}
             </motion.p>
 
             {/* Heading — line-by-line reveal */}
@@ -177,7 +201,7 @@ export function CtaSection() {
               whileInView="visible"
               viewport={{ once: true, amount: 0.4 }}
             >
-              {HEADLINE_LINES.map((line, index) => (
+              {headline.map((line, index) => (
                 <span key={line} className="block overflow-hidden pb-[0.08em]">
                   <motion.span
                     className="block"
@@ -199,22 +223,22 @@ export function CtaSection() {
               whileInView="visible"
               viewport={{ once: true, amount: 0.6 }}
             >
-              Every great production begins with a conversation. Whether
-              you&rsquo;re launching a brand, telling a story, or creating a
-              campaign, let&rsquo;s craft something people will remember.
+              {body}
             </motion.p>
 
             {/* Location line */}
-            <motion.p
-              className="mt-6 text-[0.75rem] tracking-[0.28em] text-white/30 uppercase"
-              variants={fadeUp}
-              custom={0.55}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.6 }}
-            >
-              Dubai &middot; Kerala &middot; Worldwide
-            </motion.p>
+            {showLocations && (
+              <motion.p
+                className="mt-6 text-[0.75rem] tracking-[0.28em] text-white/30 uppercase"
+                variants={fadeUp}
+                custom={0.55}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.6 }}
+              >
+                Dubai &middot; Kerala &middot; Worldwide
+              </motion.p>
+            )}
 
             {/* CTAs */}
             <motion.div
@@ -225,11 +249,11 @@ export function CtaSection() {
             >
               <motion.div variants={fadeUp} custom={0.6}>
                 <Button
-                  href="/contact"
+                  href={primary.href}
                   className="group rounded-full bg-[#F8F7F4] text-[#0F1C2E] transition-[background-color,transform,box-shadow] duration-500 ease-out hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_8px_30px_rgba(248,247,244,0.15)]"
                   size="lg"
                 >
-                  Start a project
+                  {primary.label}
                   <span
                     aria-hidden="true"
                     className="inline-block transition-transform duration-500 ease-out group-hover:translate-x-1"
@@ -239,22 +263,24 @@ export function CtaSection() {
                 </Button>
               </motion.div>
 
-              <motion.div variants={fadeUp} custom={0.7}>
-                <Button
-                  href="/work"
-                  variant="outline"
-                  className="rounded-full border-[#BFA76F]/40 text-white transition-[color,border-color,transform,box-shadow] duration-500 ease-out hover:-translate-y-0.5 hover:border-[#BFA76F] hover:text-[#BFA76F] hover:shadow-[0_8px_30px_rgba(191,167,111,0.08)]"
-                  size="lg"
-                >
-                  View our work
-                  <span
-                    aria-hidden="true"
-                    className="inline-block transition-transform duration-500 ease-out"
+              {secondary && (
+                <motion.div variants={fadeUp} custom={0.7}>
+                  <Button
+                    href={secondary.href}
+                    variant="outline"
+                    className="rounded-full border-[#BFA76F]/40 text-white transition-[color,border-color,transform,box-shadow] duration-500 ease-out hover:-translate-y-0.5 hover:border-[#BFA76F] hover:text-[#BFA76F] hover:shadow-[0_8px_30px_rgba(191,167,111,0.08)]"
+                    size="lg"
                   >
-                    →
-                  </span>
-                </Button>
-              </motion.div>
+                    {secondary.label}
+                    <span
+                      aria-hidden="true"
+                      className="inline-block transition-transform duration-500 ease-out"
+                    >
+                      →
+                    </span>
+                  </Button>
+                </motion.div>
+              )}
             </motion.div>
           </div>
         </div>
