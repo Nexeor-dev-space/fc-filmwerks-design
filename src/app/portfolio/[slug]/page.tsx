@@ -5,7 +5,6 @@ import { notFound } from 'next/navigation';
 import { CinematicFooter } from '@/components/layout/CinematicFooter';
 import { FloatingNav } from '@/components/layout/FloatingNav';
 import { CtaSection } from '@/components/sections/CtaSection';
-import { LensTransition } from '@/components/sections/LensTransition';
 import { getProjectBySlug, getProjectSlugs, projects } from '@/config/projects';
 import { createMetadata } from '@/lib/seo';
 
@@ -35,10 +34,6 @@ export async function generateMetadata({
  * One reusable template for every project — there is deliberately no
  * per-project layout. A new entry in `src/config/projects.ts` gets a page,
  * metadata and a static route with no code change here.
- *
- * The closing three sections are the site's standard ending, and they are
- * coupled by scroll geometry: the footer is pulled up a full viewport to
- * cover the lens plate, so it has to follow `LensTransition`.
  */
 export default async function ProjectPage({
   params,
@@ -157,8 +152,6 @@ export default async function ProjectPage({
         primary={{ label: 'Start a project', href: '/contact' }}
         secondary={{ label: 'Contact us', href: '/contact' }}
       />
-
-      <LensTransition />
 
       <CinematicFooter />
     </>

@@ -1,7 +1,6 @@
 import { CinematicFooter } from '@/components/layout/CinematicFooter';
 import { FloatingNav } from '@/components/layout/FloatingNav';
 import { CtaSection } from '@/components/sections/CtaSection';
-import { LensTransition } from '@/components/sections/LensTransition';
 import {
   ContactDetails,
   ContactForm,
@@ -30,15 +29,7 @@ export default function ContactPage() {
 
       <ContactForm />
 
-      {/*
-       * The same closing the homepage, About and Portfolio pages use, with
-       * this page's words and a single action rather than the usual pair —
-       * the form above is already the second path through. These three are
-       * coupled by scroll geometry: the footer is pulled up a full viewport
-       * to cover the lens plate, so it has to follow LensTransition —
-       * dropping the lens would leave the footer overlapping the CTA by
-       * 100dvh.
-       */}
+      {/* The site's standard closing, matching the homepage. */}
       <CtaSection
         label={contactCta.label}
         headline={contactCta.headline}
@@ -47,8 +38,6 @@ export default function ContactPage() {
         primary={contactCta.primary}
         secondary={null}
       />
-
-      <LensTransition />
 
       <CinematicFooter />
     </>
