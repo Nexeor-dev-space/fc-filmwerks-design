@@ -1,3 +1,4 @@
-export { BehindTheFrame } from './BehindTheFrame';
-export { PortfolioGallery } from './PortfolioGallery';
-export { PortfolioHero } from './PortfolioHero';
+export { PortfolioArchive } from './PortfolioArchive';
+export { PortfolioMasthead } from './PortfolioMasthead';
+export { PortfolioStatement } from './PortfolioStatement';
+export { ProductionGallery } from './ProductionGallery';

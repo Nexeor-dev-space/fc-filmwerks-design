@@ -1,4 +1,9 @@
-export { AboutHero } from './AboutHero';
-export { AboutIntro } from './AboutIntro';
-export { AboutMission } from './AboutMission';
-export { AboutPhilosophy } from './AboutPhilosophy';
+export { AboutChapterRail } from './AboutChapterRail';
+export { AboutClosing } from './AboutClosing';
+export { AboutCraft } from './AboutCraft';
+export { AboutMasthead } from './AboutMasthead';
+export { AboutMethod } from './AboutMethod';
+export { AboutOnSet } from './AboutOnSet';
+export { AboutPeople } from './AboutPeople';
+export { AboutRecord } from './AboutRecord';
+export { AboutStory } from './AboutStory';

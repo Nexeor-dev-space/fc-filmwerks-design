@@ -279,8 +279,20 @@ html.lenis body {
   will-change: transform;
 }
 
+/*
+ * The portfolio masthead's filmstrip. Slower again than the logo belt — these
+ * are photographs being glanced at rather than logos being identified, and a
+ * strip of stills reads as drift rather than motion at this rate.
+ */
+.animate-marquee-filmstrip {
+  animation: marquee 110s linear infinite;
+  will-change: transform;
+}
+
 .animate-marquee:hover,
 .marquee-host:hover .animate-marquee,
+.animate-marquee-filmstrip:hover,
+.marquee-host:hover .animate-marquee-filmstrip,
 .animate-marquee-logos:hover,
 .marquee-host:hover .animate-marquee-logos {
   animation-play-state: paused;
