@@ -1,10 +1,17 @@
-import Image from 'next/image';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { CinematicFooter } from '@/components/layout/CinematicFooter';
 import { FloatingNav } from '@/components/layout/FloatingNav';
 import { CtaSection } from '@/components/sections/CtaSection';
+import {
+  NextProject,
+  ProjectFrame,
+  ProjectGallery,
+  ProjectHero,
+  ProjectOverview,
+  ProjectSpec,
+  ProjectStory,
+} from '@/components/sections/project';
 import { getProjectBySlug, getProjectSlugs, projects } from '@/config/projects';
 import { createMetadata } from '@/lib/seo';
 
@@ -24,16 +31,33 @@ export async function generateMetadata({
 
   return createMetadata({
     title: project.title,
-    description: project.summary,
+    /* The standfirst rather than the raw summary: it is written as a single
+       self-contained sentence, which is what a search result and a link preview
+       both need. */
+    description: project.caseStudy.standfirst,
     image: project.image,
     path: project.href,
   });
 }
 
 /**
- * One reusable template for every project — there is deliberately no
- * per-project layout. A new entry in `src/config/projects.ts` gets a page,
- * metadata and a static route with no code change here.
+ * A project case study.
+ *
+ * One route for every project, but not one *page* — the narrative is driven by
+ * `caseStudy.chapters` in `src/config/projects.ts`, and both the number of
+ * chapters and their titles are decided per project. An event that happens once
+ * and a script-to-finish vertical campaign do not have the same story shape, so
+ * they do not get the same headings. A page with no gallery imagery on file
+ * simply has no gallery section; a project whose source copy names a place gets
+ * a Location row and the other seven do not.
+ *
+ * The narrative is split around a full-bleed frame rather than running as one
+ * block. Long-form reading needs a visual breath in the middle, and putting it
+ * after the second chapter means it lands once the reader knows what the project
+ * is but before the production detail starts.
+ *
+ * There are no invented results anywhere on this page — see the provenance note
+ * on `ProjectCaseStudy` in the config for what each field may and may not say.
  */
 export default async function ProjectPage({
   params,
@@ -47,101 +71,43 @@ export default async function ProjectPage({
 
   const index = projects.findIndex((p) => p.href === project.href);
   const next = projects[(index + 1) % projects.length];
+  const { chapters, delivered, details, gallery } = project.caseStudy;
+
+  /*
+   * Where the frame interrupts the story. After the second chapter for anything
+   * with four or more, at the midpoint otherwise — a three-chapter page would
+   * otherwise get its break one chapter from the end, which is a stall rather
+   * than a breath. `slice` past the end is safe, so a one-chapter project would
+   * simply run its frame afterwards.
+   */
+  const breakAt = chapters.length >= 4 ? 2 : Math.ceil(chapters.length / 2);
 
   return (
     <>
       <FloatingNav immediate />
 
       <article>
-        <header className="bg-[#0F1012] pt-32 pb-12 md:pt-40 md:pb-16">
-          <div className="w-full px-4 md:px-[3vw]">
-            <Link
-              href="/portfolio"
-              className="group inline-flex items-center gap-2.5 text-[0.6875rem] font-semibold tracking-[0.24em] text-white/55 uppercase transition-colors duration-500 ease-out hover:text-[#BFA76F] focus-visible:text-[#BFA76F] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F] md:text-[0.75rem]"
-            >
-              <span
-                aria-hidden="true"
-                className="inline-block transition-transform duration-500 ease-out group-hover:-translate-x-1.5"
-              >
-                ←
-              </span>
-              All work
-            </Link>
+        <ProjectHero project={project} index={index} total={projects.length} />
 
-            <p className="mt-10 text-[0.875rem] font-semibold tracking-[0.28em] text-[#BFA76F] uppercase">
-              {project.category}
-            </p>
+        <ProjectOverview project={project} />
 
-            <h1 className="mt-5 max-w-[18ch] text-[2.5rem] leading-[0.95] font-semibold tracking-[-0.02em] text-white uppercase md:text-[3.25rem] lg:text-[4rem]">
-              {project.title}
-            </h1>
-          </div>
-        </header>
+        <ProjectStory chapters={chapters.slice(0, breakAt)} />
 
-        {/* The still, full width inside the gutter. */}
-        <div className="bg-[#0F1012]">
-          <div className="w-full px-4 md:px-[3vw]">
-            <div className="relative aspect-[16/10] overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#13233A] md:aspect-[21/9]">
-              <Image
-                src={project.image}
-                alt={`${project.client} — ${project.category}`}
-                fill
-                priority
-                sizes="100vw"
-                className="object-cover"
-              />
-            </div>
-          </div>
-        </div>
+        <ProjectFrame
+          src={project.image}
+          alt={`${project.client} — ${project.category}`}
+        />
 
-        <div className="bg-[#0F1012] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28">
-          <div className="w-full px-4 md:px-[3vw]">
-            <div className="flex flex-col gap-12 lg:flex-row lg:gap-20">
-              <dl className="flex flex-row gap-12 lg:w-[28%] lg:shrink-0 lg:flex-col lg:gap-10">
-                <div>
-                  <dt className="mb-3 text-[0.6875rem] font-semibold tracking-[0.28em] text-white/35 uppercase">
-                    Client
-                  </dt>
-                  <dd className="text-[0.9375rem] text-white/[0.72]">
-                    {project.client}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="mb-3 text-[0.6875rem] font-semibold tracking-[0.28em] text-white/35 uppercase">
-                    Discipline
-                  </dt>
-                  <dd className="text-[0.9375rem] text-white/[0.72]">
-                    {project.category}
-                  </dd>
-                </div>
-              </dl>
+        <ProjectStory chapters={chapters.slice(breakAt)} />
 
-              <p className="max-w-[62ch] text-[1.125rem] leading-[1.7] text-white/[0.82] lg:text-[1.375rem] lg:leading-[1.6]">
-                {project.summary}
-              </p>
-            </div>
+        <ProjectSpec delivered={delivered} details={details} />
 
-            {/* Route-through to the next project, so the archive is walkable
-                without going back to the index each time. */}
-            <Link
-              href={next.href}
-              className="group mt-20 flex flex-col gap-2 border-t border-white/[0.12] pt-10 lg:mt-28"
-            >
-              <span className="text-[0.6875rem] font-semibold tracking-[0.24em] text-white/35 uppercase md:text-[0.75rem]">
-                Next project
-              </span>
-              <span className="inline-flex items-center gap-4 text-[1.5rem] leading-[1.15] font-extralight tracking-tight text-white transition-colors duration-500 ease-out group-hover:text-[#BFA76F] md:text-[2rem]">
-                {next.title}
-                <span
-                  aria-hidden="true"
-                  className="inline-block transition-transform duration-500 ease-out group-hover:translate-x-2"
-                >
-                  →
-                </span>
-              </span>
-            </Link>
-          </div>
-        </div>
+        {/* Only where the studio has stills for this project. See the note in
+            ProjectGallery for why this is not padded out with the generic
+            behind-the-scenes archive. */}
+        {gallery && gallery.length > 0 && <ProjectGallery images={gallery} />}
+
+        <NextProject project={next} />
       </article>
 
       <CtaSection

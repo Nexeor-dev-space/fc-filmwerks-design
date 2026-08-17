@@ -74,7 +74,7 @@ function ContactLink({
  * Typography carries the information rather than cards — the same choice the
  * About page's mission strip makes for the same details. The still on the
  * right is the page's one large visual: a slow scroll-driven zoom, exactly
- * the treatment `AboutIntro` gives its own still, so the two pages read as
+ * the treatment `AboutStory` gives its own still, so the two pages read as
  * one system.
  */
 export function ContactDetails() {
@@ -189,7 +189,7 @@ export function ContactDetails() {
           </div>
 
           {/* Cinematic still, almost edge to edge inside the gutter — same
-              three-layer treatment (parallax, pull-out, image) as AboutIntro,
+              three-layer treatment (parallax, pull-out, image) as AboutStory,
               so no two animations ever share a `transform`. */}
           <div
             ref={stillRef}
