@@ -15,6 +15,14 @@ interface BackgroundVideoProps {
   overlay?: string | null;
   /** Darkens the corners so the frame reads as a lit shot rather than a fill. */
   vignette?: boolean;
+  /**
+   * Whether the video should be decoding/playing right now. Defaults to
+   * true. Pass false while the element is mounted but not yet visible (e.g.
+   * behind `IntroExperience`'s aperture) — a hidden autoplaying video still
+   * costs a full decode+composite pass every frame, and on mobile that
+   * competes directly with whatever scroll animation is covering it.
+   */
+  active?: boolean;
   className?: string;
 }
 
@@ -40,6 +48,7 @@ export function BackgroundVideo({
   fallbackClassName = 'bg-navy',
   overlay = DEFAULT_OVERLAY,
   vignette = true,
+  active = true,
   className,
 }: BackgroundVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -49,7 +58,7 @@ export function BackgroundVideo({
     const video = videoRef.current;
     if (!video) return;
 
-    if (reduced) {
+    if (reduced || !active) {
       video.pause();
       return;
     }
@@ -57,7 +66,7 @@ export function BackgroundVideo({
     // Autoplay can still be refused (low power mode, for one); the poster and
     // fallback colour carry the section when it is.
     void video.play().catch(() => undefined);
-  }, [reduced]);
+  }, [reduced, active]);
 
   return (
     <div

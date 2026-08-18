@@ -24,4 +24,6 @@ export const MEDIA_QUERY = {
   reducedMotion: '(prefers-reduced-motion: reduce)',
   dark: '(prefers-color-scheme: dark)',
   hover: '(hover: hover) and (pointer: fine)',
+  /** Touch-primary input — no wheel, so nothing for Lenis to smooth. */
+  touch: '(pointer: coarse)',
 } as const;

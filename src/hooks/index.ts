@@ -3,6 +3,7 @@ export { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 export {
   useBreakpoint,
   useIsMobile,
+  useIsTouchDevice,
   useMediaQuery,
   usePrefersReducedMotion,
 } from './useMediaQuery';

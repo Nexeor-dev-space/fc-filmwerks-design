@@ -36,6 +36,11 @@ export function Parallax({ children, className, speed = 0.2 }: ParallaxProps) {
     // trigger at all when motion is reduced.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+    // A scrub tween recomputes `yPercent` on every scroll tick. On mobile
+    // that's competing with native momentum scroll for the same frame
+    // budget, and the drift is small enough there to not be missed.
+    if (window.matchMedia('(max-width: 767px)').matches) return;
+
     const context = gsap.context(() => {
       gsap.fromTo(
         element,
