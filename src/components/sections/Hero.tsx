@@ -59,6 +59,7 @@ export function Hero() {
       <BackgroundVideo
         src="/videos/banner-video.mp4"
         overlay="linear-gradient(rgba(15,28,46,0.62), rgba(15,28,46,0.55))"
+        active={revealed}
       />
 
       {/* The flat overlay alone is not enough where the footage goes bright —

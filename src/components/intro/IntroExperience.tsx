@@ -318,11 +318,19 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
 
         const blades = Array.from(element.querySelectorAll('.iris-blade'));
         const aperture = { opening: IRIS.radius };
+
+        /*
+         * `svgOrigin` is constant (the blades all pivot about the same
+         * point), but resolving it costs GSAP a getBBox/getScreenCTM pass
+         * per blade. Setting it once up front and touching only `rotation`
+         * on every scrub tick keeps the per-frame work to a single transform
+         * write per blade instead of a full origin recompute for each of
+         * them — the difference mobile GPUs actually feel during the scrub.
+         */
+        gsap.set(blades, { svgOrigin: PIVOT_ORIGIN });
+
         const applyAperture = () => {
-          gsap.set(blades, {
-            rotation: rotationForOpening(aperture.opening),
-            svgOrigin: PIVOT_ORIGIN,
-          });
+          gsap.set(blades, { rotation: rotationForOpening(aperture.opening) });
         };
 
         applyAperture();
@@ -337,7 +345,13 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
               trigger: wrapper,
               start: 'top top',
               end: 'bottom bottom',
-              scrub: 1,
+              // `scrub` is a smoothing delay between actual scroll position
+              // and the animation catching up to it. A full second reads as
+              // buttery on a mouse wheel, but on touch — where the eye
+              // expects the blades to track the finger directly, the way
+              // native scroll does — any catch-up time reads as latency.
+              // `true` ties the animation to scroll position with no delay.
+              scrub: isMobile ? true : 1,
               invalidateOnRefresh: true,
             },
           }));

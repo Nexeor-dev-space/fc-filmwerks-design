@@ -3,7 +3,7 @@
 import { ReactLenis, useLenis } from 'lenis/react';
 import { useEffect, type ReactNode } from 'react';
 
-import { usePrefersReducedMotion } from '@/hooks';
+import { useIsTouchDevice, usePrefersReducedMotion } from '@/hooks';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 /**
@@ -59,15 +59,25 @@ interface SmoothScrollProviderProps {
  * unscrollable. Unmounting runs Lenis' own `destroy()`, which removes its
  * listeners and classes and hands scrolling back to the browser.
  *
+ * Touch devices skip it too, for a different reason: `syncTouch: false`
+ * already means Lenis leaves touch scrolling native rather than smoothing
+ * it, so the only thing it's doing there is relaying scroll position to
+ * ScrollTrigger through an extra RAF hop (native scroll -> Lenis's own
+ * frame -> `ScrollTrigger.update`). That hop is a frame of latency between
+ * a finger and a scrubbed animation that plain native scroll wouldn't have.
+ * ScrollTrigger listens to native scroll on its own once nothing hands it a
+ * `scrollerProxy`, so nothing else has to change for this to work.
+ *
  * In `root` mode ReactLenis renders its children with no wrapper element, so
  * mounting or unmounting it does not change the DOM.
  */
 export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
   // False on the server and on the first client render, so hydration matches;
-  // it flips after mount if the visitor prefers reduced motion.
+  // both flip after mount once the real device/preference is known.
   const prefersReducedMotion = usePrefersReducedMotion();
+  const isTouchDevice = useIsTouchDevice();
 
-  if (prefersReducedMotion) return <>{children}</>;
+  if (prefersReducedMotion || isTouchDevice) return <>{children}</>;
 
   return (
     <ReactLenis

@@ -41,3 +41,8 @@ export function useIsMobile(): boolean {
 export function usePrefersReducedMotion(): boolean {
   return useMediaQuery(MEDIA_QUERY.reducedMotion);
 }
+
+/** True on touch-primary input (phones, tablets) — no wheel to smooth. */
+export function useIsTouchDevice(): boolean {
+  return useMediaQuery(MEDIA_QUERY.touch);
+}
