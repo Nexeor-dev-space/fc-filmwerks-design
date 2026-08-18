@@ -287,7 +287,7 @@ export function CinematicFooter() {
                   </Button>
 
                   <Button
-                    href="/work"
+                    href="/portfolio"
                     variant="outline"
                     className="group rounded-full border-[#BFA76F]/40 text-white transition-[color,border-color,transform,box-shadow] duration-500 ease-out hover:-translate-y-0.5 hover:border-[#BFA76F] hover:text-[#BFA76F] hover:shadow-[0_8px_30px_rgba(191,167,111,0.08)]"
                     size="lg"

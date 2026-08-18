@@ -142,7 +142,7 @@ export function Hero() {
                 {/* Pill, to match the MENU control in the nav above — the
                     system default is the near-square editorial radius. */}
                 <Button
-                  href="/work"
+                  href="/portfolio"
                   className="rounded-full bg-[#F8F7F4] text-[#0F1C2E] hover:bg-white"
                 >
                   View our work

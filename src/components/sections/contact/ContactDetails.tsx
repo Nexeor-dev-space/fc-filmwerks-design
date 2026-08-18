@@ -97,7 +97,7 @@ export function ContactDetails() {
       className="bg-[#0F1012] pt-20 pb-20 md:pt-28 md:pb-24 lg:pt-32 lg:pb-28"
     >
       <div className="w-full px-4 md:px-[3vw]">
-        <div className="flex flex-col gap-16 lg:flex-row lg:items-start lg:gap-20">
+        <div className="flex flex-col gap-16 lg:flex-row lg:items-start lg:justify-between lg:gap-20">
           {/* Editorial info column */}
           <div className="lg:w-[38%] lg:shrink-0">
             <motion.p
@@ -193,7 +193,7 @@ export function ContactDetails() {
               so no two animations ever share a `transform`. */}
           <div
             ref={stillRef}
-            className="relative aspect-[4/5] flex-1 overflow-hidden rounded-[28px] border border-white/[0.08] md:aspect-video lg:aspect-[4/5]"
+            className="relative aspect-[4/5] w-full overflow-hidden rounded-[28px] border border-white/[0.08] md:aspect-video lg:aspect-[4/5] lg:w-[500px] lg:shrink-0"
           >
             <motion.div
               className="absolute inset-x-0 -top-10 -bottom-10"
