@@ -81,6 +81,40 @@ const LINES = [
   },
 ] as const;
 
+const SOCIALS = [
+  { label: 'Instagram', href: siteConfig.social.instagram },
+  { label: 'LinkedIn', href: siteConfig.social.linkedin },
+  { label: 'YouTube', href: siteConfig.social.youtube },
+] as const;
+
+/**
+ * Small link for the menu foot — gold underline drawn left to right on hover.
+ *
+ * Deliberately not the panel's own link treatment: those carry a standing rule
+ * because the list of pages is the point of the panel, whereas these are
+ * details being offered rather than a menu being presented. It matches the
+ * footer's `ContactLink` instead, which is the same job in the same tone.
+ */
+function FootLink({
+  href,
+  children,
+  external,
+}: {
+  href: string;
+  children: React.ReactNode;
+  external?: boolean;
+}) {
+  return (
+    <a
+      href={href}
+      {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      className="relative inline-block text-[0.9375rem] text-bone/[0.72] transition-colors duration-500 ease-out after:absolute after:bottom-[-3px] after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#BFA76F] after:transition-transform after:duration-500 after:ease-out hover:text-[#BFA76F] hover:after:scale-x-100 focus-visible:text-[#BFA76F] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F]"
+    >
+      {children}
+    </a>
+  );
+}
+
 export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
   const [revealed, setRevealed] = useState(false);
   const [open, setOpen] = useState(false);
@@ -279,31 +313,36 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
              * the bottom on a tall screen while still being pushed down by the
              * links on a short one.
              */}
-            <div className="marquee-host relative mt-auto shrink-0 overflow-hidden py-10 md:py-12">
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-navy to-transparent md:w-32"
-              />
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-navy to-transparent md:w-32"
-              />
+            {/* The belt and the contact block travel together as one foot
+                to the panel, so `mt-auto` goes on the group rather than on the
+                belt — the spacing between the two then stays fixed however
+                tall the screen is. */}
+            <div className="mt-auto shrink-0">
+              <div className="marquee-host relative overflow-hidden py-10 md:py-12">
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-navy to-transparent md:w-32"
+                />
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-navy to-transparent md:w-32"
+                />
 
-              <div className="animate-marquee-logos flex w-max">
-                {[0, 1].map((copy) => (
-                  <ul
-                    key={copy}
-                    className="flex shrink-0 items-center"
-                    // The duplicate is presentational; only the first is
-                    // announced.
-                    aria-hidden={copy === 1}
-                  >
-                    {clients.map((client) => (
-                      <li
-                        key={client.name}
-                        className="flex shrink-0 items-center justify-center px-8 md:px-10"
-                      >
-                        {/* Same contrast-then-brightness treatment as the
+                <div className="animate-marquee-logos flex w-max">
+                  {[0, 1].map((copy) => (
+                    <ul
+                      key={copy}
+                      className="flex shrink-0 items-center"
+                      // The duplicate is presentational; only the first is
+                      // announced.
+                      aria-hidden={copy === 1}
+                    >
+                      {clients.map((client) => (
+                        <li
+                          key={client.name}
+                          className="flex shrink-0 items-center justify-center px-8 md:px-10"
+                        >
+                          {/* Same contrast-then-brightness treatment as the
                             Trusted-by belt — see the note there for why plain
                             grayscale loses the near-black marks on navy — and
                             the same hover, which drops every filter so the mark
@@ -311,18 +350,57 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
                             The belt pauses under the cursor via `.marquee-host`
                             on the wrapper, so the logo stays still long enough
                             to be read. */}
-                        <Image
-                          src={client.logo}
-                          alt={client.name}
-                          width={352}
-                          height={352}
-                          loading="lazy"
-                          className="h-auto max-h-[52px] w-auto max-w-none object-contain opacity-80 brightness-[1.85] contrast-[0.45] grayscale transition-[opacity,filter] duration-500 ease-out hover:opacity-100 hover:brightness-100 hover:contrast-100 hover:grayscale-0 md:max-h-[72px]"
-                        />
+                          <Image
+                            src={client.logo}
+                            alt={client.name}
+                            width={352}
+                            height={352}
+                            loading="lazy"
+                            className="h-auto max-h-[52px] w-auto max-w-none object-contain opacity-80 brightness-[1.85] contrast-[0.45] grayscale transition-[opacity,filter] duration-500 ease-out hover:opacity-100 hover:brightness-100 hover:contrast-100 hover:grayscale-0 md:max-h-[72px]"
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-col gap-5 border-t border-bone/15 px-4 py-8 md:gap-6 md:px-[3vw] md:py-10">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:gap-6">
+                  <p className="text-[0.6875rem] font-semibold tracking-[0.28em] text-bone/35 uppercase sm:w-28 sm:shrink-0">
+                    Contact us
+                  </p>
+                  {/* The rule between items IS the sketch's `|`, drawn rather
+                      than typed so it cannot be read aloud or copied. */}
+                  <ul className="flex flex-wrap items-baseline gap-x-5 gap-y-2 [&>li+li]:border-l [&>li+li]:border-bone/20 [&>li+li]:pl-5">
+                    {siteConfig.contact.phone && (
+                      <li>
+                        <FootLink href={`tel:${siteConfig.contact.phone}`}>
+                          {siteConfig.contact.phone}
+                        </FootLink>
+                      </li>
+                    )}
+                    <li>
+                      <FootLink href={`mailto:${siteConfig.contact.email}`}>
+                        {siteConfig.contact.email}
+                      </FootLink>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:gap-6">
+                  <p className="text-[0.6875rem] font-semibold tracking-[0.28em] text-bone/35 uppercase sm:w-28 sm:shrink-0">
+                    Follow us
+                  </p>
+                  <ul className="flex flex-wrap items-baseline gap-x-6 gap-y-2">
+                    {SOCIALS.map((social) => (
+                      <li key={social.label}>
+                        <FootLink href={social.href || '#'} external>
+                          {social.label}
+                        </FootLink>
                       </li>
                     ))}
                   </ul>
-                ))}
+                </div>
               </div>
             </div>
           </motion.div>
