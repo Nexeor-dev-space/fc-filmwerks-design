@@ -56,6 +56,7 @@ export function Footer() {
 
         <p className="mt-16 text-xs text-muted">
           © {year} {siteConfig.name}. All rights reserved.
+          <a href="https://nexeor.com">| CREATED BY NEXEOR</a>
         </p>
       </Container>
     </footer>

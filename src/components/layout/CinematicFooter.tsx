@@ -388,6 +388,7 @@ export function CinematicFooter() {
             viewport={{ once: true, amount: 0.8 }}
           >
             © {year} {siteConfig.name}. All rights reserved.
+            <a href="https://nexeor.com"> | CREATED BY NEXEOR</a>
           </motion.p>
         </div>
 
