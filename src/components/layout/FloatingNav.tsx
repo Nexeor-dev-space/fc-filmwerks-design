@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { clients } from '@/config/clients';
 import { mainNav } from '@/config/navigation';
 import { siteConfig } from '@/config/site';
 import { DURATION, EASE } from '@/constants';
@@ -199,7 +200,7 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
              * link list can outrun the panel, and hidden would strand it with
              * no way to reach the last item.
              */
-            className="fixed inset-2 z-100 overflow-y-auto rounded-[28px] bg-navy md:inset-3"
+            className="fixed inset-2 z-100 flex flex-col overflow-y-auto rounded-[28px] bg-navy md:inset-3"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -216,7 +217,9 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
              * trigger stays mounted and is itself the close control, so the
              * key that opened the menu also closes it without a tab.
              */}
-            <div className="mt-28 w-full px-4 md:mt-36 md:px-[3vw]">
+            {/* `shrink-0` on both children: in a scrolling flex column the
+                default would let the link list compress instead of scroll. */}
+            <div className="mt-28 w-full shrink-0 px-4 md:mt-36 md:px-[3vw]">
               <ul className="flex flex-col gap-6 md:gap-8">
                 {mainNav.map((item, index) => (
                   <motion.li
@@ -232,13 +235,95 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
                     <Link
                       href={item.href}
                       onClick={() => setOpen(false)}
-                      className="inline-block text-3xl font-medium tracking-tight text-bone transition-colors duration-300 hover:text-[#BFA76F] md:text-5xl"
+                      /*
+                       * The rule sits under the text at rest rather than
+                       * arriving on hover — it is part of how the list is set,
+                       * not a hover affordance. Hover lifts the text and the
+                       * rule to gold together, so the two never disagree about
+                       * which item is being pointed at.
+                       *
+                       * Drawn as an `::after` bar rather than `border-b`, which
+                       * is the same approach `.link-accent` takes in
+                       * globals.css. A border here came out invisible: Tailwind
+                       * v4 sets `border-bottom-style: var(--tw-border-style)`
+                       * alongside the width, so the rule paints only if that
+                       * variable resolves — and when it does not, you get a
+                       * 2px-wide border with no style and nothing on screen.
+                       * A background on a positioned pseudo-element has no such
+                       * dependency.
+                       *
+                       * `pb-2` keeps the bar clear of the descenders.
+                       */
+                      className="relative inline-block pb-2 text-3xl font-medium tracking-tight text-bone transition-colors duration-300 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-bone/55 after:transition-colors after:duration-300 after:content-[''] hover:text-[#BFA76F] hover:after:bg-[#BFA76F] md:text-5xl"
                     >
                       {item.label}
                     </Link>
                   </motion.li>
                 ))}
               </ul>
+            </div>
+
+            {/*
+             * The same client belt that closes the Trusted-by section, run
+             * along the foot of the menu: the panel is otherwise a large field
+             * of empty navy below the links, and this fills it with proof
+             * rather than decoration.
+             *
+             * Deliberately a copy of the markup rather than a shared
+             * component. It shares only the `animate-marquee-logos` keyframe;
+             * everything else differs — smaller cap, tighter spacing, no
+             * scroll-triggered entrance (the panel itself is the entrance) —
+             * so the abstraction would be two configs pretending to be one.
+             *
+             * `mt-auto` is why the panel is a flex column: it pins the belt to
+             * the bottom on a tall screen while still being pushed down by the
+             * links on a short one.
+             */}
+            <div className="marquee-host relative mt-auto shrink-0 overflow-hidden py-10 md:py-12">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-navy to-transparent md:w-32"
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-navy to-transparent md:w-32"
+              />
+
+              <div className="animate-marquee-logos flex w-max">
+                {[0, 1].map((copy) => (
+                  <ul
+                    key={copy}
+                    className="flex shrink-0 items-center"
+                    // The duplicate is presentational; only the first is
+                    // announced.
+                    aria-hidden={copy === 1}
+                  >
+                    {clients.map((client) => (
+                      <li
+                        key={client.name}
+                        className="flex shrink-0 items-center justify-center px-8 md:px-10"
+                      >
+                        {/* Same contrast-then-brightness treatment as the
+                            Trusted-by belt — see the note there for why plain
+                            grayscale loses the near-black marks on navy — and
+                            the same hover, which drops every filter so the mark
+                            comes up in full colour while it is being looked at.
+                            The belt pauses under the cursor via `.marquee-host`
+                            on the wrapper, so the logo stays still long enough
+                            to be read. */}
+                        <Image
+                          src={client.logo}
+                          alt={client.name}
+                          width={352}
+                          height={352}
+                          loading="lazy"
+                          className="h-auto max-h-[52px] w-auto max-w-none object-contain opacity-80 brightness-[1.85] contrast-[0.45] grayscale transition-[opacity,filter] duration-500 ease-out hover:opacity-100 hover:brightness-100 hover:contrast-100 hover:grayscale-0 md:max-h-[72px]"
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                ))}
+              </div>
             </div>
           </motion.div>
         )}
