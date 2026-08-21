@@ -82,10 +82,74 @@ const LINES = [
 ] as const;
 
 const SOCIALS = [
-  { label: 'Instagram', href: siteConfig.social.instagram },
-  { label: 'LinkedIn', href: siteConfig.social.linkedin },
-  { label: 'YouTube', href: siteConfig.social.youtube },
+  { label: 'Instagram', href: siteConfig.social.instagram, icon: Instagram },
+  { label: 'LinkedIn', href: siteConfig.social.linkedin, icon: LinkedIn },
+  { label: 'YouTube', href: siteConfig.social.youtube, icon: YouTube },
 ] as const;
+
+const ICON_PROPS = {
+  width: 20,
+  height: 20,
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.75,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+  'aria-hidden': true,
+} as const;
+
+function Instagram() {
+  return (
+    <svg {...ICON_PROPS}>
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
+function LinkedIn() {
+  return (
+    <svg {...ICON_PROPS}>
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-10h4v1.5" />
+      <rect x="2" y="9" width="4" height="12" />
+      <circle cx="4" cy="4" r="2" />
+    </svg>
+  );
+}
+
+function YouTube() {
+  return (
+    <svg {...ICON_PROPS}>
+      <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
+      <path d="m10 15 5-3-5-3z" />
+    </svg>
+  );
+}
+
+
+function SocialLink({
+  href,
+  label,
+  icon: Icon,
+}: {
+  href: string;
+  label: string;
+  icon: () => React.ReactElement;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      className="-m-2.5 inline-flex h-10 w-10 items-center justify-center text-bone/[0.72] transition-colors duration-500 ease-out hover:text-[#BFA76F] focus-visible:text-[#BFA76F] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#BFA76F]"
+    >
+      <Icon />
+    </a>
+  );
+}
 
 /**
  * Small link for the menu foot — gold underline drawn left to right on hover.
@@ -391,12 +455,14 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
                   <p className="text-[0.6875rem] font-semibold tracking-[0.28em] text-bone/35 uppercase sm:w-28 sm:shrink-0">
                     Follow us
                   </p>
-                  <ul className="flex flex-wrap items-baseline gap-x-6 gap-y-2">
+                  <ul className="flex flex-wrap items-center gap-x-4 gap-y-2">
                     {SOCIALS.map((social) => (
                       <li key={social.label}>
-                        <FootLink href={social.href || '#'} external>
-                          {social.label}
-                        </FootLink>
+                        <SocialLink
+                          href={social.href || '#'}
+                          label={social.label}
+                          icon={social.icon}
+                        />
                       </li>
                     ))}
                   </ul>
