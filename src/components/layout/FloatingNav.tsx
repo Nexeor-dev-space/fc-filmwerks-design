@@ -128,7 +128,6 @@ function YouTube() {
   );
 }
 
-
 function SocialLink({
   href,
   label,
@@ -317,7 +316,7 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
              */}
             {/* `shrink-0` on both children: in a scrolling flex column the
                 default would let the link list compress instead of scroll. */}
-            <div className="mt-28 w-full shrink-0 px-4 md:mt-36 md:px-[3vw]">
+            <div className="mt-28 w-full shrink-0 px-4 text-center md:mt-36 md:px-[3vw]">
               <ul className="flex flex-col gap-6 md:gap-8">
                 {mainNav.map((item, index) => (
                   <motion.li
