@@ -56,14 +56,27 @@ export function ProjectHero({ project, index, total }: ProjectHeroProps) {
         className="absolute inset-0"
         style={reducedMotion ? undefined : { scale: imageScale, y: imageY }}
       >
-        <Image
-          src={project.image}
-          alt={`${project.client} — ${project.category}`}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+        {project.video ? (
+          <video
+            src={project.video}
+            aria-label={`${project.title} video`}
+            className="h-full w-full object-cover"
+            autoPlay
+            muted
+            playsInline
+            preload="auto"
+            loop
+          />
+        ) : (
+          <Image
+            src={project.image}
+            alt={`${project.client} — ${project.category}`}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        )}
       </motion.div>
 
       {/* Two scrims, not one, because they are solving different problems.
