@@ -2,10 +2,9 @@
 
 import { motion, useScroll, useTransform, type Variants } from 'framer-motion';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRef } from 'react';
 
-import { HorizontalCarousel } from '@/components/ui';
+import { CtaButton, HorizontalCarousel } from '@/components/ui';
 import { services, type Service } from '@/config/services';
 import { EASE } from '@/constants';
 import { useIsMobile, usePrefersReducedMotion } from '@/hooks';
@@ -66,11 +65,16 @@ const cardVariants: Variants = {
 /**
  * One service, presented as a poster rather than a card.
  *
- * Four separate elements each own exactly one transform, which is what lets
+ * Not a link. The `/services/*` routes in the config have no pages behind
+ * them, and a poster that navigates to a 404 is worse than one that simply
+ * states what the studio does. The About page's Craft chapter is where the
+ * disciplines are read in detail, and the route-through under the carousel
+ * points there.
+ *
+ * Three separate elements each own exactly one transform, which is what lets
  * them run at once without fighting: the outer holds the scroll parallax, the
- * next the hover zoom, the innermost the endless drift, and the `<Link>`
- * itself the lift. Collapsing any two would mean one silently overwriting the
- * other's `transform`.
+ * next the hover zoom, the innermost the endless drift. Collapsing any two
+ * would mean one silently overwriting the other's `transform`.
  *
  * Hover is CSS rather than React state — nine cards re-rendering on every
  * pointer move would cost far more than the effect is worth, and opacity,
@@ -103,10 +107,7 @@ function ServiceCard({ service }: { service: Service }) {
       custom={{ lift: isMobile ? 36 : 52, still: reducedMotion }}
       className="w-[88vw] shrink-0 snap-start md:w-[420px] lg:w-[540px]"
     >
-      <Link
-        href={service.href}
-        /* The card itself never moves or resizes on hover — all the motion
-           happens to the image inside it. Only the border colour responds. */
+      <div
         /*
          * The card itself never moves, resizes or changes its border on hover —
          * the scroller clips vertically (an `overflow-x` container computes
@@ -118,7 +119,7 @@ function ServiceCard({ service }: { service: Service }) {
            the whole strip — it read as the carousel having its own darker
            background laid over the section's. The cards sit flat on the
            ground now; the border alone draws the edge. */
-        className="group relative block h-[72vh] overflow-hidden rounded-[24px] border border-white/[0.08] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F] md:h-[560px] lg:h-[660px]"
+        className="group relative block h-[72vh] overflow-hidden rounded-[24px] border border-white/[0.08] md:h-[560px] lg:h-[660px]"
       >
         {/* Parallax. Overscanned top and bottom so the travel stays covered. */}
         <motion.div
@@ -126,7 +127,7 @@ function ServiceCard({ service }: { service: Service }) {
           style={reducedMotion ? undefined : { y: parallaxY }}
         >
           {/* Hover zoom. */}
-          <div className="h-full w-full transition-transform duration-[700ms] ease-out group-hover:scale-[1.08] group-focus-visible:scale-[1.08]">
+          <div className="h-full w-full transition-transform duration-[700ms] ease-out group-hover:scale-[1.08]">
             {/* Endless drift — almost imperceptible, and the reason the
                 posters feel alive when nothing is being touched. */}
             <motion.div
@@ -178,7 +179,7 @@ function ServiceCard({ service }: { service: Service }) {
          */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-[#0A131F]/45 opacity-0 transition-opacity duration-[600ms] ease-out group-hover:opacity-100 group-focus-visible:opacity-100"
+          className="absolute inset-0 bg-[#0A131F]/45 opacity-0 transition-opacity duration-[600ms] ease-out group-hover:opacity-100"
         />
 
         <span className="absolute top-8 left-8 text-[0.875rem] tracking-[0.28em] text-white/35 md:top-10 md:left-10">
@@ -186,7 +187,7 @@ function ServiceCard({ service }: { service: Service }) {
         </span>
 
         <div className="absolute right-8 bottom-8 left-8 md:right-10 md:bottom-10 md:left-10">
-          <h3 className="mb-2.5 text-[1.625rem] leading-[1.15] font-extralight tracking-tight text-white transition-[color,transform] duration-[600ms] ease-out group-hover:-translate-y-1 group-hover:text-[#BFA76F] group-focus-visible:-translate-y-1 group-focus-visible:text-[#BFA76F] md:text-[1.875rem] lg:text-[2.125rem]">
+          <h3 className="mb-2.5 text-[1.625rem] leading-[1.15] font-extralight tracking-tight text-white transition-[color,transform] duration-[600ms] ease-out group-hover:-translate-y-1 group-hover:text-[#BFA76F] md:text-[1.875rem] lg:text-[2.125rem]">
             {service.title}
           </h3>
 
@@ -197,43 +198,34 @@ function ServiceCard({ service }: { service: Service }) {
             {service.description}
           </p>
         </div>
-      </Link>
+      </div>
     </motion.li>
   );
 }
 
 /**
- * Services discovery grid — three columns on desktop, two on tablet, one on
- * phones.
+ * Services, as a strip of posters the visitor drags through.
  *
- * Each card is a single `<Link>` rather than a container with a nested
- * "view service" anchor: one focus stop per service, and the whole poster is
- * the target.
+ * An overview, deliberately: nine names and a line each. The detail — what
+ * each discipline covers and how they fit together — lives on the About page,
+ * and the single route-through under the strip goes there.
  */
 export function ServicesSection() {
   return (
     /*
-     * Pulled up by the `cover` span so it overlaps the final stretch of
-     * the hero's sticky wrapper. The hero stays at `position: sticky; top: 0`
-     * inside a tall wrapper; this section slides upward over it — and because
-     * it is opaque and edge to edge, no gap shows between the two.
-     *
-     * The offset must stay in step with `cover` in IntroExperience's SPANS:
-     *   mobile  cover 1.2 → -mt-[120dvh]
-     *   desktop cover 1.6 → -mt-[160dvh]
-     *
-     * `motion-reduce:mt-0` cancels the margin when the sticky wrapper is
-     * absent and sections stack in normal flow.
+     * In normal flow. The trust strip above is the section that climbs over
+     * the pinned hero (see TrustSection for the margin that does it); this
+     * simply follows it on the same ground.
      */
     <section
       id="services"
       aria-labelledby="services-heading"
-      className="relative z-10 -mt-[120dvh] overflow-hidden bg-[#0f1012] pt-16 pb-20 motion-reduce:!mt-0 md:-mt-[160dvh] md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
+      className="relative z-10 overflow-hidden bg-[#0f1012] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
     >
       {/* Gutters are the reference site's own container value — a flat 16px on
           phones, then a fluid 3vw — so the grid tracks the viewport instead of
           sitting inside a fixed measure. */}
-      <div className="w-full px-4 md:px-[3vw]">
+      <div className="w-full px-4 md:px-[3vw] xl:pl-52">
         {/* Label and title left, standfirst pushed to the far right and sharing
             the title's baseline. Body copy stays left-aligned within its own
             column — right-aligned paragraphs give the eye no consistent edge to
@@ -274,9 +266,9 @@ export function ServicesSection() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.6 }}
           >
-            From concept development to final delivery, we create cinematic
-            experiences that move audiences and elevate brands through strategy,
-            storytelling and world-class production.
+            Nine disciplines under one roof, from the first line of the script
+            to the final mix. Your film never leaves the people who understood
+            the brief.
           </motion.p>
         </header>
       </div>
@@ -307,7 +299,7 @@ export function ServicesSection() {
       >
         <HorizontalCarousel
           label="Services"
-          edgeClassName="px-4 py-6 scroll-px-4 md:px-[3vw] md:scroll-px-[3vw]"
+          edgeClassName="px-4 py-6 scroll-px-4 md:px-[3vw] md:scroll-px-[3vw] xl:pl-52 xl:scroll-pl-52"
           // Same gap the list uses internally, so the seam of the loop is
           // indistinguishable from every other join between cards.
           gapClassName="gap-5 md:gap-6 lg:gap-8"
@@ -318,6 +310,18 @@ export function ServicesSection() {
             ))}
           </ul>
         </HorizontalCarousel>
+      </motion.div>
+
+      {/* One route-through, to the chapter that reads these in full. */}
+      <motion.div
+        className="mt-12 flex justify-center px-4 md:px-[3vw] lg:mt-16 xl:pl-52"
+        variants={fadeUp}
+        custom={0.1}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.6 }}
+      >
+        <CtaButton href="/about#about-craft">How we work →</CtaButton>
       </motion.div>
     </section>
   );

@@ -5,6 +5,7 @@ import { FloatingNav } from '@/components/layout/FloatingNav';
 import { CtaSection } from '@/components/sections/CtaSection';
 import {
   NextProject,
+  ProjectFilm,
   ProjectFrame,
   ProjectGallery,
   ProjectHero,
@@ -89,14 +90,23 @@ export default async function ProjectPage({
       <article>
         <ProjectHero project={project} index={index} total={projects.length} />
 
+        {/* Published films play here, straight under the hero. */}
+        <ProjectFilm project={project} />
+
         <ProjectOverview project={project} />
 
         <ProjectStory chapters={chapters.slice(0, breakAt)} />
 
-        <ProjectFrame
-          src={project.image}
-          alt={`${project.client} — ${project.category}`}
-        />
+        {/* The mid-story frame re-shows the key still as a visual breath. A
+            project with the film itself on the page already has one, so the
+            frame is skipped there rather than showing the same art a third
+            time. */}
+        {!project.video && (
+          <ProjectFrame
+            src={project.image}
+            alt={`${project.client}, ${project.category}`}
+          />
+        )}
 
         <ProjectStory chapters={chapters.slice(breakAt)} />
 

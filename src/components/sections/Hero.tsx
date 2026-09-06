@@ -11,10 +11,10 @@ const HEADLINE_FIXED_LINES = ['CREATIVE', 'MEDIA'];
 
 /** Third line — cycles one word at a time, in order. */
 const ROTATING_WORDS = [
-  'PRODUCTION',
   'STORYTELLING',
+  'PRODUCTION',
   'FILMS',
-  'CONTENT',
+  'CINEMA',
   'EXPERIENCES',
 ];
 
@@ -129,8 +129,9 @@ export function Hero() {
               initial="hidden"
               animate={animate}
             >
-              FC Filmwerks is a film production studio crafting cinematic
-              stories for brands, artists and screens of every size.
+              A Dubai film studio for stories people feel. Corporate films,
+              documentaries and award-winning original cinema, led by an
+              award-winning director with fifteen years in UAE media.
             </motion.p>
 
             <div className="mt-9 flex flex-wrap justify-center gap-3 lg:justify-start">
@@ -140,13 +141,24 @@ export function Hero() {
                 initial="hidden"
                 animate={animate}
               >
-                {/* Pill, to match the MENU control in the nav above — the
-                    system default is the near-square editorial radius. */}
+                {/* The hero's one gold action, set large. Pill, to match the
+                    controls in the nav above — the system default is the
+                    near-square editorial radius. The nav carries a bone
+                    "Start a project" of its own, so this is the only gold in
+                    the viewport. */}
                 <Button
-                  href="/portfolio"
-                  className="rounded-full bg-[#F8F7F4] text-[#0F1C2E] hover:bg-white"
+                  href="/contact"
+                  variant="accent"
+                  size="lg"
+                  className="group rounded-full transition-[background-color,transform,box-shadow] duration-500 ease-out hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(191,167,111,0.25)] focus-visible:outline-[#F8F7F4]"
                 >
-                  View our work
+                  Start a project
+                  <span
+                    aria-hidden="true"
+                    className="inline-block transition-transform duration-500 ease-out group-hover:translate-x-1"
+                  >
+                    →
+                  </span>
                 </Button>
               </motion.div>
 
@@ -157,11 +169,12 @@ export function Hero() {
                 animate={animate}
               >
                 <Button
-                  href="/contact"
+                  href="/portfolio"
                   variant="outline"
-                  className="rounded-full border-white/35 text-[#F8F7F4] hover:border-[#BFA76F]"
+                  size="lg"
+                  className="rounded-full border-white/35 text-[#F8F7F4] hover:border-[#BFA76F] hover:text-[#BFA76F]"
                 >
-                  Start a project
+                  View our work
                 </Button>
               </motion.div>
             </div>

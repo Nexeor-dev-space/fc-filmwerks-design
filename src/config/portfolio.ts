@@ -19,11 +19,11 @@ import { projects } from './projects';
 
 export const portfolioMasthead = {
   /** Mono slug line, set above the rule. */
-  slug: 'fcfilmwerks — archive',
+  slug: 'FC Filmwerks · Archive',
   /** Rendered one line per entry, each masked and revealed in turn. */
   headline: ['The work,', 'frame', 'by frame.'],
   standfirst:
-    'Events, adverts and social campaigns for brands across Dubai and India — every one of them scripted, shot and finished in-house.',
+    'Original films beside events, adverts and social campaigns for brands across Dubai and India, every one of them scripted, shot and finished in-house.',
   /** Reading instruction for the filter rail below. */
   hint: 'Filter the archive, or scroll it end to end.',
 } as const;
@@ -35,13 +35,14 @@ export const portfolioMasthead = {
 export interface PortfolioFilter {
   /** Matches `Project.category`, or `All` for the unfiltered set. */
   value: string;
-  /** What the control reads from tablet up — plural, as a section of an archive. */
+  /** What the control reads on wide screens: plural, as a section of an archive. */
   label: string;
   /**
-   * The phone label. Four full-length labels cannot fit across a 375px screen,
-   * and the rail is sticky, so wrapping them onto a second line would cost a
-   * permanent band of the viewport. These are short enough that the whole set
-   * fits without scrolling on all but the narrowest handsets.
+   * The phone and tablet label. Six full-length labels cannot fit across a
+   * phone screen or inside a tablet's pill, and the rail is sticky, so
+   * wrapping them onto a second line would cost a permanent band of the
+   * viewport. These are short enough that the whole set fits without
+   * scrolling on all but the narrowest handsets.
    */
   short: string;
   count: number;
@@ -55,6 +56,8 @@ export interface PortfolioFilter {
  * reads in the singular until a label is added.
  */
 const FILTER_LABELS: Record<string, { label: string; short: string }> = {
+  'Original Film': { label: 'Original films', short: 'Films' },
+  'Music Video': { label: 'Music videos', short: 'Music' },
   Event: { label: 'Events', short: 'Events' },
   Advert: { label: 'Advertisements', short: 'Adverts' },
   'Social Media': { label: 'Social Media', short: 'Social' },
@@ -129,7 +132,7 @@ export const portfolioStatement = {
     'wants one.',
   ],
   body: [
-    'Every project on this page started the same way — in a room, listening. What the brand needed to say, who needed to hear it, and the single feeling that had to land before anything else did.',
+    'Every project on this page started the same way: in a room, listening. What the brand needed to say, who needed to hear it, and the single feeling that had to land before anything else did.',
     'The camera comes last. Script, cast, location, lens and grade are all downstream of that one decision, which is why the work reads as a body rather than a showreel of unrelated jobs.',
   ],
 } as const;

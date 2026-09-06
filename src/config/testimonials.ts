@@ -46,7 +46,7 @@ export const reviews: Review[] = [
     date: '3 months ago',
     rating: 5,
     quote:
-      "From concept to delivery, everything was seamless. FC Filmwerks doesn't just make videos — they craft visual stories. Our wedding film still makes us emotional every time we watch it.",
+      "From concept to delivery, everything was seamless. FC Filmwerks doesn't just make videos, they craft visual stories. Our wedding film still makes us emotional every time we watch it.",
   },
   {
     name: 'Fatima Al-Hassan',

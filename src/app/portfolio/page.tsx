@@ -12,7 +12,7 @@ import { createMetadata } from '@/lib/seo';
 export const metadata = createMetadata({
   title: 'Portfolio',
   description:
-    'The FC Filmwerks archive — events, adverts and social campaigns for brands across Dubai and India, filterable by discipline.',
+    'The FC Filmwerks archive: original films, events, adverts and social campaigns for brands across Dubai and India, filterable by discipline.',
   path: '/portfolio',
 });
 
@@ -34,24 +34,36 @@ export default function PortfolioPage() {
           the nav normally waits on — without it the nav never appears here. */}
       <FloatingNav immediate />
 
-      <PortfolioMasthead />
+      {/*
+       * No scroll anchoring on this route. Choosing a filter remounts the
+       * archive at a new height, and a browser that anchors to whichever
+       * section is visible below it, which on a phone is the gallery under a
+       * one-card grid, then scrolls the page by the height of every card that
+       * came back: several screens, in one jump. Excluding every section
+       * leaves the scroller with nothing to anchor to, so the archive's own
+       * scroll (see PortfolioArchive) is the only thing that moves the page.
+       * A plain block, so it changes no layout.
+       */}
+      <div className="[overflow-anchor:none]">
+        <PortfolioMasthead />
 
-      <PortfolioArchive />
+        <PortfolioArchive />
 
-      <ProductionGallery />
+        <ProductionGallery />
 
-      <PortfolioStatement />
+        <PortfolioStatement />
 
-      <CtaSection
-        label="Seen something you like?"
-        headline={['YOUR PROJECT,', 'IN THIS', 'ARCHIVE.']}
-        body="Every film on this page began as a conversation about what a brand needed people to feel. Tell us yours and we will show you what it could become."
-        showLocations={false}
-        primary={{ label: 'Start a project', href: '/contact' }}
-        secondary={{ label: 'View services', href: '/services' }}
-      />
+        <CtaSection
+          label="Seen something you like?"
+          headline={['YOUR PROJECT,', 'IN THIS', 'ARCHIVE.']}
+          body="Every film on this page began as a conversation about what a brand needed people to feel. Tell us yours and we will show you what it could become."
+          showLocations={false}
+          primary={{ label: 'Start a project', href: '/contact' }}
+          secondary={{ label: 'View services', href: '/services' }}
+        />
 
-      <CinematicFooter />
+        <CinematicFooter />
+      </div>
     </>
   );
 }

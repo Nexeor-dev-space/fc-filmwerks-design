@@ -63,3 +63,16 @@ export interface VideoAsset {
   /** Vimeo/YouTube id when the video is hosted off-site. */
   externalId?: string;
 }
+
+/**
+ * One entry in a page's chapter rail — the fixed index that the About page
+ * and the homepage carry on desktop.
+ */
+export interface Chapter {
+  /** Zero-padded display number. Also the rail's marker. */
+  number: string;
+  /** Rail label — short enough to sit in a 12ch column. */
+  title: string;
+  /** Section element id this chapter scrolls to. */
+  id: string;
+}

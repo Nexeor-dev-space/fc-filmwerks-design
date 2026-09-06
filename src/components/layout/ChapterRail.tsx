@@ -3,32 +3,39 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
-import { aboutChapters } from '@/config/about';
+import type { Chapter } from '@/types';
 import { EASE } from '@/constants';
 import { usePrefersReducedMotion } from '@/hooks';
 import { cn } from '@/lib/utils';
 
+interface ChapterRailProps {
+  chapters: Chapter[];
+  /** Accessible name for the nav, e.g. "About chapters". */
+  label: string;
+}
+
 /**
- * The dossier's index, fixed to the left edge.
+ * A page's index, fixed to the left edge.
  *
- * More than ornament: it is what makes the page read as a document with parts
- * rather than a scroll of sections, and it gives a reader who is four chapters
- * deep a way back out. It is also the single strongest signal that this is not
- * the homepage, which has no such structure.
+ * More than ornament: it is what makes a long page read as a document with
+ * parts rather than a scroll of sections, and it gives a reader who is four
+ * chapters deep a way back out. The About page and the homepage both carry it;
+ * a page that does needs `xl:pl-52` on its content so the rail has a gutter of
+ * its own to sit in rather than lying over the type.
  *
  * Only on `xl`. Below that the viewport is too narrow to carry a fixed column
- * beside the content without stealing measure from it, and the chapter marks in
- * the flow already do the labelling.
+ * beside the content without stealing measure from it, and the section
+ * headings in the flow already do the labelling.
  *
- * Hidden until the reader is past the masthead: over chapter 00 it would be
- * pointing at a chapter nobody has reached yet.
+ * Hidden until the reader reaches the first chapter: over a masthead or a
+ * pinned hero it would be pointing at a chapter nobody has reached yet.
  */
-export function AboutChapterRail() {
+export function ChapterRail({ chapters, label }: ChapterRailProps) {
   const reducedMotion = usePrefersReducedMotion();
   const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {
-    const sections = aboutChapters
+    const sections = chapters
       .map(({ id }) => document.getElementById(id))
       .filter((node): node is HTMLElement => node !== null);
 
@@ -51,13 +58,13 @@ export function AboutChapterRail() {
 
     for (const section of sections) observer.observe(section);
     return () => observer.disconnect();
-  }, []);
+  }, [chapters]);
 
   return (
     <AnimatePresence>
       {activeId && (
         <motion.nav
-          aria-label="About chapters"
+          aria-label={label}
           className="fixed top-1/2 left-6 z-[90] hidden -translate-y-1/2 xl:block"
           initial={{ opacity: 0, x: reducedMotion ? 0 : -12 }}
           animate={{ opacity: 1, x: 0 }}
@@ -65,7 +72,7 @@ export function AboutChapterRail() {
           transition={{ duration: reducedMotion ? 0.2 : 0.7, ease: EASE.out }}
         >
           <ol className="flex flex-col gap-4">
-            {aboutChapters.map((chapter) => {
+            {chapters.map((chapter) => {
               const isActive = chapter.id === activeId;
 
               return (

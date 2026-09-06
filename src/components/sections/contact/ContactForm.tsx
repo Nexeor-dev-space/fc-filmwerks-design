@@ -251,7 +251,7 @@ export function ContactForm() {
                 className="text-[0.875rem] text-white/60"
               >
                 {status === 'success' &&
-                  'Thank you — we’ll be in touch shortly.'}
+                  'Thank you. We will be in touch shortly.'}
                 {status === 'error' &&
                   'Something went wrong. Please try again, or email us directly.'}
               </p>

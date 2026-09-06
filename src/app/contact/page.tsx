@@ -12,7 +12,7 @@ import { createMetadata } from '@/lib/seo';
 export const metadata = createMetadata({
   title: 'Contact',
   description:
-    'Get in touch with fcfilmwerks — a media production studio in Dubai and India specialising in pre- and post-production for films and commercials.',
+    'Get in touch with FC Filmwerks, a film studio in Dubai and India making corporate films, documentaries and original cinema with humane, emotional storytelling.',
   path: '/contact',
 });
 

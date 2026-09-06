@@ -23,67 +23,72 @@ const SIZE = IRIS.viewBox * 2;
  *
  * The SVG is a square of 160vmax so the disc always covers the viewport,
  * whatever its aspect ratio.
+ *
+ * `id` prefixes the SVG's internal ids. Two irises share a document on the
+ * homepage, the intro's and the route transition's, and `url(#…)` references
+ * resolve to whichever definition comes first, so each instance needs its own.
  */
-export const ApertureIris = forwardRef<SVGSVGElement, { className?: string }>(
-  function ApertureIris({ className }, ref) {
-    return (
-      <svg
-        ref={ref}
-        viewBox={`${-IRIS.viewBox} ${-IRIS.viewBox} ${SIZE} ${SIZE}`}
-        className={cn(
-          'pointer-events-none absolute top-1/2 left-1/2 h-[160vmax] w-[160vmax]',
-          '-translate-x-1/2 -translate-y-1/2',
-          // The base layer caps svg at max-width:100%, which would squash this
-          // to the viewport width and shrink the disc below the frame diagonal,
-          // leaving the corners uncovered when the iris is shut.
-          'max-w-none',
-          className,
-        )}
-        aria-hidden="true"
-        focusable="false"
-      >
-        <defs>
-          {/* Trims the oversized blade bodies back to the iris disc. */}
-          <clipPath id="iris-disc">
-            <circle cx="0" cy="0" r={IRIS.clipRadius} />
-          </clipPath>
+export const ApertureIris = forwardRef<
+  SVGSVGElement,
+  { className?: string; id?: string }
+>(function ApertureIris({ className, id = 'iris' }, ref) {
+  return (
+    <svg
+      ref={ref}
+      viewBox={`${-IRIS.viewBox} ${-IRIS.viewBox} ${SIZE} ${SIZE}`}
+      className={cn(
+        'pointer-events-none absolute top-1/2 left-1/2 h-[160vmax] w-[160vmax]',
+        '-translate-x-1/2 -translate-y-1/2',
+        // The base layer caps svg at max-width:100%, which would squash this
+        // to the viewport width and shrink the disc below the frame diagonal,
+        // leaving the corners uncovered when the iris is shut.
+        'max-w-none',
+        className,
+      )}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <defs>
+        {/* Trims the oversized blade bodies back to the iris disc. */}
+        <clipPath id={`${id}-disc`}>
+          <circle cx="0" cy="0" r={IRIS.clipRadius} />
+        </clipPath>
 
-          {/* Brushed-metal sheen across the blades. */}
-          <linearGradient id="iris-blade-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#12202f" />
-            <stop offset="55%" stopColor="#0a131f" />
-            <stop offset="100%" stopColor="#060d16" />
-          </linearGradient>
-        </defs>
+        {/* Brushed-metal sheen across the blades. */}
+        <linearGradient id={`${id}-blade-fill`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#12202f" />
+          <stop offset="55%" stopColor="#0a131f" />
+          <stop offset="100%" stopColor="#060d16" />
+        </linearGradient>
+      </defs>
 
-        <g clipPath="url(#iris-disc)">
-          {BLADES.map((index) => (
-            /* Outer group fixes the blade's seat on the pivot ring; the inner
+      <g clipPath={`url(#${id}-disc)`}>
+        {BLADES.map((index) => (
+          /* Outer group fixes the blade's seat on the pivot ring; the inner
                group is what rotates, so GSAP never fights the ring angle. */
-            <g key={index} transform={`rotate(${bladeAngle(index)})`}>
-              {/* Rotation and its pivot are set by GSAP via `svgOrigin`. At
+          <g key={index} transform={`rotate(${bladeAngle(index)})`}>
+            {/* Rotation and its pivot are set by GSAP via `svgOrigin`. At
                   rest the blade sits at 0°, which is the fully open position,
                   so the iris is invisible before the timeline runs. */}
-              <g className="iris-blade">
-                <path
-                  d={PATH}
-                  fillRule="evenodd"
-                  fill="url(#iris-blade-fill)"
-                  /* A machined edge catching a little light. Kept very low:
+            <g className="iris-blade">
+              <path
+                d={PATH}
+                fillRule="evenodd"
+                fill={`url(#${id}-blade-fill)`}
+                /* A machined edge catching a little light. Kept very low:
                      each cutting edge is a huge arc, so a stronger stroke draws
                      long lines right across the frame. */
-                  stroke="#BFA76F"
-                  strokeOpacity={0.09}
-                  strokeWidth={0.5}
-                  /* Alternating opacity separates the stacked leaves without
+                stroke="#BFA76F"
+                strokeOpacity={0.09}
+                strokeWidth={0.5}
+                /* Alternating opacity separates the stacked leaves without
                      letting the background bleed through. */
-                  opacity={index % 2 === 0 ? 1 : 0.97}
-                />
-              </g>
+                opacity={index % 2 === 0 ? 1 : 0.97}
+              />
             </g>
-          ))}
-        </g>
-      </svg>
-    );
-  },
-);
+          </g>
+        ))}
+      </g>
+    </svg>
+  );
+});
