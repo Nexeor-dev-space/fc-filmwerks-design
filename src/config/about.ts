@@ -22,7 +22,7 @@
  * - The founder's quote is marked DRAFT. It was written for approval and must
  *   be confirmed or replaced by the founder before launch.
  *
- * The page is structured as a numbered dossier, six chapters, each with its
+ * The page is structured as a numbered dossier, seven chapters, each with its
  * own id, and `aboutChapters` is what the side rail reads to build its index.
  * A chapter added here appears in the rail automatically, and every chapter
  * component reads its own number back through `chapterNumber`, so the marks
@@ -39,9 +39,10 @@ export const aboutChapters: AboutChapter[] = [
   { number: '01', title: 'The studio', id: 'about-studio' },
   { number: '02', title: 'The founders', id: 'about-people' },
   { number: '03', title: 'The film', id: 'about-film' },
-  { number: '04', title: 'The method', id: 'about-method' },
-  { number: '05', title: 'The craft', id: 'about-craft' },
-  { number: '06', title: 'On set', id: 'about-on-set' },
+  { number: '04', title: 'The label', id: 'about-label' },
+  { number: '05', title: 'The method', id: 'about-method' },
+  { number: '06', title: 'The craft', id: 'about-craft' },
+  { number: '07', title: 'On set', id: 'about-on-set' },
 ];
 
 /** The display number for a chapter, looked up by its section id. */

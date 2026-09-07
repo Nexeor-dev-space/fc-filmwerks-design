@@ -360,6 +360,35 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
             transition={{ duration: DURATION.fast, ease: EASE.out }}
           >
             {/*
+             * The vertical lockup, filling the panel behind the links.
+             *
+             * The menu is the one surface on the site that is a flat field of
+             * navy with a handful of words on it, which is exactly where a
+             * watermark belongs and nowhere else does — over the hero's
+             * footage or a project still it was competing with the picture.
+             *
+             * `object-contain` and centred so the mark keeps its proportions
+             * whatever shape the panel is, and sized past the panel's own
+             * padding so it reads as a ground rather than as an image placed
+             * on one. Behind everything, and out of the flex flow entirely, so
+             * the scrolling link list is unaffected.
+             */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden rounded-[28px] select-none"
+            >
+              <div className="relative h-[78%] w-[78%] max-w-[520px]">
+                <Image
+                  src="/images/brand/vertical-logo-FCF.avif"
+                  alt=""
+                  fill
+                  sizes="(min-width: 768px) 520px, 78vw"
+                  className="object-contain opacity-[0.045]"
+                />
+              </div>
+            </div>
+
+            {/*
              * No header of its own. The panel used to repeat the logo and
              * carry a bordered close button, but the site header now sits
              * above it and its trigger morphs into the cross — so both were
@@ -372,7 +401,7 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
              */}
             {/* `shrink-0` on both children: in a scrolling flex column the
                 default would let the link list compress instead of scroll. */}
-            <div className="mt-28 w-full shrink-0 px-4 text-center md:mt-36 md:px-[3vw]">
+            <div className="relative z-10 mt-28 w-full shrink-0 px-4 text-center md:mt-36 md:px-[3vw]">
               <ul className="flex flex-col gap-6 md:gap-8">
                 {mainNav.map((item, index) => (
                   <motion.li
@@ -417,7 +446,7 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
                 to the panel, so `mt-auto` goes on the group rather than on the
                 belt — the spacing between the two then stays fixed however
                 tall the screen is. */}
-            <div className="mt-auto shrink-0">
+            <div className="relative z-10 mt-auto shrink-0">
               <div className="marquee-host relative overflow-hidden py-10 md:py-12">
                 <div
                   aria-hidden="true"

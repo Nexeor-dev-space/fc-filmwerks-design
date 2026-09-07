@@ -24,6 +24,58 @@ export interface ProjectDetail {
 }
 
 /**
+ * A film the visitor can watch, played on the project's own page.
+ *
+ * Two forms, because the work arrives two ways. The original films are
+ * published on YouTube and carry a public watch URL. The commercial work is
+ * delivered as files the studio hosts itself, with nowhere to link to. Both are
+ * films someone came to see, so both play in the hero behind the same poster;
+ * only the player inside the frame differs.
+ *
+ * This is NOT the same thing as a bare `video: '/path.mp4'` string on a
+ * project, which is silent background footage looping under the hero's type
+ * with nothing to press. The same file can serve either role — what decides it
+ * is which shape is written here.
+ *
+ * `orientation` is not decoration: it decides the whole shape of the hero. A
+ * landscape film gets a wide plate with the title beneath it; a vertical one
+ * gets a tall plate with the title set beside it, because a 9:16 frame stretched
+ * to the width of a desktop screen is either enormous or marooned in black.
+ * Vertical work is a real part of this studio's output, so the page is built for
+ * both rather than assuming the cinema case.
+ *
+ * Defaults to landscape where omitted — the common case, and the safe one: a
+ * landscape plate showing a vertical film letterboxes, where the reverse crops.
+ */
+interface ProjectFilmBase {
+  /** Verb for the play control: "Watch the film", "Watch the video". */
+  label: string;
+  orientation?: 'landscape' | 'portrait';
+  /**
+   * The frame shown until the visitor presses play. Falls back to the
+   * project's own `image`, which is right for a single-film project because
+   * the two are the same frame. A project delivering two adverts needs two,
+   * or the second plate is a poster for the first film.
+   */
+  poster?: string;
+}
+
+export interface PublishedFilm extends ProjectFilmBase {
+  /** The `v=` id from the watch URL. */
+  youtubeId: string;
+  /** The public watch URL, for search engines and for anyone without JS. */
+  href: string;
+}
+
+export interface HostedFilm extends ProjectFilmBase {
+  /** A file under `public/videos`. Plays with sound and browser controls. */
+  src: string;
+}
+
+/** Narrow with `'youtubeId' in video`; the two shapes share no required key. */
+export type ProjectVideo = PublishedFilm | HostedFilm;
+
+/**
  * The long-form content for a project page.
  *
  * PROVENANCE, and please keep this straight when editing:
@@ -80,8 +132,24 @@ export interface Project {
   /** `/portfolio/<slug>`, resolved by the shared detail route. */
   href: string;
   image: string;
-  /** Optional video asset for the project. Can be a direct video URL string or an object with YouTube details. */
-  video?: string | { youtubeId: string; label: string; href: string };
+  /**
+   * The film, or films, the project delivered.
+   *
+   * One plays in the hero at its own aspect ratio. Several stack down it, in
+   * the order written here — two of these jobs were campaigns of two vertical
+   * adverts rather than one film, and showing only the first would misdescribe
+   * the work the studio was paid for.
+   *
+   * A project with no film keeps the still-led hero and gets a full-bleed
+   * frame further down the page instead. Every project currently has one; the
+   * fallback is there for the next job that does not.
+   *
+   * This replaced an earlier `string` form that meant "silent background loop
+   * under the hero's type". Nothing used it once the commercial films arrived,
+   * and keeping a second meaning for the same field was the sort of thing that
+   * gets a film shown muted and unpressable by accident.
+   */
+  video?: ProjectVideo | ProjectVideo[];
   /** The detail page's long form. See `ProjectCaseStudy` for provenance. */
   caseStudy: ProjectCaseStudy;
 }
@@ -135,16 +203,14 @@ export const projects: Project[] = [
           number: '01',
           title: 'Why an original',
           body: [
-            'FC Filmwerks was founded on an observation: that the market it works in was short of humane, emotional storytelling. A claim like that is easy to make in a pitch and hard to make on a screen. An original film is where it gets tested, there is no brief to interpret, no brand to serve, and nothing to hide behind but the work.',
-            'Blue Lily is that test. Every discipline the studio offers a client, from script and direction to sound, edit and grade, was brought to bear on a story the studio chose for itself.',
+            'FC Filmwerks was founded on an observation: that the market it works in was short of humane, emotional storytelling. An original film is where a claim like that gets tested. There is no brief to interpret and no brand to serve, only the work.',
           ],
         },
         {
           number: '02',
           title: 'Emotion as the brief',
           body: [
-            'The studio\u2019s method runs Listen, Emote, Visualise, Repeat, and an original film is the purest version of it. With no client to listen to, the listening is done to the story: what it is about, who it is for, and the one feeling an audience should leave with.',
-            'That feeling decides everything downstream. Casting, location, the length of a shot, the choice to hold on a face rather than cut away: each is a decision about emotion before it is a decision about craft.',
+            'The studio\u2019s method runs Listen, Emote, Visualise, Repeat. With no client to listen to, the listening is done to the story: the one feeling an audience should leave with. Casting, location and the length of a shot are decisions about that feeling before they are decisions about craft.',
           ],
         },
         {
@@ -158,8 +224,7 @@ export const projects: Project[] = [
           number: '04',
           title: 'On the circuit',
           body: [
-            'Blue Lily was recognised at five international festivals, taking Best Director and Best Actress at The Buddha International Film Festival and Special Jury Awards at IFA Film Festival Abu Dhabi and IIFF, with official selections at MEI International Film Festival and the Calgary Independent Film Festival. It screened theatrically in Kochi and Dubai.',
-            'For a studio founded in 2025, that is the record the rest of the work stands on.',
+            'Blue Lily was recognised at five international festivals: Best Director and Best Actress at The Buddha International Film Festival, Special Jury Awards at IFA Film Festival Abu Dhabi and IIFF, and official selections at MEI International and Calgary Independent. It screened theatrically in Kochi and Dubai.',
           ],
         },
       ],
@@ -214,7 +279,7 @@ export const projects: Project[] = [
           number: '01',
           title: 'A thriller in miniature',
           body: [
-            'A short film has none of the room a feature has to earn tension slowly. The genre has to be established in the first minute and paid off before the audience has settled. Your Place or Mine works inside that constraint rather than against it: a small cast, a tight premise, and a title that is already a question.',
+            'A short film has none of the room a feature has to earn tension slowly: the genre must be established in the first minute and paid off before the audience has settled. A small cast, a tight premise, and a title that is already a question.',
           ],
         },
         {
@@ -228,7 +293,7 @@ export const projects: Project[] = [
           number: '03',
           title: 'Cut for tension',
           body: [
-            'The edit is where a thriller is finally made. Information is released a beat later than the audience wants it, and the sound design is doing at least half of the frightening. English subtitles were part of the delivery from the start, so the film could travel beyond a Malayalam-speaking audience.',
+            'The edit is where a thriller is finally made. Information is released a beat later than the audience wants it, and the sound design is doing at least half of the frightening. English subtitles were part of the delivery from the start.',
           ],
         },
       ],
@@ -271,21 +336,20 @@ export const projects: Project[] = [
           title: 'A tribute, not a showcase',
           body: [
             'People of Determination is the UAE\u2019s own term, and it sets the register for everything in the film. A tribute has to carry dignity before it carries anything else: the subject is not a backdrop for the track, it is the reason the track exists.',
-            'So the film is built the way the studio builds everything: the feeling first, then the frame. What an audience should leave with is decided before the first shot is planned, and every choice after that is measured against it.',
           ],
         },
         {
           number: '02',
           title: 'Cut to the bar',
           body: [
-            'A music video is edited to the track, not around it. Performance, movement and cut all land on the beat, and the rhythm of the rap decides the rhythm of the picture. The camera stays close, because the intensity of a performance lives in a face, not in a wide shot.',
+            'A music video is edited to the track, not around it. Performance, movement and cut all land on the beat. The camera stays close, because the intensity of a performance lives in a face, not in a wide shot.',
           ],
         },
         {
           number: '03',
           title: 'Six hundred in the room',
           body: [
-            'The video was launched and released at a public event at World Trade Centre Dubai, in front of six hundred people. A release like that is itself a production: a room, a screen, a moment that has to land once. The studio\u2019s events background is what made it the natural way to put the film into the world.',
+            'The video was launched at a public event at World Trade Centre Dubai, in front of six hundred people. A release like that is itself a production: a room, a screen, a moment that has to land once.',
           ],
         },
       ],
@@ -311,15 +375,18 @@ export const projects: Project[] = [
     title: 'Cleveland Clinic | Event',
     client: 'Cleveland Clinic',
     description:
-      'Event film of the Steppi app’s early launch and demo, covered cinematically.',
+      'An event for Cleveland Clinic and the Steppi app: early launch and demo coverage, shot in a cinematic manner.',
     summary:
       'An Event for Cleveland and Steppi App. Steppi’s Early Launch and Demo Event coverage done in a cinematic manner.',
     href: '/portfolio/cleveland-clinic-event',
-    image: '/images/works/Cleveland%20Clinic-Event.jpg',
-    video: '/videos/portfolio/ClevelandClinic.mp4',
+    image: '/images/works/Cleveland-Clinic-Event.jpg',
+    video: {
+      src: '/videos/portfolio/ClevelandClinic.mp4',
+      label: 'Watch the film',
+    },
     caseStudy: {
       standfirst:
-        'An early launch and demo event for the Steppi app, held with Cleveland Clinic, and covered as a film rather than as a record of proceedings.',
+        'An event for Cleveland and the Steppi app. Steppi\u2019s early launch and demo event coverage, done in a cinematic manner.',
       objective:
         'Cover Steppi\u2019s early launch and demo event in a cinematic manner.',
       chapters: [
@@ -327,16 +394,14 @@ export const projects: Project[] = [
           number: '01',
           title: 'A room that happens once',
           body: [
-            'Cleveland Clinic and Steppi brought the studio in for the app\u2019s early launch and demo. An event has no second take. The demo is given once, the room reacts once, and whatever is not covered when it happens is simply not in the film.',
-            'That is the constraint the whole job is built around, and it is what separates event coverage from every other kind of production: the schedule belongs to the event, not to the crew.',
+            'Cleveland Clinic and Steppi brought the studio in for the app\u2019s early launch and demo. An event has no second take: the demo is given once, the room reacts once, and whatever is not covered when it happens is simply not in the film.',
           ],
         },
         {
           number: '02',
           title: 'Covering it as a film',
           body: [
-            '\u201CIn a cinematic manner\u201D was the brief\u2019s own phrase, and it decides the coverage. A record of an event points the camera at whoever is speaking. A film of an event also holds on the listening: the demo landing, the question from the floor, the moment a room understands what it is being shown.',
-            'So the coverage is planned for two things at once: the proceedings, which have to be complete, and the reactions, which are what make the cut watchable.',
+            '\u201CIn a cinematic manner\u201D was the brief\u2019s own phrase, and it decides the coverage. A record of an event points the camera at whoever is speaking; a film of an event also holds on the listening, which is what makes the cut watchable.',
           ],
         },
         {
@@ -362,15 +427,18 @@ export const projects: Project[] = [
     title: 'ID Fresh - Blend | Advert',
     client: 'ID Fresh',
     description:
-      'Launch advert for Blend, built around the emotion attached to its taste.',
+      'Advert for a new product, Blend, built around the emotion attached to its taste.',
     summary:
       'ID’s brand came up with a new product by the name of Blend and wanted us to showcase the emotion attached to the taste of the product.',
     href: '/portfolio/id-fresh-blend-advert',
     image: '/images/works/ID-Fresh-Blend-Advert.jpg',
-    video: '/videos/portfolio/fresh_placeholder.mp4',
+    video: {
+      src: '/videos/portfolio/fresh_placeholder.mp4',
+      label: 'Watch the film',
+    },
     caseStudy: {
       standfirst:
-        'A launch advert for Blend, a new product from ID Fresh, built around the emotion attached to the way it tastes.',
+        'ID\u2019s brand came up with a new product by the name of Blend, and wanted us to showcase the emotion attached to the taste of the product.',
       objective: 'Showcase the emotion attached to the taste of the product.',
       chapters: [
         {
@@ -391,7 +459,7 @@ export const projects: Project[] = [
           number: '03',
           title: 'Shot for appetite',
           body: [
-            'Food work lives or dies on light and on timing. Steam holds for seconds. A surface goes dull almost as fast. The production is arranged so the camera is ready before the food is, rather than the other way round, and so the product is at its best in the frame where it matters most.',
+            'Food work lives or dies on light and on timing. Steam holds for seconds; a surface goes dull almost as fast. The production is arranged so the camera is ready before the food is, rather than the other way round.',
           ],
         },
         {
@@ -420,16 +488,19 @@ export const projects: Project[] = [
     title: 'Silk Route | Advert',
     client: 'Silk Route',
     description:
-      'Festival advert tying the emotions of Onam to the brand and its designs.',
+      'Onam advert connecting the emotion of the festival to the brand and its designs.',
     summary:
       'Silk Route, explained the need of connecting emotions of ONAM to their brand and their designs.',
     href: '/portfolio/silk-route-advert',
     /* PLACEHOLDER: no project still available yet. */
-    image: '/images/services/photography.jpg',
-    video: '/videos/portfolio/SilkRoute.mp4',
+    image: '/images/works/Silk-Route-Advert.jpg',
+    video: {
+      src: '/videos/portfolio/SilkRoute.mp4',
+      label: 'Watch the film',
+    },
     caseStudy: {
       standfirst:
-        'An advert for Silk Route, tying the emotions of Onam to the brand and to the designs it makes.',
+        'Silk Route explained the need of connecting the emotions of Onam to their brand and their designs.',
       objective: 'Connect the emotions of Onam to the brand and its designs.',
       chapters: [
         {
@@ -443,14 +514,14 @@ export const projects: Project[] = [
           number: '02',
           title: 'Onam as the subject, not the set dressing',
           body: [
-            'A festival is easy to use as decoration and hard to use as meaning. The approach was to treat Onam as what the film is about: the gathering, the preparation, the particular warmth of a house on the day, so the brand arrives inside a feeling the audience already has, rather than beside one.',
+            'A festival is easy to use as decoration and hard to use as meaning. Onam is treated as what the film is about, so the brand arrives inside a feeling the audience already has rather than beside one.',
           ],
         },
         {
           number: '03',
           title: 'The designs, in motion',
           body: [
-            'Cloth is a moving subject. It reads through drape, weight and the way it catches light, none of which survive a still frame. The coverage gives the designs movement and gives them the right light, so the craft in them is legible at the same time as the emotion around them.',
+            'Cloth is a moving subject. It reads through drape, weight and the way it catches light, none of which survive a still frame. The coverage gives the designs movement and the right light, so the craft in them is legible.',
           ],
         },
       ],
@@ -472,14 +543,27 @@ export const projects: Project[] = [
     title: 'MalabarGold | Social Media',
     client: 'Malabar Gold',
     description:
-      'Influencer campaign of two vertical adverts, taken from script to finished master.',
+      'Social media influencer campaign of two vertical adverts, scripted to finish in-house.',
     summary:
       'A Social media Influencer campaign with 2 vertical adverts, we were able to provide Malabar Gold a full script to finish Advert.',
     href: '/portfolio/malabargold-social-media',
-    image: '/images/works/MalabarGold-Social-Media.jpg',
+    image: '/images/works/MalabarGold-Social-Media-1.jpg',
+    video: [
+      {
+        src: '/videos/portfolio/Malabar-Gold-1-FCF.mp4',
+        label: 'Watch the first advert',
+        orientation: 'portrait',
+      },
+      {
+        src: '/videos/portfolio/Malabar-Gold-2-FCF.mp4',
+        label: 'Watch the second advert',
+        orientation: 'portrait',
+        poster: '/images/works/MalabarGold-Social-Media-2.jpg',
+      },
+    ],
     caseStudy: {
       standfirst:
-        'A social media influencer campaign for Malabar Gold: two vertical adverts, taken from script all the way to finish.',
+        'A social media influencer campaign with two vertical adverts. We were able to provide Malabar Gold a full script-to-finish advert.',
       objective:
         'Deliver a social media influencer campaign as a full script-to-finish production.',
       chapters: [
@@ -494,7 +578,7 @@ export const projects: Project[] = [
           number: '02',
           title: 'Script to finish, in one house',
           body: [
-            'Campaigns split across a writer, a production company and an editor lose something at every handover, and what they lose is usually the idea. Holding scripting, production and post together means the thing written on page one is the thing that ships, and that a change late in the edit can be answered rather than absorbed.',
+            'Campaigns split across a writer, a production company and an editor lose something at every handover, and what they lose is usually the idea. Holding scripting, production and post in one house means the thing written on page one is the thing that ships.',
           ],
         },
         {
@@ -530,14 +614,18 @@ export const projects: Project[] = [
     title: 'Go Sands | Advert',
     client: 'Go Sands',
     description:
-      'Advert showing off Dubai in style, and the experience customers get by choosing the brand.',
+      'Advert showing off Dubai in a stylish, cinematic manner, and the experience the brand offers.',
     summary:
       'Go Sands needed an Advert that showed off Dubai in a stylish cinematic manner, while also showing the customers of the kind of experience they would get if they chose the brand.',
     href: '/portfolio/go-sands-advert',
     image: '/images/works/Go-Sands-Advert.jpg',
+    video: {
+      src: '/videos/portfolio/GO-SANDS-FCF.mp4',
+      label: 'Watch the film',
+    },
     caseStudy: {
       standfirst:
-        'An advert that had to do two jobs at once: show off Dubai in a stylish cinematic manner, and show a customer exactly what choosing Go Sands would feel like.',
+        'Go Sands needed an advert that showed off Dubai in a stylish cinematic manner, while also showing customers the kind of experience they would get if they chose the brand.',
       objective:
         'Show off Dubai cinematically while showing customers the kind of experience they would get with the brand.',
       chapters: [
@@ -589,15 +677,28 @@ export const projects: Project[] = [
     title: 'Ecovacs | Social Media',
     client: 'Ecovacs',
     description:
-      'Social campaign of two vertical adverts, taken from script to finished master.',
+      'Social media campaign of two vertical adverts, scripted to finish in-house.',
     summary:
       'A Social media campaign with 2 vertical adverts, we were able to provide Ecovacs a full script to finish Advert.',
     href: '/portfolio/ecovacs-social-media',
     /* PLACEHOLDER: no project still available yet. */
-    image: '/images/services/corporate-ads.jpg',
+    image: '/images/works/Ecovacs-Social-Media-1.jpg',
+    video: [
+      {
+        src: '/videos/portfolio/Ecovas-1-FCF.mp4',
+        label: 'Watch the first advert',
+        orientation: 'portrait',
+      },
+      {
+        src: '/videos/portfolio/Ecovas-2-FCF.mp4',
+        label: 'Watch the second advert',
+        orientation: 'portrait',
+        poster: '/images/works/Ecovacs-Social-Media-2.jpg',
+      },
+    ],
     caseStudy: {
       standfirst:
-        'A social media campaign for Ecovacs: two vertical adverts, provided as a full script-to-finish production.',
+        'A social media campaign with two vertical adverts. We were able to provide Ecovacs a full script-to-finish advert. Watch to find out.',
       objective:
         'Deliver a two-film social campaign from script through to finished master.',
       chapters: [
@@ -641,14 +742,18 @@ export const projects: Project[] = [
     title: 'Flydubai | Advert',
     client: 'flydubai',
     description:
-      'Advert for the airline’s sports and social division, made to grow staff participation.',
+      'Advert for the airline\u2019s sports and social division, made to grow staff participation.',
     summary:
       'The Sports and social division of flydubai wanted to showcase the activities they do, and conjoin them with the emotions of how the staff feels by participating, to attract more participation.',
     href: '/portfolio/flydubai-advert',
     image: '/images/works/flydubai-Advert.jpg',
+    video: {
+      src: '/videos/portfolio/Fly-Dubai-FCF.mp4',
+      label: 'Watch the film',
+    },
     caseStudy: {
       standfirst:
-        'A film for flydubai\u2019s sports and social division, made to show the activities they run and how it feels to take part, in order to get more people taking part.',
+        'The sports and social division of flydubai wanted to showcase the activities they do, and conjoin them with the emotions of how the staff feel by participating, to attract more participation.',
       objective:
         'Showcase the division\u2019s activities, conjoined with how the staff feel participating, to attract more participation.',
       chapters: [
@@ -656,16 +761,14 @@ export const projects: Project[] = [
           number: '01',
           title: 'The brief',
           body: [
-            'The sports and social division of flydubai wanted to showcase the activities they do, and to conjoin them with the emotions of how the staff feel by participating. The reason was stated plainly: to attract more participation.',
-            'That last part changes everything. This is not a film about a company. It is a film addressed to colleagues who have not signed up yet, and it has to give them a reason to.',
+            'The sports and social division of flydubai wanted to showcase the activities they run and conjoin them with how the staff feel taking part, in order to attract more participation. That last part changes everything: this is a film addressed to colleagues who have not signed up yet.',
           ],
         },
         {
           number: '02',
           title: 'Two things at the same time',
           body: [
-            'Showing the activities is straightforward. Showing how it feels to be in them is not, and \u201Cconjoin\u201D was the brief\u2019s own word for the difficulty: the two cannot be alternated, they have to arrive together.',
-            'So the activity is never covered from the outside. It is covered from where a participant would be standing.',
+            'Showing the activities is straightforward. Showing how it feels to be in them is not, and \u201Cconjoin\u201D was the brief\u2019s own word for the difficulty. So the activity is never covered from the outside.',
           ],
         },
         {
@@ -701,15 +804,18 @@ export const projects: Project[] = [
     title: 'M & S Cosmetics | Advert',
     client: 'M & S Cosmetics',
     description:
-      'B2B advert focused on the brand’s ingredients and uniqueness, made for the presentation room.',
+      'B2B advert focused on the ingredients and what makes the brand unique.',
     summary:
       'M&S Cosmetics apporached us for an advert that represented the brand well for a B2B presentation that focused on the ingredients and the uniqueness of the brand.',
     href: '/portfolio/ms-cosmetics-advert',
     image: '/images/works/M-S-Cosmetics-Advert.jpg',
-    video: '/videos/portfolio/cosmetics.mp4',
+    video: {
+      src: '/videos/portfolio/cosmetics.mp4',
+      label: 'Watch the film',
+    },
     caseStudy: {
       standfirst:
-        'A B2B advert for M&S Cosmetics, focused on the ingredients and on what makes the brand different, made for the room it would be presented in.',
+        'M & S Cosmetics approached us for an advert that represented the brand well for a B2B presentation, focused on the ingredients and the uniqueness of the brand.',
       objective:
         'Represent the brand for a B2B presentation, focused on the ingredients and the uniqueness of the brand.',
       chapters: [
@@ -724,14 +830,14 @@ export const projects: Project[] = [
           number: '02',
           title: 'A different audience entirely',
           body: [
-            'A consumer advert sells a feeling. A B2B film is shown to people who are deciding whether to stock, distribute or partner, and they are looking at what is in the product and at what nobody else has. The film is made for that viewer, which is why it opens on substance rather than on lifestyle.',
+            'A consumer advert sells a feeling. A B2B film is shown to people deciding whether to stock, distribute or partner, and they are looking at what is in the product. The film opens on substance rather than on lifestyle.',
           ],
         },
         {
           number: '03',
           title: 'Ingredients, in close-up',
           body: [
-            'Macro work is where cosmetics becomes cinema: texture, viscosity, the way a raw material behaves under a hard light. Shooting the ingredients this closely is what turns a claim about quality into something the room can see for itself, and it is the difference between saying a brand is unique and showing why.',
+            'Macro work is where cosmetics becomes cinema: texture, viscosity, the way a raw material behaves under a hard light. Shooting the ingredients this closely is the difference between saying a brand is unique and showing why.',
           ],
         },
       ],

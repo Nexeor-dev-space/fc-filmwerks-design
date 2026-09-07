@@ -5,6 +5,9 @@ import { motion, type Variants } from 'framer-motion';
 import { CtaButton } from '@/components/ui';
 import { studioHighlights } from '@/config/studio';
 import { EASE } from '@/constants';
+import { cn } from '@/lib/utils';
+
+import { SECTION_BAND, SECTION_GUTTER } from './rhythm';
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 32 },
@@ -37,9 +40,9 @@ export function AboutSection() {
     <section
       id="about"
       aria-labelledby="about-heading"
-      className="bg-[#0F1012] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
+      className={cn('bg-[#0F1012]', SECTION_BAND)}
     >
-      <div className="w-full px-4 md:px-[3vw] xl:pl-52">
+      <div className={SECTION_GUTTER}>
         <motion.p
           className="text-[0.875rem] font-semibold tracking-[0.28em] text-[#BFA76F] uppercase"
           variants={fadeUp}

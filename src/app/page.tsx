@@ -4,6 +4,7 @@ import { CinematicFooter } from '@/components/layout/CinematicFooter';
 import { FloatingNav } from '@/components/layout/FloatingNav';
 import { FeaturedWorkSection } from '@/components/sections/FeaturedWorkSection';
 import { Hero } from '@/components/sections/Hero';
+import { LabelSection } from '@/components/sections/LabelSection';
 import { AboutSection } from '@/components/sections/AboutSection';
 import { ClientsSection } from '@/components/sections/ClientsSection';
 import { ServicesSection } from '@/components/sections/ServicesSection';
@@ -37,6 +38,10 @@ export default function HomePage() {
       <ServicesSection />
 
       <FeaturedWorkSection />
+
+      {/* The studio's music label: more of what the house makes for itself,
+          so it follows the work and precedes the studio itself. */}
+      <LabelSection />
 
       <AboutSection />
 

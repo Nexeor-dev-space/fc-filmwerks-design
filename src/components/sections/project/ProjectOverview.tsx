@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 import { drawRule, ENTER, rise } from '@/components/animations';
 import type { Project } from '@/config/projects';
 import { usePrefersReducedMotion } from '@/hooks';
+import { cn } from '@/lib/utils';
+
+import { PROJECT_BAND, PROJECT_GUTTER } from './gutter';
 
 /**
  * The overview: what the project was, and what it had to do.
@@ -18,27 +21,36 @@ import { usePrefersReducedMotion } from '@/hooks';
  * The objective is set apart rather than buried in the prose because it is the
  * thing every later chapter is measured against.
  */
-export function ProjectOverview({ project }: { project: Project }) {
+export function ProjectOverview({
+  project,
+  number,
+}: {
+  project: Project;
+  /** Its place in the page's numbering; see `ProjectStoryItem`. */
+  number: string;
+}) {
   const reducedMotion = usePrefersReducedMotion();
   const { standfirst, objective } = project.caseStudy;
 
   return (
     <section
+      id="project-overview"
       aria-labelledby="project-overview-heading"
-      className="bg-[#0A131F] py-24 md:py-32 lg:py-40"
+      className={cn('scroll-mt-28 bg-[#0A131F]', PROJECT_BAND)}
     >
-      <div className="px-5 md:px-8 lg:px-14">
+      <div className={PROJECT_GUTTER}>
         <div className="grid grid-cols-1 gap-y-14 lg:grid-cols-12 lg:gap-x-14">
           <div className="lg:col-span-7">
             <motion.p
               id="project-overview-heading"
-              className="text-[0.6875rem] font-semibold tracking-[0.3em] text-[#BFA76F] uppercase"
+              className="flex items-baseline gap-5 text-[0.6875rem] font-semibold tracking-[0.3em] text-[#BFA76F] uppercase md:gap-8"
               variants={rise}
               custom={{ still: reducedMotion }}
               initial="hidden"
               whileInView="visible"
               viewport={ENTER}
             >
+              <span className="shrink-0 font-mono font-normal">{number}</span>
               Overview
             </motion.p>
 

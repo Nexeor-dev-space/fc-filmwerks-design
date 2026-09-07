@@ -10,6 +10,9 @@ import {
   type Review,
 } from '@/config/testimonials';
 import { EASE } from '@/constants';
+import { cn } from '@/lib/utils';
+
+import { SECTION_BAND, SECTION_GUTTER } from './rhythm';
 import { usePrefersReducedMotion } from '@/hooks';
 
 const fadeUp: Variants = {
@@ -222,7 +225,7 @@ export function TestimonialsSection() {
     <section
       id="testimonials"
       aria-labelledby="testimonials-heading"
-      className="relative overflow-hidden bg-[#0f1012] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
+      className={cn('relative overflow-hidden bg-[#0f1012]', SECTION_BAND)}
     >
       {/* Oversized outline word */}
       <span
@@ -237,7 +240,7 @@ export function TestimonialsSection() {
       </span>
 
       {/* Heading */}
-      <div className="relative w-full px-4 md:px-[3vw] xl:pl-52">
+      <div className={cn('relative', SECTION_GUTTER)}>
         <header className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-20">
           <div className="max-w-[760px]">
             <motion.p

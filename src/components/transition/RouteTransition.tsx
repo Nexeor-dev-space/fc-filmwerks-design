@@ -22,6 +22,7 @@ import {
   SEALED_OPENING,
 } from '@/lib/aperture';
 import { gsap } from '@/lib/gsap';
+import { markIntroSeen } from '@/lib/intro-seen';
 import { cn } from '@/lib/utils';
 
 type Phase = 'idle' | 'closing' | 'covered' | 'opening';
@@ -154,6 +155,21 @@ export function RouteTransitionProvider({ children }: { children: ReactNode }) {
 
       event.preventDefault();
       if (phase.current !== 'idle') return true;
+
+      /*
+       * This cut IS the opening shot for wherever we are going, so the
+       * homepage must not play its own on arrival. Without this, a visitor who
+       * landed on any other page and then clicked the wordmark saw the iris
+       * twice over: these blades closing and opening, and then the full lens
+       * intro with a second iris behind them. Marking the intro spent before
+       * the push means IntroExperience reads it in its first layout effect and
+       * mounts the hero outright, so the blades part onto the hero.
+       *
+       * Set here rather than after `router.push` on purpose: the flag has to
+       * be readable in the same commit the new route mounts in, and a page
+       * that is already prefetched can mount in the very next frame.
+       */
+      markIntroSeen();
 
       phase.current = 'closing';
       setCovering(true);

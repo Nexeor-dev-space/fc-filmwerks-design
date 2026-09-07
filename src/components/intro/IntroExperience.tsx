@@ -39,18 +39,29 @@ import { ScrollIndicator } from './ScrollIndicator';
  * pause, not the aperture.
  *
  * The spans are fractions of the wrapper's scroll range, not viewport heights.
- * The wrapper is 400dvh (mobile) / 520dvh (desktop), so the scrub runs over
- * 300dvh / 420dvh and one span unit is ≈68dvh / 75dvh of scroll.
+ * The wrapper is 300dvh (mobile) / 340dvh (desktop), so the scrub runs over
+ * 200dvh / 240dvh and one span unit is ≈51dvh / 59dvh of scroll.
+ *
+ * These were roughly twice as long until a review of the built page: an
+ * opening shot that costs four screens of scrolling before the next section
+ * appears stops reading as a hero and starts reading as a page of its own.
+ * The whole sequence — opening, hold and hand-off — now lands inside about
+ * three screens, and the hero itself holds for a little over one.
  *
  * The tree is retired at `introSpent`, just before `coverStart`, so the cover
  * and settle tweens below never actually play on the page. The hand-off is
  * TrustSection sliding over the hero: its negative margin must equal the cover
- * phase's share of this range (≈82dvh mobile, 120dvh desktop) so that it
+ * phase's share of this range (≈56dvh mobile, 70dvh desktop) so that it
  * arrives at `coverStart` and not during the hold.
+ *
+ * `hold` also has a floor, and it is not a taste question: `introSpent` has to
+ * land before `heroSettle` (see the note on the interface below), and both
+ * move when these do. The margin is thin — check `introSpent < heroSettle` at
+ * BOTH breakpoints after any change here.
  */
 const SPANS = {
-  desktop: { aperture: 2, hold: 0.3, cover: 1.6 },
-  mobile: { aperture: 2, hold: 0.5, cover: 1.2 },
+  desktop: { aperture: 2, hold: 0.9, cover: 1.2 },
+  mobile: { aperture: 2, hold: 0.85, cover: 1.1 },
 } as const;
 
 interface Timing {
@@ -105,8 +116,9 @@ function buildTiming(spans: (typeof SPANS)[keyof typeof SPANS]): Timing {
       swap: beat(0.66),
       irisOpen: beat(0.76),
       /* The iris-open and hero-settle tweens are 0.34 long; 0.35 is the first
-         moment both are certainly finished. Desktop clears heroSettle by
-         ~0.07, mobile by ~0.01 — see the note on the interface. */
+         moment both are certainly finished. With the current spans this sits
+         ~0.007 before heroSettle at both breakpoints — a margin that thin is
+         why `hold` cannot be shortened on its own; see the note on SPANS. */
       introSpent: beat(0.76) + 0.35,
 
       heroSettle: coverStart + 0.02,
@@ -540,14 +552,14 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
    * opening — from here the intro is gone from the scroll flow entirely, so
    * the top of the page is the hero and nothing replays on the way back up.
    *
-   * Mobile wrapper: 300dvh  → ~118dvh of pure hero hold
-   * Desktop wrapper: 380dvh → ~160dvh of pure hero hold
-   * (the scroll range less TrustSection's pull-up of 82dvh / 120dvh)
+   * Mobile wrapper: 180dvh  → ~124dvh of pure hero hold
+   * Desktop wrapper: 200dvh → ~130dvh of pure hero hold
+   * (the wrapper less TrustSection's pull-up of 56dvh / 70dvh)
    */
   if (skipIntro || introComplete) {
     return (
       <div
-        className={cn('relative h-[300dvh] w-full md:h-[380dvh]', className)}
+        className={cn('relative h-[180dvh] w-full md:h-[200dvh]', className)}
       >
         <div ref={root} className="sticky top-0 h-dvh w-full overflow-hidden">
           <div className="hero-reveal absolute inset-0">
@@ -590,14 +602,14 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
      * GSAP's ScrollTrigger scrubs the timeline against the wrapper's scroll
      * range (top-top to bottom-bottom) — no `pin: true` needed.
      *
-     * Wrapper height: 400dvh on mobile, 520dvh on desktop. The timeline's
+     * Wrapper height: 300dvh on mobile, 340dvh on desktop. The timeline's
      * spans are fractions of the resulting scroll range, so the height only
      * decides how much scrolling the whole opening takes; see the note on
      * SPANS for how the cover phase's share is derived.
      */
     <div
       ref={wrapperRef}
-      className={cn('relative h-[400dvh] w-full md:h-[520dvh]', className)}
+      className={cn('relative h-[300dvh] w-full md:h-[340dvh]', className)}
     >
       <div
         ref={root}
