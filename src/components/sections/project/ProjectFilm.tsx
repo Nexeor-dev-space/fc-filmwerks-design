@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 
-import { ENTER, ENTER_TALL, rise } from '@/components/animations';
+import { ENTER, rise } from '@/components/animations';
 import { YouTubeEmbed } from '@/components/ui';
 import type { Project } from '@/config/projects';
 import { usePrefersReducedMotion } from '@/hooks';
@@ -48,33 +48,38 @@ export function ProjectFilm({ project }: { project: Project }) {
             The film
           </h2>
 
-          <a
-            href={video.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2 font-mono text-[0.6875rem] tracking-[0.24em] text-white/45 uppercase transition-colors duration-500 ease-out hover:text-[#BFA76F] focus-visible:text-[#BFA76F] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F]"
-          >
-            Open on YouTube
-            <span aria-hidden="true">↗</span>
-          </a>
-        </motion.div>
-
-        <motion.div
-          className="mt-8 lg:mt-10"
-          variants={rise}
-          custom={{ delay: 0.08, still: reducedMotion }}
-          initial="hidden"
-          whileInView="visible"
-          viewport={ENTER_TALL}
-        >
-          <YouTubeEmbed
-            videoId={video.youtubeId}
-            title={project.title}
-            poster={project.image}
-            posterAlt=""
-            className="rounded-[2px] border border-white/[0.08]"
-            sizes="100vw"
-          />
+          {typeof video === 'string' ? (
+            <video
+              src={video}
+              aria-label={`${project.title} video`}
+              className="h-full w-full object-cover"
+              autoPlay
+              muted
+              playsInline
+              preload="auto"
+              loop
+            />
+          ) : (
+            <>
+              <a
+                href={video.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-2 font-mono text-[0.6875rem] tracking-[0.24em] text-white/45 uppercase transition-colors duration-500 ease-out hover:text-[#BFA76F] focus-visible:text-[#BFA76F] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F]"
+              >
+                Open on YouTube
+                <span aria-hidden="true">↗</span>
+              </a>
+              <YouTubeEmbed
+                videoId={video.youtubeId}
+                title={project.title}
+                poster={project.image}
+                posterAlt=""
+                className="rounded-[2px] border border-white/[0.08]"
+                sizes="100vw"
+              />
+            </>
+          )}
         </motion.div>
       </div>
     </section>

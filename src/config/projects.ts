@@ -80,12 +80,8 @@ export interface Project {
   /** `/portfolio/<slug>`, resolved by the shared detail route. */
   href: string;
   image: string;
-  /**
-   * The finished film, for work the studio has published. The case-study page
-   * embeds it (poster first, player on press) and the hero links down to it;
-   * `href` is the watch URL for anyone who wants it on YouTube itself.
-   */
-  video?: { youtubeId: string; label: string; href: string };
+  /** Optional video asset for the project. Can be a direct video URL string or an object with YouTube details. */
+  video?: string | { youtubeId: string; label: string; href: string };
   /** The detail page's long form. See `ProjectCaseStudy` for provenance. */
   caseStudy: ProjectCaseStudy;
 }
@@ -320,6 +316,7 @@ export const projects: Project[] = [
       'An Event for Cleveland and Steppi App. Steppi’s Early Launch and Demo Event coverage done in a cinematic manner.',
     href: '/portfolio/cleveland-clinic-event',
     image: '/images/works/Cleveland%20Clinic-Event.jpg',
+    video: '/videos/portfolio/ClevelandClinic.mp4',
     caseStudy: {
       standfirst:
         'An early launch and demo event for the Steppi app, held with Cleveland Clinic, and covered as a film rather than as a record of proceedings.',
@@ -370,6 +367,7 @@ export const projects: Project[] = [
       'ID’s brand came up with a new product by the name of Blend and wanted us to showcase the emotion attached to the taste of the product.',
     href: '/portfolio/id-fresh-blend-advert',
     image: '/images/works/ID-Fresh-Blend-Advert.jpg',
+    video: '/videos/portfolio/fresh_placeholder.mp4',
     caseStudy: {
       standfirst:
         'A launch advert for Blend, a new product from ID Fresh, built around the emotion attached to the way it tastes.',
@@ -428,6 +426,7 @@ export const projects: Project[] = [
     href: '/portfolio/silk-route-advert',
     /* PLACEHOLDER: no project still available yet. */
     image: '/images/services/photography.jpg',
+    video: '/videos/portfolio/SilkRoute.mp4',
     caseStudy: {
       standfirst:
         'An advert for Silk Route, tying the emotions of Onam to the brand and to the designs it makes.',
@@ -707,6 +706,7 @@ export const projects: Project[] = [
       'M&S Cosmetics apporached us for an advert that represented the brand well for a B2B presentation that focused on the ingredients and the uniqueness of the brand.',
     href: '/portfolio/ms-cosmetics-advert',
     image: '/images/works/M-S-Cosmetics-Advert.jpg',
+    video: '/videos/portfolio/cosmetics.mp4',
     caseStudy: {
       standfirst:
         'A B2B advert for M&S Cosmetics, focused on the ingredients and on what makes the brand different, made for the room it would be presented in.',
