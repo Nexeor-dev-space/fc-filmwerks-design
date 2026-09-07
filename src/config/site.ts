@@ -16,8 +16,8 @@ export const siteConfig = {
   locale: 'en_US',
   lang: 'en',
   description:
-    'FC Filmwerks is a film production studio crafting cinematic stories for brands, artists and screens of every size.',
-  tagline: 'Cinematic storytelling, end to end.',
+    'FC Filmwerks is a Dubai film studio bringing humane, emotional storytelling to every frame: corporate and commemorative films, documentaries and original cinema, led by an award-winning director.',
+  tagline: 'Humane, emotional storytelling.',
   /** Relative to /public — replace with the real asset before launch. */
   ogImage: '/opengraph-image.png',
   /** Brand navy — must stay in step with `--brand-navy` in globals.css. */
@@ -25,16 +25,25 @@ export const siteConfig = {
   keywords: [
     'film production',
     'video production',
-    'commercial films',
+    'corporate films',
+    'commemorative films',
+    'documentary production',
+    'original films',
     'branded content',
     'post production',
     'cinematography',
+    'Dubai film studio',
+    'Blue Lily',
+    'Gautam Raveendran',
     'FC Filmwerks',
   ],
+  /** Founding facts, read by the Organisation schema and the About page. */
+  founded: '2025',
+  founder: 'Gautam Raveendran',
   contact: {
-    email: 'hello@fcfilmwerks.com',
-    phone: '',
-    address: '',
+    email: 'letstalk@fcfilmwerks.com',
+    phone: '+971 54 321 6347',
+    address: 'Dubai, UAE',
   },
   social: {
     instagram: '',

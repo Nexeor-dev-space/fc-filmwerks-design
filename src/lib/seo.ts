@@ -25,7 +25,7 @@ export function createMetadata({
 }: SeoProps = {}): Metadata {
   const resolvedTitle = title
     ? `${title} | ${siteConfig.name}`
-    : `${siteConfig.name} — ${siteConfig.tagline}`;
+    : `${siteConfig.name} | ${siteConfig.tagline}`;
 
   const url = absoluteUrl(path);
   const ogImage = image.startsWith('http') ? image : absoluteUrl(image);
@@ -96,6 +96,8 @@ export function organizationJsonLd() {
     url: siteConfig.url,
     description: siteConfig.description,
     logo: absoluteUrl('/logo.png'),
+    foundingDate: siteConfig.founded,
+    founder: { '@type': 'Person', name: siteConfig.founder },
     ...(sameAs.length > 0 ? { sameAs } : {}),
     ...(siteConfig.contact.email
       ? {

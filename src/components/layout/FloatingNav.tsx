@@ -3,8 +3,10 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type MouseEvent } from 'react';
 
+import { useRouteTransition } from '@/components/transition';
+import { Button, Magnetic } from '@/components/ui';
 import { clients } from '@/config/clients';
 import { mainNav } from '@/config/navigation';
 import { siteConfig } from '@/config/site';
@@ -182,6 +184,18 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
   const [revealed, setRevealed] = useState(false);
   const [open, setOpen] = useState(false);
   const reducedMotion = usePrefersReducedMotion();
+  const transition = useRouteTransition();
+
+  /*
+   * Header links leave through the iris. The menu closes either way; the
+   * transition then takes the navigation itself, unless the browser should
+   * keep it: a modifier click, a link to the page already open, or a visitor
+   * who has asked for reduced motion.
+   */
+  const cut = (href: string) => (event: MouseEvent<HTMLAnchorElement>) => {
+    setOpen(false);
+    transition.intercept(event, href);
+  };
 
   useEffect(() => {
     if (immediate || hasSeenIntro()) {
@@ -214,19 +228,36 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
 
   return (
     <>
+      {/*
+       * The header lets pointer events through everywhere except its own
+       * controls. Its padding makes the fixed box a good deal taller than the
+       * logo and buttons look, and anything sticky that parks just under them,
+       * such as the portfolio's filter rail, sits inside that invisible band.
+       * With the box catching pointer events, taps on the upper half of every
+       * filter went to this padding and did nothing, which made the rail feel
+       * as though it only worked sometimes. Only the nav row is a target, and
+       * only once it has been revealed.
+       */}
       <motion.header
-        className="fixed inset-x-0 top-0 z-[110]"
+        className="pointer-events-none fixed inset-x-0 top-0 z-[110]"
         initial={{ opacity: 0, y: -16 }}
         animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: -16 }}
         transition={{ duration: DURATION.slow, ease: EASE.out, delay: 0.1 }}
-        style={{ pointerEvents: revealed ? 'auto' : 'none' }}
       >
         <div className="w-full px-4 py-8 md:px-[3vw] md:py-10 lg:py-12">
           <nav
             aria-label="Main"
-            className="flex items-center justify-between gap-6"
+            className={cn(
+              'flex items-center justify-between gap-6',
+              revealed && 'pointer-events-auto',
+            )}
           >
-            <Link href="/" className="inline-flex" aria-label={siteConfig.name}>
+            <Link
+              href="/"
+              className="inline-flex"
+              aria-label={siteConfig.name}
+              onClick={cut('/')}
+            >
               <Image
                 src="/images/logo-2.png"
                 alt={siteConfig.name}
@@ -237,48 +268,73 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
               />
             </Link>
 
-            {/*
-             * Three rules and nothing else — no pill, border or backing shape.
-             * The 48px box is an invisible hit target, not a container: the
-             * icon is 18px tall and would otherwise be far below the minimum
-             * touch size.
-             *
-             * The split of duties matters. Framer owns `transform` and
-             * `opacity` for the morph; CSS owns `background-color` and `width`
-             * for the hover. Both write to the same elements, so putting the
-             * hover on a transform would mean one silently overwriting the
-             * other every time the menu opened.
-             */}
-            <button
-              type="button"
-              onClick={() => setOpen((wasOpen) => !wasOpen)}
-              aria-expanded={open}
-              aria-controls="site-menu"
-              aria-label={open ? 'Close menu' : 'Open menu'}
-              className="group -mr-3 inline-flex h-12 w-12 items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F]"
-            >
-              <span className="relative block h-[18px] w-9 md:w-10">
-                {LINES.map((line) => (
-                  <motion.span
-                    key={line.key}
-                    aria-hidden="true"
-                    className={cn(
-                      'absolute left-0 block h-[2px] rounded-full bg-[#F8F7F4]',
-                      'transition-[width,background-color] duration-500 ease-out',
-                      'group-hover:bg-[#BFA76F]',
-                      open && 'openClass' in line ? line.openClass : line.rest,
-                    )}
-                    animate={open ? 'open' : 'closed'}
-                    variants={line.variants}
-                    transition={
-                      reducedMotion
-                        ? { duration: 0 }
-                        : { duration: DURATION.fast, ease: EASE.inOut }
-                    }
-                  />
-                ))}
-              </span>
-            </button>
+            <div className="flex items-center gap-3 md:gap-5">
+              {/*
+               * The one call to action that is on screen for the whole visit.
+               * The homepage hero sits two viewports into the lens intro and
+               * its copy fades as the next section climbs, so a CTA that lived
+               * only there was seen for a few seconds of scroll. This one does
+               * not move. Bone rather than gold, so it never competes with a
+               * page's own gold action in the same viewport.
+               */}
+              <Magnetic className="hidden sm:inline-flex">
+                <Button
+                  href="/contact"
+                  size="sm"
+                  className="rounded-full bg-[#F8F7F4] text-[#0F1C2E] transition-[background-color,transform,box-shadow] duration-500 ease-out hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_8px_30px_rgba(248,247,244,0.15)] focus-visible:outline-[#BFA76F]"
+                  onClick={cut('/contact')}
+                >
+                  Start a project
+                </Button>
+              </Magnetic>
+
+              {/*
+               * Three rules and nothing else — no pill, border or backing shape.
+               * The 48px box is an invisible hit target, not a container: the
+               * icon is 18px tall and would otherwise be far below the minimum
+               * touch size.
+               *
+               * The split of duties matters. Framer owns `transform` and
+               * `opacity` for the morph; CSS owns `background-color` and `width`
+               * for the hover. Both write to the same elements, so putting the
+               * hover on a transform would mean one silently overwriting the
+               * other every time the menu opened.
+               */}
+              <Magnetic className="-mr-3">
+                <button
+                  type="button"
+                  onClick={() => setOpen((wasOpen) => !wasOpen)}
+                  aria-expanded={open}
+                  aria-controls="site-menu"
+                  aria-label={open ? 'Close menu' : 'Open menu'}
+                  className="group inline-flex h-12 w-12 items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F]"
+                >
+                  <span className="relative block h-[18px] w-9 md:w-10">
+                    {LINES.map((line) => (
+                      <motion.span
+                        key={line.key}
+                        aria-hidden="true"
+                        className={cn(
+                          'absolute left-0 block h-[2px] rounded-full bg-[#F8F7F4]',
+                          'transition-[width,background-color] duration-500 ease-out',
+                          'group-hover:bg-[#BFA76F]',
+                          open && 'openClass' in line
+                            ? line.openClass
+                            : line.rest,
+                        )}
+                        animate={open ? 'open' : 'closed'}
+                        variants={line.variants}
+                        transition={
+                          reducedMotion
+                            ? { duration: 0 }
+                            : { duration: DURATION.fast, ease: EASE.inOut }
+                        }
+                      />
+                    ))}
+                  </span>
+                </button>
+              </Magnetic>
+            </div>
           </nav>
         </div>
       </motion.header>
@@ -331,27 +387,8 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
                   >
                     <Link
                       href={item.href}
-                      onClick={() => setOpen(false)}
-                      /*
-                       * The rule sits under the text at rest rather than
-                       * arriving on hover — it is part of how the list is set,
-                       * not a hover affordance. Hover lifts the text and the
-                       * rule to gold together, so the two never disagree about
-                       * which item is being pointed at.
-                       *
-                       * Drawn as an `::after` bar rather than `border-b`, which
-                       * is the same approach `.link-accent` takes in
-                       * globals.css. A border here came out invisible: Tailwind
-                       * v4 sets `border-bottom-style: var(--tw-border-style)`
-                       * alongside the width, so the rule paints only if that
-                       * variable resolves — and when it does not, you get a
-                       * 2px-wide border with no style and nothing on screen.
-                       * A background on a positioned pseudo-element has no such
-                       * dependency.
-                       *
-                       * `pb-2` keeps the bar clear of the descenders.
-                       */
-                      className="relative inline-block pb-2 text-3xl font-medium tracking-tight text-bone transition-colors duration-300 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-bone/55 after:transition-colors after:duration-300 after:content-[''] hover:text-[#BFA76F] hover:after:bg-[#BFA76F] md:text-5xl"
+                      onClick={cut(item.href)}
+                      className="inline-block text-3xl font-medium tracking-tight text-bone transition-colors duration-300 hover:text-[#BFA76F] md:text-5xl"
                     >
                       {item.label}
                     </Link>

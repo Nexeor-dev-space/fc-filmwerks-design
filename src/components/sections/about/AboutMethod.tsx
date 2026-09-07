@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
-import { aboutMethod } from '@/config/about';
+import { aboutMethod, chapterNumber } from '@/config/about';
 import { usePrefersReducedMotion } from '@/hooks';
 import { cn } from '@/lib/utils';
 
@@ -11,7 +11,7 @@ import { ChapterMark, DisplayHeading } from './ChapterHeading';
 import { drawRule, ENTER, rise } from '@/components/animations';
 
 /**
- * Chapter 02 — the four stages, as a loop rather than a list.
+ * Chapter 04: the four stages, as a loop rather than a list.
  *
  * The left column holds every stage word stacked in the same place and fades
  * between them as the right column scrolls, so the reader always has the name
@@ -58,7 +58,11 @@ export function AboutMethod() {
       className="scroll-mt-24 bg-[#0A131F] py-24 md:py-32 lg:py-40"
     >
       <div className="px-5 md:px-8 lg:px-14 xl:pl-52">
-        <ChapterMark number="02" title="The method" still={reducedMotion} />
+        <ChapterMark
+          number={chapterNumber('about-method')}
+          title="The method"
+          still={reducedMotion}
+        />
 
         <div className="mt-8 grid grid-cols-1 gap-y-8 lg:grid-cols-12 lg:gap-x-12">
           <div className="lg:col-span-6">

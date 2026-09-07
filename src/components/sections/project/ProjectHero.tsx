@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRef } from 'react';
 
 import { ENTER, lineReveal, rise } from '@/components/animations';
+import { Button } from '@/components/ui';
 import type { Project } from '@/config/projects';
 import { usePrefersReducedMotion } from '@/hooks';
 
@@ -58,7 +59,7 @@ export function ProjectHero({ project, index, total }: ProjectHeroProps) {
       >
         <Image
           src={project.image}
-          alt={`${project.client} — ${project.category}`}
+          alt={`${project.client}, ${project.category}`}
           fill
           priority
           sizes="100vw"
@@ -171,6 +172,23 @@ export function ProjectHero({ project, index, total }: ProjectHeroProps) {
               </span>
             </dd>
           </div>
+
+          {/* Only for work the studio has published. Pushed to the far end of
+              the strip so the facts stay a facts row and the action reads as
+              an action. It is an in-page link down to the player under the
+              hero, not a trip to YouTube. */}
+          {project.video && (
+            <div className="w-full sm:ml-auto sm:w-auto">
+              <Button
+                href="#project-film"
+                variant="outline"
+                className="rounded-full border-white/35 text-[#F8F7F4] hover:border-[#BFA76F] hover:text-[#BFA76F] focus-visible:outline-[#BFA76F]"
+              >
+                {project.video.label}
+                <span aria-hidden="true">↓</span>
+              </Button>
+            </div>
+          )}
         </motion.dl>
       </div>
     </section>

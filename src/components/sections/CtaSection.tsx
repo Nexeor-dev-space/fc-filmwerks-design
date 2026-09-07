@@ -58,7 +58,7 @@ interface CtaSectionProps {
 export function CtaSection({
   label = 'Ready when you are',
   headline = HEADLINE_LINES,
-  body = 'Every great production begins with a conversation. Whether you’re launching a brand, telling a story, or creating a campaign, let’s craft something people will remember.',
+  body = 'Tell us what your audience needs to feel. We bring the script, the crew and the finish. Every film here started with one conversation.',
   showLocations = true,
   primary = { label: 'Start a project', href: '/contact' },
   secondary = { label: 'View our work', href: '/portfolio' },
@@ -76,6 +76,7 @@ export function CtaSection({
   return (
     <section
       ref={sectionRef}
+      id="lets-talk"
       aria-labelledby="cta-heading"
       /* `z-[2]` keeps this above the lens plate (`z-1`) that is pulled up
          beneath it, so the lens stays hidden until this scrolls clear of it. */

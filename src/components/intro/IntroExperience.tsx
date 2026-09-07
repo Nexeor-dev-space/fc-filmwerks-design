@@ -29,7 +29,7 @@ import { ScrollIndicator } from './ScrollIndicator';
  * length hold there reads as the page having stopped responding; a mouse wheel
  * covers it in several notches, so a short hold reads as no pause at all.
  *
- * `cover` is load-bearing beyond this file — ServicesSection pulls itself up by
+ * `cover` is load-bearing beyond this file: TrustSection pulls itself up by
  * exactly that much to create the overlap, and its negative margin has to be
  * changed in step at the same breakpoint.
  *
@@ -38,9 +38,15 @@ import { ScrollIndicator } from './ScrollIndicator';
  * a long dedicated scroll of its own — the hold is what gives the reader a
  * pause, not the aperture.
  *
- * Wrapper heights must match: (aperture + hold + cover + 1) * 100dvh.
- *   mobile:  (0.6 + 1.2 + 1.2 + 1) = 4.0 → 400dvh
- *   desktop: (0.6 + 2.0 + 1.6 + 1) = 5.2 → 520dvh
+ * The spans are fractions of the wrapper's scroll range, not viewport heights.
+ * The wrapper is 400dvh (mobile) / 520dvh (desktop), so the scrub runs over
+ * 300dvh / 420dvh and one span unit is ≈68dvh / 75dvh of scroll.
+ *
+ * The tree is retired at `introSpent`, just before `coverStart`, so the cover
+ * and settle tweens below never actually play on the page. The hand-off is
+ * TrustSection sliding over the hero: its negative margin must equal the cover
+ * phase's share of this range (≈82dvh mobile, 120dvh desktop) so that it
+ * arrives at `coverStart` and not during the hold.
  */
 const SPANS = {
   desktop: { aperture: 2, hold: 0.3, cover: 1.6 },
@@ -124,7 +130,7 @@ interface IntroExperienceProps {
  * containers. The wrapper height provides the scroll distance; the sticky
  * element stays at `top: 0` for the whole duration.
  *
- * ServicesSection sits after the wrapper with a negative top margin equal to
+ * TrustSection sits after the wrapper with a negative top margin equal to
  * `cover`, so it slides upward over the still-stuck hero during the last
  * phase of the timeline.
  */
@@ -525,7 +531,7 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
 
   /*
    * The hero as the landing section outright, held in a tall wrapper so CSS
-   * sticky keeps it pinned. ServicesSection's negative margin pulls it into
+   * sticky keeps it pinned. TrustSection's negative margin pulls it into
    * the last stretch of the wrapper, creating the slide-over effect without
    * any JavaScript scroll handling.
    *
@@ -534,8 +540,9 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
    * opening — from here the intro is gone from the scroll flow entirely, so
    * the top of the page is the hero and nothing replays on the way back up.
    *
-   * Mobile wrapper: 300dvh  → ~80dvh of pure hero hold
-   * Desktop wrapper: 380dvh → ~120dvh of pure hero hold
+   * Mobile wrapper: 300dvh  → ~118dvh of pure hero hold
+   * Desktop wrapper: 380dvh → ~160dvh of pure hero hold
+   * (the scroll range less TrustSection's pull-up of 82dvh / 120dvh)
    */
   if (skipIntro || introComplete) {
     return (
@@ -583,9 +590,10 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
      * GSAP's ScrollTrigger scrubs the timeline against the wrapper's scroll
      * range (top-top to bottom-bottom) — no `pin: true` needed.
      *
-     * Wrapper height = (pin + 1) * 100dvh:
-     *   mobile:  400dvh  (3.0 + 1 viewport heights)
-     *   desktop: 520dvh  (4.2 + 1 viewport heights)
+     * Wrapper height: 400dvh on mobile, 520dvh on desktop. The timeline's
+     * spans are fractions of the resulting scroll range, so the height only
+     * decides how much scrolling the whole opening takes; see the note on
+     * SPANS for how the cover phase's share is derived.
      */
     <div
       ref={wrapperRef}

@@ -4,5 +4,7 @@ export { Container } from './Container';
 export { CtaButton } from './CtaButton';
 export { EditorialRows, type EditorialRow } from './EditorialRows';
 export { HorizontalCarousel } from './HorizontalCarousel';
+export { Magnetic } from './Magnetic';
 export { RotatingWord } from './RotatingWord';
 export { Section } from './Section';
+export { YouTubeEmbed, type YouTubeEmbedProps } from './YouTubeEmbed';

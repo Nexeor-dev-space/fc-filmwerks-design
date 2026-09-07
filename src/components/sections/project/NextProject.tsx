@@ -37,6 +37,7 @@ export function NextProject({ project }: { project: Project }) {
       >
         <Link
           href={project.href}
+          data-cursor="view"
           className="group relative block h-[60vh] min-h-[380px] overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#BFA76F] md:h-[72vh]"
         >
           <Image

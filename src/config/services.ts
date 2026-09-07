@@ -72,7 +72,7 @@ export const services: Service[] = [
     number: '07',
     title: 'Event Coverage',
     description:
-      'End-to-end technical AV and lighting solutions, with expertise on location, for all kinds of events — big or small.',
+      'End-to-end technical AV and lighting solutions, with expertise on location, for all kinds of events, big or small.',
     href: '/services/event-coverage',
     image: '/images/services/event-coverage.jpg',
   },

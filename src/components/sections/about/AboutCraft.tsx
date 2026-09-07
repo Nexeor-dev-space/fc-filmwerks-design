@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState } from 'react';
 
-import { aboutCraft } from '@/config/about';
+import { aboutCraft, chapterNumber } from '@/config/about';
 import { services } from '@/config/services';
 import { EASE } from '@/constants';
 import { usePrefersReducedMotion } from '@/hooks';
@@ -20,7 +20,7 @@ import {
 } from '@/components/animations';
 
 /**
- * Chapter 03 — capabilities, set as an index rather than a grid of cards.
+ * Chapter 05: capabilities, set as an index rather than a grid of cards.
  *
  * The homepage already presents these nine disciplines as posters. Repeating
  * that here would be the duplication this redesign exists to remove, so the
@@ -43,7 +43,11 @@ export function AboutCraft() {
       className="scroll-mt-24 bg-[#0F1C2E] py-24 md:py-32 lg:py-40"
     >
       <div className="px-5 md:px-8 lg:px-14 xl:pl-52">
-        <ChapterMark number="03" title="The craft" still={reducedMotion} />
+        <ChapterMark
+          number={chapterNumber('about-craft')}
+          title="The craft"
+          still={reducedMotion}
+        />
 
         <div className="mt-8 grid grid-cols-1 gap-y-8 lg:grid-cols-12 lg:gap-x-12">
           <div className="lg:col-span-7">
@@ -102,7 +106,7 @@ export function AboutCraft() {
               </div>
 
               <p className="mt-4 font-mono text-[0.6875rem] tracking-[0.24em] text-white/40 uppercase">
-                {activeService.number} — {activeService.title}
+                {activeService.number} · {activeService.title}
               </p>
             </div>
           </div>
