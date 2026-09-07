@@ -237,7 +237,7 @@ export function TestimonialsSection() {
       </span>
 
       {/* Heading */}
-      <div className="relative w-full px-4 md:px-[3vw]">
+      <div className="relative w-full px-4 md:px-[3vw] xl:pl-52">
         <header className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-20">
           <div className="max-w-[760px]">
             <motion.p
@@ -276,8 +276,8 @@ export function TestimonialsSection() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.6 }}
           >
-            Every frame we create begins with trust. These reviews reflect the
-            partnerships, creativity and dedication behind every project.
+            What a client says after the film has gone out is the only review
+            that matters. These are theirs.
           </motion.p>
         </header>
       </div>
@@ -319,7 +319,7 @@ export function TestimonialsSection() {
 
       {/* CTA */}
       <motion.div
-        className="mt-16 flex justify-center px-4 md:px-[3vw] lg:mt-24"
+        className="mt-16 flex justify-center px-4 md:px-[3vw] lg:mt-24 xl:pl-52"
         variants={fadeUp}
         custom={0}
         initial="hidden"
@@ -335,7 +335,7 @@ export function TestimonialsSection() {
           {reviews.map((review) => (
             <li key={review.name}>
               <p>
-                {review.name} — {review.rating} stars — {review.date}
+                {review.name}, {review.rating} stars, {review.date}
               </p>
               <blockquote>{review.quote}</blockquote>
             </li>

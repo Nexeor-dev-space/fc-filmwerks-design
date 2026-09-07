@@ -32,7 +32,7 @@ export function ClientsSection() {
       aria-labelledby="clients-heading"
       className="bg-[#0F1C2E] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
     >
-      <div className="w-full px-4 md:px-[3vw]">
+      <div className="w-full px-4 md:px-[3vw] xl:pl-52">
         <header className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-20">
           <div className="max-w-[700px]">
             <motion.p
@@ -69,9 +69,9 @@ export function ClientsSection() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.6 }}
           >
-            We&rsquo;re proud to collaborate with ambitious brands,
-            organizations and creative partners to produce films that inspire,
-            engage and leave a lasting impression.
+            Airlines, hospitals, retailers, hospitality groups and government
+            bodies across the UAE and India, each with a story that had to land
+            on a deadline.
           </motion.p>
         </header>
 

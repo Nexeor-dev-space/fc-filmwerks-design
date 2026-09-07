@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
-import { aboutOnSet } from '@/config/about';
+import { aboutOnSet, chapterNumber } from '@/config/about';
 import { useIsMobile, usePrefersReducedMotion } from '@/hooks';
 import { cn } from '@/lib/utils';
 
@@ -24,7 +24,7 @@ const FRAMES = Array.from({ length: aboutOnSet.frameCount }, (_, index) => ({
 }));
 
 /**
- * Chapter 04 — the strip, moving sideways as the page moves down.
+ * Chapter 06: the strip, moving sideways as the page moves down.
  *
  * The travel is measured rather than guessed: a ResizeObserver keeps the track
  * and viewport widths current, and the scroll range maps onto exactly the
@@ -86,7 +86,11 @@ export function AboutOnSet() {
     >
       <div ref={sectionRef}>
         <div className="px-5 md:px-8 lg:px-14 xl:pl-52">
-          <ChapterMark number="04" title="On set" still={reducedMotion} />
+          <ChapterMark
+            number={chapterNumber('about-on-set')}
+            title="On set"
+            still={reducedMotion}
+          />
 
           <div className="mt-8 grid grid-cols-1 gap-y-8 lg:grid-cols-12 lg:gap-x-12">
             <div className="lg:col-span-6">

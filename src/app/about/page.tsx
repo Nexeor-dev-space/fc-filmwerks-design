@@ -1,22 +1,22 @@
+import { ChapterRail } from '@/components/layout/ChapterRail';
 import { CinematicFooter } from '@/components/layout/CinematicFooter';
 import { FloatingNav } from '@/components/layout/FloatingNav';
 import {
-  AboutChapterRail,
-  AboutClosing,
   AboutCraft,
+  AboutFilm,
   AboutMasthead,
   AboutMethod,
   AboutOnSet,
   AboutPeople,
-  AboutRecord,
   AboutStory,
 } from '@/components/sections/about';
+import { aboutChapters } from '@/config/about';
 import { createMetadata } from '@/lib/seo';
 
 export const metadata = createMetadata({
   title: 'About',
   description:
-    'fcfilmwerks is a media production company specialising in pre- and post-production for films and commercials, working out of Dubai and India.',
+    'FC Filmwerks is a Dubai film studio founded in 2025 by award-winning director Gautam Raveendran: humane, emotional storytelling across corporate films, documentaries and original cinema, including the award-winning Blue Lily (2026).',
   path: '/about',
 });
 
@@ -26,14 +26,20 @@ export const metadata = createMetadata({
  * It shares the brand — navy, gold, the same grain and the same easing — and
  * nothing else with `/`. No hero video wall, no Featured Work grid, no services
  * posters, and no shared `CtaSection` at the end: it opens on type, runs as
- * seven numbered chapters with a fixed index beside them, and closes on its own
- * mission statement. The one component it borrows from the site chrome is the
- * footer, which every route shares by design.
+ * six numbered chapters with a fixed index beside them, and ends on the set.
+ * The one component it borrows from the site chrome is the footer, which every
+ * route shares by design and which carries the contact details.
  *
- * Section order is deliberate — who, how, what, where it happens, who does it,
- * who it was done for, and then the way in. `aboutChapters` in
- * `src/config/about.ts` mirrors this order and drives the rail, so a chapter
- * added here needs an entry there to appear in the index.
+ * Every fact has one home. The trust figures and the client belt are on the
+ * homepage and are not repeated here; the founder's record is in his biography
+ * and nowhere else; the film's record is in its own chapter.
+ *
+ * Section order is deliberate: the studio, the two people who founded it, the
+ * film that proves the claim, how the work is made, what the house holds, and
+ * where it happens.
+ * `aboutChapters` in `src/config/about.ts` mirrors this order and drives both
+ * the rail and every chapter's number, so a chapter added here needs an entry
+ * there to appear in the index.
  */
 export default function AboutPage() {
   return (
@@ -44,23 +50,21 @@ export default function AboutPage() {
        */}
       <FloatingNav immediate />
 
-      <AboutChapterRail />
+      <ChapterRail chapters={aboutChapters} label="About chapters" />
 
       <AboutMasthead />
 
       <AboutStory />
+
+      <AboutPeople />
+
+      <AboutFilm />
 
       <AboutMethod />
 
       <AboutCraft />
 
       <AboutOnSet />
-
-      <AboutPeople />
-
-      <AboutRecord />
-
-      <AboutClosing />
 
       <CinematicFooter />
     </>

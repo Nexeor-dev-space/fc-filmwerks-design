@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 
+import { Cursor } from '@/components/layout';
 import { Providers } from '@/components/providers';
 import { JsonLd } from '@/components/seo';
 import { siteConfig } from '@/config/site';
@@ -44,6 +45,8 @@ export default function RootLayout({
       <body className="min-h-dvh antialiased">
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
         <Providers>{children}</Providers>
+        {/* Pointer companion for mouse visitors; renders nothing on touch. */}
+        <Cursor />
       </body>
     </html>
   );

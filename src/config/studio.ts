@@ -1,41 +1,32 @@
 import type { EditorialRow } from '@/components/ui/EditorialRows';
 
 /**
- * How the studio works, as four editorial rows.
+ * How the studio works, as four editorial rows on the homepage.
  *
- * Written from what the site already states about itself — the description in
- * `site.ts`, the nine service disciplines, and the manifesto principles. No
- * founding dates, headcount, awards or client names, because none of that is
- * sourced anywhere in this project yet.
+ * Written from the studio's own positioning and founder biography — the
+ * founding intent, the end-to-end offer, the director's experience, and the
+ * award-winning original film. Nothing here is a figure the studio has not
+ * stated itself.
  */
 export const studioHighlights: EditorialRow[] = [
   {
     number: '01',
-    title: 'Creative vision',
-    body: 'Every project begins with an idea worth remembering.',
+    title: 'Humane storytelling',
+    body: 'Every film starts with the person it has to reach, not the product it has to show.',
   },
   {
     number: '02',
     title: 'End-to-end production',
-    body: 'Concept, filming, editing and final delivery.',
+    body: 'Concept, script, shoot and post-production, held in one house.',
   },
   {
     number: '03',
-    title: 'Modern equipment',
-    body: 'Industry-standard tools and cinematic workflows.',
+    title: 'Award-winning direction',
+    body: 'Led by a director with more than fifteen years in UAE events and visual media.',
   },
   {
     number: '04',
-    title: 'Human connection',
-    body: 'Real stories. Real emotions. Real impact.',
+    title: 'Original cinema',
+    body: 'Blue Lily (2026), recognised at five international festivals and screened theatrically.',
   },
 ];
-
-/** The route a project takes through the studio, start to finish. */
-export const studioProcess = [
-  'Idea',
-  'Script',
-  'Production',
-  'Edit',
-  'Delivery',
-] as const;

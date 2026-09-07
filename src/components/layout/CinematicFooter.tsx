@@ -260,7 +260,7 @@ export function CinematicFooter() {
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.6 }}
                 >
-                  From the first frame to the final grade — if you can picture
+                  From the first frame to the final grade. If you can picture
                   it, we can film it.
                 </motion.p>
 
@@ -388,6 +388,7 @@ export function CinematicFooter() {
             viewport={{ once: true, amount: 0.8 }}
           >
             © {year} {siteConfig.name}. All rights reserved.
+            <a href="https://nexeor.com"> | CREATED BY NEXEOR</a>
           </motion.p>
         </div>
 

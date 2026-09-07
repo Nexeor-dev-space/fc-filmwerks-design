@@ -11,7 +11,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRef } from 'react';
 
-import type { Project } from '@/config/projects';
+import { projectName, type Project } from '@/config/projects';
 import { DURATION, EASE } from '@/constants';
 
 /*
@@ -214,7 +214,8 @@ export function ProjectCard({
     <motion.li ref={cardRef} variants={cardVariants} custom={cardMotion}>
       <Link
         href={project.href}
-        aria-label={`${project.title} — view project`}
+        aria-label={`${projectName(project)}: view project`}
+        data-cursor="view"
         /* The card itself stays put on hover — no lift. All the response
            happens inside it: the still zooms and a scrim fades up under the
            copy, matching the service cards. */
@@ -291,14 +292,15 @@ export function ProjectCard({
           </motion.p>
 
           {/* The heading keeps its own hover transform, so the entrance rise
-              has to live on a wrapper or one would overwrite the other. */}
+              has to live on a wrapper or one would overwrite the other. It
+              shows the name alone: the category is the line above it. */}
           <motion.div
             className="mt-3"
             variants={textVariants}
             custom={cardMotion}
           >
             <h3 className="text-[1.625rem] leading-[1.15] font-extralight tracking-tight text-white transition-transform duration-[600ms] ease-out group-hover:-translate-y-1 group-focus-visible:-translate-y-1 md:text-[1.875rem]">
-              {project.title}
+              {projectName(project)}
             </h3>
           </motion.div>
 
