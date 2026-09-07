@@ -49,8 +49,8 @@ import { ScrollIndicator } from './ScrollIndicator';
  * arrives at `coverStart` and not during the hold.
  */
 const SPANS = {
-  desktop: { aperture: 2, hold: 2.0, cover: 1.6 },
-  mobile: { aperture: 2, hold: 1.2, cover: 1.2 },
+  desktop: { aperture: 2, hold: 0.3, cover: 1.6 },
+  mobile: { aperture: 2, hold: 0.5, cover: 1.2 },
 } as const;
 
 interface Timing {
