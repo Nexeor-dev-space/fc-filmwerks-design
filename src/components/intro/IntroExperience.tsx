@@ -261,7 +261,7 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
         });
 
         gsap.to('.lens-breathe', {
-          scale: 1 + 0.016 * k,
+          scale: 1 + 0.026 * k,
           duration: 5.2,
           ease: 'sine.inOut',
           yoyo: true,
@@ -288,9 +288,9 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
         });
 
         gsap.to('.lens-bloom', {
-          xPercent: 7 * k,
-          yPercent: 5 * k,
-          opacity: 0.5,
+          xPercent: 9 * k,
+          yPercent: 6 * k,
+          opacity: 0.62,
           duration: 11,
           ease: 'sine.inOut',
           yoyo: true,
@@ -298,9 +298,9 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
         });
 
         gsap.to('.lens-warm', {
-          xPercent: -6 * k,
-          yPercent: -4 * k,
-          opacity: 0.36,
+          xPercent: -8 * k,
+          yPercent: -5 * k,
+          opacity: 0.48,
           duration: 13,
           ease: 'sine.inOut',
           yoyo: true,
@@ -308,7 +308,7 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
         });
 
         gsap.to('.lens-glint-a', {
-          opacity: 0.32,
+          opacity: 0.5,
           duration: 7.5,
           ease: 'sine.inOut',
           yoyo: true,
@@ -316,7 +316,7 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
         });
 
         gsap.to('.lens-glint-b', {
-          opacity: 0.85,
+          opacity: 1,
           duration: 10.5,
           ease: 'sine.inOut',
           yoyo: true,
@@ -381,7 +381,7 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
           )
             .to(
               '.lens-scroll',
-              { scale: 1 + 0.22 * k, duration: 0.54, ease: 'power1.inOut' },
+              { scale: 1 + 0.3 * k, duration: 0.54, ease: 'power1.inOut' },
               beats.lensGrow,
             )
             .to(
@@ -534,7 +534,10 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
       </div>
 
       {/* Clear of the bottom edge by 48px, 64px from `md` — enough that the
-          cue reads as its own element rather than as page furniture. */}
+          cue reads as its own element rather than as page furniture. The
+          chevron cue is short enough that it never reaches the lens even on
+          a short viewport (see the note in globals.css next to the old
+          track-based cue's short-viewport rule) — no compaction needed here. */}
       <div className="absolute inset-x-0 bottom-12 flex justify-center text-[#222] md:bottom-16">
         <ScrollIndicator className="intro-indicator" />
       </div>

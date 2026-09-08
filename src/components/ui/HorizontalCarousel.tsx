@@ -1,6 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useRef, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+  type ReactNode,
+} from 'react';
 
 import { usePrefersReducedMotion } from '@/hooks';
 import { cn } from '@/lib/utils';
@@ -66,7 +73,10 @@ function isNotchedWheel(event: WheelEvent) {
  *
  * Only a notched mouse wheel is redirected onto the horizontal axis. A
  * trackpad scrolls the page as it always did, since taking its vertical
- * gesture would leave those users unable to get past the section.
+ * gesture would leave those users unable to get past the section. A plain
+ * desktop mouse — no notch, no trackpad gesture, nothing to redirect —
+ * instead gets a click-and-drag: press anywhere on the strip and drag to pan
+ * it, same as the progress bar underneath.
  *
  * Because the loop has no end to fall through, a wheel held in one direction
  * releases the page after a full lap — otherwise the section would trap the
@@ -82,6 +92,8 @@ export function HorizontalCarousel({
   const scrollerRef = useRef<HTMLDivElement>(null);
   const firstCopyRef = useRef<HTMLDivElement>(null);
   const secondCopyRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const thumbRef = useRef<HTMLDivElement>(null);
   const reducedMotion = usePrefersReducedMotion();
 
   const target = useRef<number | null>(null);
@@ -89,6 +101,10 @@ export function HorizontalCarousel({
   /** Distance travelled in the current direction, reset when it flips. */
   const travelled = useRef(0);
   const direction = useRef(0);
+
+  const [dragging, setDragging] = useState(false);
+  /** Pointer x and `scrollLeft` at the moment a content drag began. */
+  const dragOrigin = useRef({ pointerX: 0, scrollLeft: 0 });
 
   /**
    * One lap: the distance between two copies' left edges. Measured this way
@@ -116,6 +132,35 @@ export function HorizontalCarousel({
     return el.scrollWidth - el.clientWidth >= lap * 2 ? lap : 0;
   }, []);
 
+  /**
+   * Mirrors `scrollLeft` onto the bar under the strip. `lap` to `lap * 2` is
+   * treated as the whole track — the runway copies either side exist only for
+   * wrapping, so a thumb spanning the real loop is the only span that means
+   * anything to the reader.
+   *
+   * Written straight to the DOM rather than through state: this runs on every
+   * `scroll` event and every eased wheel frame, and re-rendering React for
+   * either would cost far more than the two style writes do.
+   */
+  const updateProgress = useCallback(() => {
+    const el = scrollerRef.current;
+    const thumb = thumbRef.current;
+    if (!el || !thumb) return;
+
+    const lap = lapWidth();
+    if (lap <= 0) {
+      thumb.style.opacity = '0';
+      return;
+    }
+
+    const widthFraction = Math.min(1, el.clientWidth / lap);
+    const progress = Math.min(1, Math.max(0, (el.scrollLeft - lap) / lap));
+
+    thumb.style.opacity = '1';
+    thumb.style.width = `${widthFraction * 100}%`;
+    thumb.style.left = `${progress * (1 - widthFraction) * 100}%`;
+  }, [lapWidth]);
+
   const stop = useCallback(() => {
     if (frame.current !== null) {
       cancelAnimationFrame(frame.current);
@@ -140,13 +185,14 @@ export function HorizontalCarousel({
         stop();
         el.scrollLeft = lap;
       }
+      updateProgress();
     };
 
     park();
     const observer = new ResizeObserver(park);
     observer.observe(el);
     return () => observer.disconnect();
-  }, [lapWidth, stop]);
+  }, [lapWidth, stop, updateProgress]);
 
   /** Eases `scrollLeft` towards the accumulated wheel target. */
   const step = useCallback(() => {
@@ -161,6 +207,7 @@ export function HorizontalCarousel({
       el.scrollLeft = target.current;
       frame.current = null;
       target.current = null;
+      updateProgress();
       return;
     }
 
@@ -181,8 +228,9 @@ export function HorizontalCarousel({
       }
     }
 
+    updateProgress();
     frame.current = requestAnimationFrame(step);
-  }, [lapWidth]);
+  }, [lapWidth, updateProgress]);
 
   /*
    * Registered manually because React's `onWheel` is passive — `preventDefault`
@@ -223,6 +271,7 @@ export function HorizontalCarousel({
       if (reducedMotion) {
         stop();
         el.scrollLeft = lap + ((((next - lap) % lap) + lap) % lap);
+        updateProgress();
         return;
       }
 
@@ -232,7 +281,7 @@ export function HorizontalCarousel({
 
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => el.removeEventListener('wheel', onWheel);
-  }, [lapWidth, reducedMotion, step, stop]);
+  }, [lapWidth, reducedMotion, step, stop, updateProgress]);
 
   /*
    * Native scrolling — trackpad, touch, keyboard, focus — bypasses the wheel
@@ -242,13 +291,86 @@ export function HorizontalCarousel({
    * meeting an edge.
    */
   const onScroll = () => {
-    if (frame.current !== null) return;
     const el = scrollerRef.current;
     const lap = lapWidth();
-    if (!el || lap <= 0) return;
+    if (el && lap > 0 && frame.current === null) {
+      if (el.scrollLeft >= lap * 2) el.scrollLeft -= lap;
+      else if (el.scrollLeft < lap) el.scrollLeft += lap;
+    }
+    updateProgress();
+  };
 
-    if (el.scrollLeft >= lap * 2) el.scrollLeft -= lap;
-    else if (el.scrollLeft < lap) el.scrollLeft += lap;
+  /**
+   * Click-and-drag panning for a plain mouse, which has no trackpad gesture
+   * and — outside a notch — no wheel redirection either. Touch is left alone;
+   * it already pans the native scroller directly under the finger, and
+   * layering this on top would fight that with a second, competing offset.
+   */
+  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    stop();
+    if (event.pointerType !== 'mouse' || event.button !== 0) return;
+
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    dragOrigin.current = { pointerX: event.clientX, scrollLeft: el.scrollLeft };
+    setDragging(true);
+    el.setPointerCapture(event.pointerId);
+  };
+
+  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!dragging) return;
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    const delta = event.clientX - dragOrigin.current.pointerX;
+    el.scrollLeft = dragOrigin.current.scrollLeft - delta;
+  };
+
+  const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!dragging) return;
+    setDragging(false);
+    scrollerRef.current?.releasePointerCapture(event.pointerId);
+  };
+
+  /**
+   * Dragging (or clicking) anywhere on the bar scrubs the strip directly:
+   * `clientX` maps straight onto a position within the lap, so the thumb
+   * tracks the pointer under it exactly as a native scrollbar's would.
+   */
+  const onTrackPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return;
+    stop();
+
+    const track = trackRef.current;
+    const el = scrollerRef.current;
+    const lap = lapWidth();
+    if (!track || !el || lap <= 0) return;
+
+    track.setPointerCapture(event.pointerId);
+
+    const seek = (clientX: number) => {
+      const rect = track.getBoundingClientRect();
+      const fraction = Math.min(
+        1,
+        Math.max(0, (clientX - rect.left) / rect.width),
+      );
+      el.scrollLeft = lap + fraction * lap;
+      updateProgress();
+    };
+
+    seek(event.clientX);
+
+    const onMove = (moveEvent: PointerEvent) => seek(moveEvent.clientX);
+    const onUp = () => {
+      track.removeEventListener('pointermove', onMove);
+      track.removeEventListener('pointerup', onUp);
+      track.removeEventListener('pointercancel', onUp);
+    };
+
+    track.addEventListener('pointermove', onMove);
+    track.addEventListener('pointerup', onUp);
+    track.addEventListener('pointercancel', onUp);
   };
 
   return (
@@ -261,8 +383,12 @@ export function HorizontalCarousel({
         // Keeps Lenis' own wheel handling off this element.
         data-lenis-prevent
         onScroll={onScroll}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onDragStart={(event) => event.preventDefault()}
         // A native scroll invalidates the eased target.
-        onPointerDown={stop}
         onKeyDown={stop}
         className={cn(
           // Snapping belongs on the scroll container itself. Phones get one
@@ -271,6 +397,7 @@ export function HorizontalCarousel({
           // No scrollbar, but still a real scroll container.
           '[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden',
           'focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#BFA76F]',
+          dragging ? 'cursor-grabbing select-none' : 'cursor-grab',
           edgeClassName,
         )}
       >
@@ -299,6 +426,26 @@ export function HorizontalCarousel({
             </div>
           ))}
         </div>
+      </div>
+
+      {/*
+       * A styled stand-in for the scrollbar the scroller itself hides —
+       * shows how far through the loop the reader is and, unlike the native
+       * bar it replaces, doubles as a control: press anywhere on it to jump,
+       * drag to scrub. `aria-hidden` because the region above already
+       * exposes scroll position and control to assistive tech; this is a
+       * sighted-pointer affordance layered on top of it, not a second one.
+       */}
+      <div
+        ref={trackRef}
+        aria-hidden="true"
+        onPointerDown={onTrackPointerDown}
+        className="relative mx-4 mt-4 h-[3px] cursor-pointer touch-none rounded-full bg-white/10 md:mx-[3vw]"
+      >
+        <div
+          ref={thumbRef}
+          className="absolute inset-y-0 rounded-full bg-[#BFA76F] opacity-0"
+        />
       </div>
     </div>
   );

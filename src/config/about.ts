@@ -226,6 +226,7 @@ export const aboutPeople = {
       name: 'Gautam Raveendran',
       role: 'Founder · Director',
       initials: 'GR',
+      portrait: '/images/Gautham-FCF.jpg',
       bio: [
         'An award-winning director and filmmaker with a strong technical grounding across production and post-production, and more than fifteen years in the UAE events and visual media market.',
         'Gautam heads the studio’s creative direction on every project, and directed Blue Lily.',
@@ -242,6 +243,7 @@ export const aboutPeople = {
       name: 'Mini Nair',
       role: 'Co-founder · Producer',
       initials: 'MN',
+      portrait: '/images/Mini-FCF.jpg',
       bio: [
         'An award-winning producer and seasoned event director, known for helming high-profile celebrity talk shows and multiple corporate visual projects, and for coordinating top-tier Indian celebrity talent.',
         'Mini produced Blue Lily and the acclaimed short-film thriller Your Place or Mine.',

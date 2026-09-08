@@ -366,10 +366,10 @@ export function CinematicFooter() {
                     </li>
                     <li>
                       <ContactLink
-                        href={siteConfig.social.youtube || '#'}
+                        href={siteConfig.social.facebook || '#'}
                         external
                       >
-                        YouTube
+                        Facebook
                       </ContactLink>
                     </li>
                   </ul>
