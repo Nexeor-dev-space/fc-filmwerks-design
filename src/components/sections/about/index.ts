@@ -1,5 +1,6 @@
 export { AboutCraft } from './AboutCraft';
 export { AboutFilm } from './AboutFilm';
+export { AboutLabel } from './AboutLabel';
 export { AboutMasthead } from './AboutMasthead';
 export { AboutMethod } from './AboutMethod';
 export { AboutOnSet } from './AboutOnSet';

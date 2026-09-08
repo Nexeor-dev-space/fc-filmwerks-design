@@ -7,6 +7,9 @@ import { useRef } from 'react';
 import { CtaButton, HorizontalCarousel } from '@/components/ui';
 import { services, type Service } from '@/config/services';
 import { EASE } from '@/constants';
+import { cn } from '@/lib/utils';
+
+import { SECTION_BAND, SECTION_GUTTER } from './rhythm';
 import { useIsMobile, usePrefersReducedMotion } from '@/hooks';
 
 /** Header blocks rise in sequence as the section arrives. */
@@ -220,12 +223,12 @@ export function ServicesSection() {
     <section
       id="services"
       aria-labelledby="services-heading"
-      className="relative z-10 overflow-hidden bg-[#0f1012] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
+      className={cn('relative z-10 overflow-hidden bg-[#0f1012]', SECTION_BAND)}
     >
       {/* Gutters are the reference site's own container value — a flat 16px on
           phones, then a fluid 3vw — so the grid tracks the viewport instead of
           sitting inside a fixed measure. */}
-      <div className="w-full px-4 md:px-[3vw] xl:pl-52">
+      <div className={SECTION_GUTTER}>
         {/* Label and title left, standfirst pushed to the far right and sharing
             the title's baseline. Body copy stays left-aligned within its own
             column — right-aligned paragraphs give the eye no consistent edge to

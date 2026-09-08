@@ -5,6 +5,9 @@ import Image from 'next/image';
 
 import { clients } from '@/config/clients';
 import { EASE } from '@/constants';
+import { cn } from '@/lib/utils';
+
+import { SECTION_BAND, SECTION_GUTTER } from './rhythm';
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 40 },
@@ -30,9 +33,9 @@ export function ClientsSection() {
     <section
       id="clients"
       aria-labelledby="clients-heading"
-      className="bg-[#0F1C2E] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
+      className={cn('bg-[#0F1C2E]', SECTION_BAND)}
     >
-      <div className="w-full px-4 md:px-[3vw] xl:pl-52">
+      <div className={SECTION_GUTTER}>
         <header className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-20">
           <div className="max-w-[700px]">
             <motion.p

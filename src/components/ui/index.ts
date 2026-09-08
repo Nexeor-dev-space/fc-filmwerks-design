@@ -7,4 +7,5 @@ export { HorizontalCarousel } from './HorizontalCarousel';
 export { Magnetic } from './Magnetic';
 export { RotatingWord } from './RotatingWord';
 export { Section } from './Section';
+export { FilmFrame, type FilmFrameProps, type FilmSource } from './FilmFrame';
 export { YouTubeEmbed, type YouTubeEmbedProps } from './YouTubeEmbed';

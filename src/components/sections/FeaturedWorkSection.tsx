@@ -14,6 +14,9 @@ import {
 import { blueLily, blueLilyHonourSummary } from '@/config/film';
 import { featuredProjectRows } from '@/config/projects';
 import { EASE } from '@/constants';
+import { cn } from '@/lib/utils';
+
+import { SECTION_BAND, SECTION_GUTTER } from './rhythm';
 import { useIsMobile, useLenis, usePrefersReducedMotion } from '@/hooks';
 import { scrollToElement } from '@/lib/scroll';
 
@@ -66,9 +69,9 @@ export function FeaturedWorkSection() {
     <section
       id="featured-work"
       aria-labelledby="featured-work-heading"
-      className="relative z-10 bg-[#0f1012] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
+      className={cn('relative z-10 bg-[#0f1012]', SECTION_BAND)}
     >
-      <div className="w-full px-4 md:px-[3vw] xl:pl-52">
+      <div className={SECTION_GUTTER}>
         {/* Heading and its route-through on the left, standfirst pushed right
             and vertically centred against them. */}
         <header className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-20">

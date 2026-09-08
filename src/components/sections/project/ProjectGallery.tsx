@@ -7,6 +7,8 @@ import { cascade, ENTER_TALL, rise } from '@/components/animations';
 import { usePrefersReducedMotion } from '@/hooks';
 import { cn } from '@/lib/utils';
 
+import { PROJECT_BAND, PROJECT_GUTTER } from './gutter';
+
 interface ProjectGalleryProps {
   images: { src: string; alt: string }[];
 }
@@ -30,10 +32,11 @@ export function ProjectGallery({ images }: ProjectGalleryProps) {
 
   return (
     <section
+      id="project-gallery"
       aria-labelledby="project-gallery-heading"
-      className="bg-[#0F1C2E] py-24 md:py-32 lg:py-40"
+      className={cn('scroll-mt-28 bg-[#0A131F]', PROJECT_BAND)}
     >
-      <div className="px-5 md:px-8 lg:px-14">
+      <div className={PROJECT_GUTTER}>
         <motion.h2
           id="project-gallery-heading"
           className="text-[0.6875rem] font-semibold tracking-[0.3em] text-[#BFA76F] uppercase"

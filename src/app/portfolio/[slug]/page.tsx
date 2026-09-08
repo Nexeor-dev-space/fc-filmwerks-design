@@ -1,20 +1,20 @@
 import { notFound } from 'next/navigation';
 
+import { ChapterRail } from '@/components/layout/ChapterRail';
 import { CinematicFooter } from '@/components/layout/CinematicFooter';
 import { FloatingNav } from '@/components/layout/FloatingNav';
 import { CtaSection } from '@/components/sections/CtaSection';
 import {
   NextProject,
-  ProjectFilm,
   ProjectFrame,
   ProjectGallery,
   ProjectHero,
   ProjectOverview,
   ProjectSpec,
-  ProjectStory,
 } from '@/components/sections/project';
 import { getProjectBySlug, getProjectSlugs, projects } from '@/config/projects';
 import { createMetadata } from '@/lib/seo';
+import type { Chapter } from '@/types';
 
 /** Prerenders one static page per project at build time. */
 export function generateStaticParams() {
@@ -44,18 +44,22 @@ export async function generateMetadata({
 /**
  * A project case study.
  *
- * One route for every project, but not one *page* — the narrative is driven by
- * `caseStudy.chapters` in `src/config/projects.ts`, and both the number of
- * chapters and their titles are decided per project. An event that happens once
- * and a script-to-finish vertical campaign do not have the same story shape, so
- * they do not get the same headings. A page with no gallery imagery on file
- * simply has no gallery section; a project whose source copy names a place gets
- * a Location row and the other seven do not.
+ * Deliberately short. The page is the film, what the project was, and what left
+ * the studio — nothing else. It used to run the `caseStudy.chapters` narrative
+ * between the overview and the spec, several hundred words of craft writing per
+ * project; the studio asked for all of it to come off, and it is a fair call.
+ * A visitor on a film's page is there to watch the film, and prose about method
+ * belongs on About, where the method chapter already says it once for the whole
+ * studio rather than eleven times over.
  *
- * The narrative is split around a full-bleed frame rather than running as one
- * block. Long-form reading needs a visual breath in the middle, and putting it
- * after the second chapter means it lands once the reader knows what the project
- * is but before the production detail starts.
+ * `caseStudy.chapters` is still in the config and still typed. Nothing reads it
+ * today. It was left rather than deleted because it is the studio's own writing
+ * and getting it back is a matter of restoring one section here — see the git
+ * history for `ProjectStory`, removed 2026-09-07.
+ *
+ * What remains still varies per project: a page with no gallery imagery on file
+ * simply has no gallery section, and a project whose source copy names a place
+ * gets a Location row where the others do not.
  *
  * There are no invented results anywhere on this page — see the provenance note
  * on `ProjectCaseStudy` in the config for what each field may and may not say.
@@ -72,35 +76,40 @@ export default async function ProjectPage({
 
   const index = projects.findIndex((p) => p.href === project.href);
   const next = projects[(index + 1) % projects.length];
-  const { chapters, delivered, details, gallery } = project.caseStudy;
+  const { delivered, details, gallery } = project.caseStudy;
 
   /*
-   * Where the frame interrupts the story. After the second chapter for anything
-   * with four or more, at the midpoint otherwise — a three-chapter page would
-   * otherwise get its break one chapter from the end, which is a stall rather
-   * than a breath. `slice` past the end is safe, so a one-chapter project would
-   * simply run its frame afterwards.
+   * The page's numbering and its index, decided together so they cannot drift.
+   * Short as it now is, the page is still a document with named parts, and the
+   * rail is what a reader uses to jump between them and to see where they are.
+   * The gallery earns an entry only on the projects that have one.
    */
-  const breakAt = chapters.length >= 4 ? 2 : Math.ceil(chapters.length / 2);
+  const railChapters: Chapter[] = [
+    { number: '01', title: 'Overview', id: 'project-overview' },
+    { number: '02', title: 'Delivered', id: 'project-spec' },
+    ...(gallery && gallery.length > 0
+      ? [{ number: '03', title: 'Stills', id: 'project-gallery' }]
+      : []),
+  ];
 
   return (
     <>
       <FloatingNav immediate />
 
+      {/* The same fixed index Home and About carry. Every band below the hero
+          pads its content by `xl:pl-52` — see `PROJECT_GUTTER`. */}
+      <ChapterRail chapters={railChapters} label="Case study sections" />
+
       <article>
+        {/* A published film plays in the hero itself; see `ProjectHero`. */}
         <ProjectHero project={project} index={index} total={projects.length} />
 
-        {/* Published films play here, straight under the hero. */}
-        <ProjectFilm project={project} />
+        <ProjectOverview project={project} number="01" />
 
-        <ProjectOverview project={project} />
-
-        <ProjectStory chapters={chapters.slice(0, breakAt)} />
-
-        {/* The mid-story frame re-shows the key still as a visual breath. A
-            project with the film itself on the page already has one, so the
-            frame is skipped there rather than showing the same art a third
-            time. */}
+        {/* A full-bleed frame between the overview and the spec, for projects
+            with no moving image on the page. It is the one visual breath a
+            still-only case study gets; a project whose film plays in the hero
+            already has a better one and skips it. */}
         {!project.video && (
           <ProjectFrame
             src={project.image}
@@ -108,9 +117,7 @@ export default async function ProjectPage({
           />
         )}
 
-        <ProjectStory chapters={chapters.slice(breakAt)} />
-
-        <ProjectSpec delivered={delivered} details={details} />
+        <ProjectSpec delivered={delivered} details={details} number="02" />
 
         {/* Only where the studio has stills for this project. See the note in
             ProjectGallery for why this is not padded out with the generic

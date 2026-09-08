@@ -4,6 +4,7 @@ import { FloatingNav } from '@/components/layout/FloatingNav';
 import {
   AboutCraft,
   AboutFilm,
+  AboutLabel,
   AboutMasthead,
   AboutMethod,
   AboutOnSet,
@@ -26,7 +27,7 @@ export const metadata = createMetadata({
  * It shares the brand — navy, gold, the same grain and the same easing — and
  * nothing else with `/`. No hero video wall, no Featured Work grid, no services
  * posters, and no shared `CtaSection` at the end: it opens on type, runs as
- * six numbered chapters with a fixed index beside them, and ends on the set.
+ * seven numbered chapters with a fixed index beside them, and ends on the set.
  * The one component it borrows from the site chrome is the footer, which every
  * route shares by design and which carries the contact details.
  *
@@ -35,8 +36,8 @@ export const metadata = createMetadata({
  * and nowhere else; the film's record is in its own chapter.
  *
  * Section order is deliberate: the studio, the two people who founded it, the
- * film that proves the claim, how the work is made, what the house holds, and
- * where it happens.
+ * film that proves the claim, the record label that continues it, how the work
+ * is made, what the house holds, and where it happens.
  * `aboutChapters` in `src/config/about.ts` mirrors this order and drives both
  * the rail and every chapter's number, so a chapter added here needs an entry
  * there to appear in the index.
@@ -59,6 +60,8 @@ export default function AboutPage() {
       <AboutPeople />
 
       <AboutFilm />
+
+      <AboutLabel />
 
       <AboutMethod />
 

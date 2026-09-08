@@ -12,8 +12,9 @@ import type { Chapter } from '@/types';
 export const homeChapters: Chapter[] = [
   { number: '01', title: 'Services', id: 'services' },
   { number: '02', title: 'The work', id: 'featured-work' },
-  { number: '03', title: 'The studio', id: 'about' },
-  { number: '04', title: 'Clients', id: 'clients' },
-  { number: '05', title: 'Reviews', id: 'testimonials' },
-  { number: '06', title: 'Let’s talk', id: 'lets-talk' },
+  { number: '03', title: 'The label', id: 'kom-ban' },
+  { number: '04', title: 'The studio', id: 'about' },
+  { number: '05', title: 'Clients', id: 'clients' },
+  { number: '06', title: 'Reviews', id: 'testimonials' },
+  { number: '07', title: 'Let’s talk', id: 'lets-talk' },
 ];
