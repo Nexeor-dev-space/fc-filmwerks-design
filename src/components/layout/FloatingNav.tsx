@@ -86,7 +86,7 @@ const LINES = [
 const SOCIALS = [
   { label: 'Instagram', href: siteConfig.social.instagram, icon: Instagram },
   { label: 'LinkedIn', href: siteConfig.social.linkedin, icon: LinkedIn },
-  { label: 'YouTube', href: siteConfig.social.youtube, icon: YouTube },
+  { label: 'Facebook', href: siteConfig.social.facebook, icon: Facebook },
 ] as const;
 
 const ICON_PROPS = {
@@ -121,11 +121,10 @@ function LinkedIn() {
   );
 }
 
-function YouTube() {
+function Facebook() {
   return (
     <svg {...ICON_PROPS}>
-      <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
-      <path d="m10 15 5-3-5-3z" />
+      <path d="M15 3h-2a5 5 0 0 0-5 5v3H6v4h2v7h4v-7h3l1-4h-4V8a1 1 0 0 1 1-1h3z" />
     </svg>
   );
 }
@@ -259,10 +258,10 @@ export function FloatingNav({ immediate = false }: FloatingNavProps = {}) {
               onClick={cut('/')}
             >
               <Image
-                src="/images/logo-2.png"
+                src="/images/logo-white.png"
                 alt={siteConfig.name}
-                width={2040}
-                height={393}
+                width={3424}
+                height={633}
                 priority
                 className="h-6 w-auto md:h-7 lg:h-8"
               />

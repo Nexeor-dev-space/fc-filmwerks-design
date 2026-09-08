@@ -24,7 +24,7 @@ const GRAIN =
 const socials: { label: string; href: string }[] = [
   { label: 'Instagram', href: siteConfig.social.instagram },
   { label: 'LinkedIn', href: siteConfig.social.linkedin },
-  { label: 'YouTube', href: siteConfig.social.youtube },
+  { label: 'Facebook', href: siteConfig.social.facebook },
   { label: 'Vimeo', href: siteConfig.social.vimeo },
 ].filter((entry) => Boolean(entry.href));
 

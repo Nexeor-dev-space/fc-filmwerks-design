@@ -46,10 +46,10 @@ export const siteConfig = {
     address: 'Dubai, UAE',
   },
   social: {
-    instagram: '',
+    instagram: 'https://www.instagram.com/fcfilmwerks',
+    facebook: 'https://www.facebook.com/fcfilmwerks',
     vimeo: '',
-    youtube: '',
-    linkedin: '',
+    linkedin: 'https://ae.linkedin.com/company/fcfilmwerks-llc',
   },
   /** Twitter/X handle used for `twitter:site`, including the leading @. */
   twitterHandle: '',

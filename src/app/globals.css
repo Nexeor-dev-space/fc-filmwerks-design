@@ -318,69 +318,66 @@ html.lenis body {
 }
 
 /*
- * Intro scroll cue — a dot descending a focus scale.
+ * Intro scroll cue — a cascading double chevron, universally read as
+ * "scroll down" rather than the photographer's focus scale it replaced.
  *
- * Three loops on three separate elements so none of them shares a property
- * with another. The dot travels `--cue-track`, set on the track element, since
- * a percentage `translateY` would resolve against the dot's own 5px. It fades
- * in off the top mark and out at the bottom one, so the restart is never seen.
+ * The two chevrons share one keyframe but run out of phase (see the
+ * `animation-delay` on `.scroll-chevron-trail`), which is what makes the
+ * pair read as motion flowing downward instead of two things bouncing in
+ * place. Label and chevrons animate independently so nothing shares a
+ * `transform` with another.
  */
-@keyframes scroll-cue-dot {
-  0% {
-    transform: translateY(0) scale(0.7);
-    opacity: 0;
-  }
-  14% {
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(calc(var(--cue-track) * 0.5)) scale(1.15);
-  }
-  82% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(var(--cue-track)) scale(0.7);
-    opacity: 0;
-  }
-}
-
-/* A couple of pixels of travel at the bottom end, anchored at the top mark —
-   a meter settling rather than a bar filling. */
-@keyframes scroll-cue-track {
+@keyframes scroll-chevron-bounce {
   0%,
   100% {
-    transform: scaleY(1);
+    transform: translateY(0);
+    opacity: 0.45;
   }
   50% {
-    transform: scaleY(1.06);
+    transform: translateY(5px);
+    opacity: 1;
   }
 }
 
 @keyframes scroll-cue-label {
   0%,
   100% {
-    opacity: 0.78;
+    opacity: 0.88;
   }
   50% {
     opacity: 1;
   }
 }
 
-.scroll-cue-dot {
-  animation: scroll-cue-dot 2.4s linear infinite;
+.scroll-chevron-lead,
+.scroll-chevron-trail {
+  animation: scroll-chevron-bounce 1.6s ease-in-out infinite;
   will-change: transform, opacity;
 }
 
-.scroll-cue-track {
-  animation: scroll-cue-track 4.8s ease-in-out infinite;
-  will-change: transform;
+.scroll-chevron-trail {
+  animation-delay: 0.2s;
 }
 
 .scroll-cue-label {
-  opacity: 0.78;
+  opacity: 0.88;
   animation: scroll-cue-label 4.8s ease-in-out infinite;
 }
+
+/*
+ * `CinemaLens`'s sizes are fixed per breakpoint by request, so on a short
+ * viewport — a laptop browser window in landscape is the common case, and
+ * 1366×768 is the single most common laptop resolution there is, not an edge
+ * case — its vh cap cannot always shrink it below the cue's fixed bottom
+ * offset, and the label ends up under the glass. The chevron cue is short
+ * enough (label + ~28px of chevrons, versus the ~150px+ the old track-based
+ * cue could reach) that this stopped being reachable in practice — verified
+ * across the same viewport matrix the track-based version needed a 960px
+ * threshold for, this version holds with the plain `bottom-12`/`md:bottom-16`
+ * offset and no compaction at all. Left as a marker in case a future cue
+ * redesign grows tall again: check the `1600×830` case in this file's
+ * history before assuming a short-viewport rule isn't needed.
+ */
 
 /*
  * The transition lens between the closing CTA and the footer.

@@ -78,7 +78,7 @@ export const CinemaLens = forwardRef<HTMLDivElement, { className?: string }>(
         >
           {/* Cool coating bloom, drifting on its own slower cycle. */}
           <div
-            className="lens-bloom absolute inset-0 opacity-35"
+            className="lens-bloom absolute inset-0 opacity-45"
             style={{
               background:
                 'radial-gradient(58% 46% at 32% 26%, rgba(120,205,255,0.5) 0%, transparent 62%)',
@@ -88,7 +88,7 @@ export const CinemaLens = forwardRef<HTMLDivElement, { className?: string }>(
 
           {/* Warm counter-reflection from the opposite side. */}
           <div
-            className="lens-warm absolute inset-0 opacity-25"
+            className="lens-warm absolute inset-0 opacity-35"
             style={{
               background:
                 'radial-gradient(46% 38% at 71% 76%, rgba(191,167,111,0.55) 0%, transparent 60%)',
