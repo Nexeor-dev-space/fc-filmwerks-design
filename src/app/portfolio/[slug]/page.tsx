@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { ChapterRail } from '@/components/layout/ChapterRail';
 import { CinematicFooter } from '@/components/layout/CinematicFooter';
 import { FloatingNav } from '@/components/layout/FloatingNav';
+import { JsonLd } from '@/components/seo';
 import { CtaSection } from '@/components/sections/CtaSection';
 import {
   NextProject,
@@ -13,7 +14,12 @@ import {
   ProjectSpec,
 } from '@/components/sections/project';
 import { getProjectBySlug, getProjectSlugs, projects } from '@/config/projects';
-import { createMetadata } from '@/lib/seo';
+import {
+  createMetadata,
+  breadcrumbJsonLd,
+  videoObjectJsonLd,
+  creativeWorkJsonLd,
+} from '@/lib/seo';
 import type { Chapter } from '@/types';
 
 /** Prerenders one static page per project at build time. */
@@ -92,8 +98,37 @@ export default async function ProjectPage({
       : []),
   ];
 
+  const breadcrumbs = breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Portfolio', path: '/portfolio' },
+    { name: project.title, path: project.href },
+  ]);
+
+  const videoSchema = project.video
+    ? videoObjectJsonLd({
+        title: project.title,
+        description: project.caseStudy.standfirst,
+        thumbnailUrl: project.image,
+        director: 'Gautam Raveendran',
+      })
+    : null;
+
+  const creativeSchema = creativeWorkJsonLd({
+    title: project.title,
+    description: project.summary,
+    image: project.image,
+    creator: 'Gautam Raveendran',
+  });
+
+  const schemas = [
+    breadcrumbs,
+    creativeSchema,
+    ...(videoSchema ? [videoSchema] : []),
+  ];
+
   return (
     <>
+      <JsonLd data={schemas} />
       <FloatingNav immediate />
 
       {/* The same fixed index Home and About carry. Every band below the hero

@@ -90,8 +90,8 @@ function Figure({
  * The margin equals the cover phase's share of the wrapper's scroll range,
  * not the raw `cover` span, because the timeline's spans are fractions of
  * that range:
- *   mobile   1.1 / 3.95 × 200dvh ≈ 56dvh
- *   desktop  1.2 / 4.1  × 240dvh ≈ 70dvh
+ *   mobile   1.1 / 3.95 × 200svh ≈ 56svh
+ *   desktop  1.2 / 4.1  × 240svh ≈ 70svh
  * That puts the band's top edge at the bottom of the viewport exactly at
  * `coverStart`, so the hero and its call to action hold for the whole `hold`
  * span after the iris opens, and the band arrives as the timeline hands off.
@@ -115,7 +115,7 @@ export function TrustSection() {
     <section
       id="trust"
       aria-label="The studio in numbers"
-      className="relative z-10 -mt-[56dvh] bg-[#0f1012] pt-16 motion-reduce:!mt-0 md:-mt-[70dvh] md:pt-20 lg:pt-24"
+      className="relative z-10 -mt-[56svh] bg-[#0f1012] pt-16 motion-reduce:!mt-0 md:-mt-[70svh] md:pt-20 lg:pt-24"
     >
       <div className="w-full px-4 md:px-[3vw] xl:pl-52">
         <motion.dl

@@ -39,8 +39,8 @@ import { ScrollIndicator } from './ScrollIndicator';
  * pause, not the aperture.
  *
  * The spans are fractions of the wrapper's scroll range, not viewport heights.
- * The wrapper is 300dvh (mobile) / 340dvh (desktop), so the scrub runs over
- * 200dvh / 240dvh and one span unit is ≈51dvh / 59dvh of scroll.
+ * The wrapper is 300svh (mobile) / 340svh (desktop), so the scrub runs over
+ * 200svh / 240svh and one span unit is ≈51svh / 59svh of scroll.
  *
  * These were roughly twice as long until a review of the built page: an
  * opening shot that costs four screens of scrolling before the next section
@@ -51,7 +51,7 @@ import { ScrollIndicator } from './ScrollIndicator';
  * The tree is retired at `introSpent`, just before `coverStart`, so the cover
  * and settle tweens below never actually play on the page. The hand-off is
  * TrustSection sliding over the hero: its negative margin must equal the cover
- * phase's share of this range (≈56dvh mobile, 70dvh desktop) so that it
+ * phase's share of this range (≈56svh mobile, 70svh desktop) so that it
  * arrives at `coverStart` and not during the hold.
  *
  * `hold` also has a floor, and it is not a taste question: `introSpent` has to
@@ -182,7 +182,7 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
 
   /*
    * Swapping the tree drops the intro's scroll distance — the wrapper goes
-   * from ~740dvh to ~380dvh — so the page under the reader gets shorter by
+   * from ~740svh to ~380svh — so the page under the reader gets shorter by
    * several viewports. Left alone, the section below would jump up and cover
    * the hero the instant the swap lands.
    *
@@ -555,16 +555,16 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
    * opening — from here the intro is gone from the scroll flow entirely, so
    * the top of the page is the hero and nothing replays on the way back up.
    *
-   * Mobile wrapper: 180dvh  → ~124dvh of pure hero hold
-   * Desktop wrapper: 200dvh → ~130dvh of pure hero hold
-   * (the wrapper less TrustSection's pull-up of 56dvh / 70dvh)
+   * Mobile wrapper: 180svh  → ~124svh of pure hero hold
+   * Desktop wrapper: 200svh → ~130svh of pure hero hold
+   * (the wrapper less TrustSection's pull-up of 56svh / 70svh)
    */
   if (skipIntro || introComplete) {
     return (
       <div
-        className={cn('relative h-[180dvh] w-full md:h-[200dvh]', className)}
+        className={cn('relative h-[180svh] w-full md:h-[200svh]', className)}
       >
-        <div ref={root} className="sticky top-0 h-dvh w-full overflow-hidden">
+        <div ref={root} className="sticky top-0 h-svh w-full overflow-hidden">
           <div className="hero-reveal absolute inset-0">
             <HeroRevealContext.Provider value>
               {children}
@@ -605,18 +605,18 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
      * GSAP's ScrollTrigger scrubs the timeline against the wrapper's scroll
      * range (top-top to bottom-bottom) — no `pin: true` needed.
      *
-     * Wrapper height: 300dvh on mobile, 340dvh on desktop. The timeline's
+     * Wrapper height: 300svh on mobile, 340svh on desktop. The timeline's
      * spans are fractions of the resulting scroll range, so the height only
      * decides how much scrolling the whole opening takes; see the note on
      * SPANS for how the cover phase's share is derived.
      */
     <div
       ref={wrapperRef}
-      className={cn('relative h-[300dvh] w-full md:h-[340dvh]', className)}
+      className={cn('relative h-[300svh] w-full md:h-[340svh]', className)}
     >
       <div
         ref={root}
-        className="sticky top-0 h-dvh w-full overflow-hidden bg-background"
+        className="sticky top-0 h-svh w-full overflow-hidden bg-background"
       >
         <div className="intro-frame absolute inset-2 overflow-hidden rounded-[28px] md:inset-3">
           <div className="hero-reveal absolute inset-0 z-10">
