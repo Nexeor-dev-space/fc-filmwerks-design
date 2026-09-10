@@ -84,7 +84,21 @@ export function LensProgressRing({
       viewBox="0 0 100 100"
       aria-hidden="true"
       className={cn(
-        'pointer-events-none absolute inset-[-9%] h-auto w-auto',
+        /*
+         * Sized and centred explicitly rather than with insets.
+         *
+         * The base layer caps every `svg` at `max-width: 100%` with
+         * `height: auto` — the same rule `ApertureIris` has to opt out of.
+         * Against `inset-[-9%]` that clamped the width to the lens while the
+         * height still resolved from the insets, so the box came out
+         * off-square, the viewBox was letterboxed inside it, and the ring
+         * drew up and to the left of the barrel instead of around it.
+         *
+         * A square box pinned to the centre cannot drift: 128% of the lens,
+         * which puts the scale clear of the barrel rather than grazing it.
+         */
+        'pointer-events-none absolute top-1/2 left-1/2 h-[128%] w-[128%]',
+        'max-w-none -translate-x-1/2 -translate-y-1/2',
         'transition-opacity duration-700 ease-out',
         active ? 'opacity-100' : 'opacity-0',
         className,
