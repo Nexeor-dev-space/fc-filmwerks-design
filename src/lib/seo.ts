@@ -134,3 +134,61 @@ export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
     })),
   };
 }
+
+export function videoObjectJsonLd({
+  title,
+  description,
+  thumbnailUrl,
+  uploadDate,
+  duration,
+  director,
+}: {
+  title: string;
+  description: string;
+  thumbnailUrl: string;
+  uploadDate?: string;
+  duration?: string;
+  director?: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: title,
+    description,
+    thumbnailUrl: absoluteUrl(thumbnailUrl),
+    ...(uploadDate ? { uploadDate } : {}),
+    ...(duration ? { duration } : {}),
+    ...(director ? { director: { '@type': 'Person', name: director } } : {}),
+  };
+}
+
+export function creativeWorkJsonLd({
+  title,
+  description,
+  image,
+  creator,
+  datePublished,
+  awards,
+}: {
+  title: string;
+  description: string;
+  image: string;
+  creator?: string;
+  datePublished?: string;
+  awards?: string[];
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: title,
+    description,
+    image: absoluteUrl(image),
+    ...(creator ? { creator: { '@type': 'Person', name: creator } } : {}),
+    ...(datePublished ? { datePublished } : {}),
+    ...(awards && awards.length > 0
+      ? {
+          award: awards,
+        }
+      : {}),
+  };
+}

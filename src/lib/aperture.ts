@@ -55,6 +55,36 @@ export const IRIS = {
 export const CUT_R = IRIS.radius * IRIS.cutRatio;
 
 /**
+ * How large the iris SVG is rendered, in `vmax`.
+ *
+ * `ApertureIris` writes this into a Tailwind class, which cannot read a
+ * constant, so the two have to be changed together — it is declared here
+ * because `coveringOpening` needs it to convert screen pixels into viewBox
+ * units.
+ */
+export const SCREEN_VMAX = 160;
+
+/**
+ * The opening radius at which the blades first reach the corners of the
+ * screen — the widest the iris can be while still covering nothing.
+ *
+ * Above this the aperture is larger than the frame, so the blades sit outside
+ * it and closing them changes nothing the reader can see. That is most of the
+ * sweep: on a 16:9 screen the iris is invisible from 158 down to about 115,
+ * roughly a quarter of the travel, and it was being given a quarter of the
+ * tween's time. The visible part of the close was left with the remainder and
+ * a `power2.inOut` ease that is slowest at both ends, so the frame went from
+ * wide open to sealed in a couple of frames — the "hard cut" between the lens
+ * and the hero. Starting the close here spends the whole tween on the part
+ * that is actually on screen.
+ */
+export function coveringOpening(width: number, height: number): number {
+  const unitsPerPixel =
+    (IRIS.viewBox * 2) / ((SCREEN_VMAX * Math.max(width, height)) / 100);
+  return Math.min(IRIS.radius, (Math.hypot(width, height) / 2) * unitsPerPixel);
+}
+
+/**
  * Blade rotation, in degrees, that first brings the opening to zero.
  * Negative: the blades swing inward from the open position at 0.
  */
@@ -90,8 +120,31 @@ export function rotationForOpening(opening: number): number {
 /** Pivot position for the reference blade, before its ring rotation. */
 export const PIVOT = { x: IRIS.radius, y: 0 } as const;
 
-/** `svgOrigin` string GSAP needs to rotate a blade about its pivot. */
-export const PIVOT_ORIGIN = `${PIVOT.x} ${PIVOT.y}`;
+/**
+ * Swings every blade to produce the given opening radius.
+ *
+ * Writes the SVG `transform` attribute directly, in the `rotate(angle cx cy)`
+ * form that rotates about a point natively, rather than going through GSAP.
+ * GSAP's transform plugin keeps a per-element cache and, for SVG, bakes a
+ * custom pivot into the matrix it writes; whenever something marks that
+ * cache stale — a `revert()` during a ScrollTrigger refresh will — the next
+ * write rebuilds the pivot relative to the blade's bounding box and then
+ * treats it as absolute, which put it 450 units off and swung every blade
+ * clear of the frame. The iris simply never appeared. One attribute per
+ * blade per frame is also less work than instantiating a tween for each
+ * tick, which is what `gsap.set` on every scrub update amounted to.
+ *
+ * `blades` are the `.iris-blade` groups of one `ApertureIris`.
+ */
+export function setIrisOpening(
+  blades: ArrayLike<Element>,
+  opening: number,
+): void {
+  const transform = `rotate(${rotationForOpening(opening)} ${PIVOT.x} ${PIVOT.y})`;
+  for (let index = 0; index < blades.length; index++) {
+    blades[index].setAttribute('transform', transform);
+  }
+}
 
 /**
  * The reference blade, drawn fully open.

@@ -167,6 +167,7 @@ export function AboutMasthead() {
             fallbackClassName="bg-[#0F1C2E]"
             vignette={false}
             overlay="linear-gradient(to bottom, rgba(10,19,31,0.92) 0%, rgba(10,19,31,0.35) 40%, rgba(10,19,31,0.35) 60%, rgba(10,19,31,0.9) 100%)"
+            lazy
           />
         </motion.div>
 
