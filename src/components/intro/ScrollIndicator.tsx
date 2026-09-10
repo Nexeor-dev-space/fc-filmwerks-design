@@ -17,6 +17,17 @@ import { cn } from '@/lib/utils';
  * "stuck"; two, animating in sequence a beat apart, read as motion flowing
  * downward — the same idiom as everyone else's "more below" cue.
  *
+ * On touch screens the pair is turned to point up. A chevron pointing down
+ * tells a thumb to move down, and a downward swipe at the top of the page is
+ * the pull-to-refresh gesture: visitors were reloading the site instead of
+ * scrolling it. Pointing the cue the way the thumb actually travels removes
+ * the suggestion. Keyed to `pointer: coarse` rather than viewport width
+ * because it is about the finger, not the screen — a tablet in landscape
+ * scrolls the same way — and done in CSS so the first paint is already right.
+ * Rotating the container flips the cascade too: the lead chevron lands at the
+ * bottom and its bounce travels up, so the motion still flows the way the
+ * arrows point.
+ *
  * Entirely CSS keyframes — the reduced-motion block in `globals.css`
  * neutralises them together, and nothing here needs a rAF callback.
  *
@@ -46,7 +57,10 @@ export const ScrollIndicator = forwardRef<
         {label}
       </span>
 
-      <div aria-hidden="true" className="flex flex-col items-center">
+      <div
+        aria-hidden="true"
+        className="flex flex-col items-center pointer-coarse:rotate-180"
+      >
         <Chevron className="scroll-chevron-lead" />
         {/* Trails a beat behind the lead chevron and sits fainter at rest —
             the pair is what reads as one shape flowing down, not two

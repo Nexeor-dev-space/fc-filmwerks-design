@@ -15,12 +15,7 @@ import {
 
 import { ApertureIris } from '@/components/intro';
 import { usePrefersReducedMotion } from '@/hooks';
-import {
-  IRIS,
-  PIVOT_ORIGIN,
-  rotationForOpening,
-  SEALED_OPENING,
-} from '@/lib/aperture';
+import { IRIS, SEALED_OPENING, setIrisOpening } from '@/lib/aperture';
 import { gsap } from '@/lib/gsap';
 import { markIntroSeen } from '@/lib/intro-seen';
 import { cn } from '@/lib/utils';
@@ -94,23 +89,21 @@ export function RouteTransitionProvider({ children }: { children: ReactNode }) {
   const arrival = useRef<number | null>(null);
   const [covering, setCovering] = useState(false);
 
+  /* The blades are written straight to the SVG, the same way the intro does
+     it — see the note on `setIrisOpening` for why not a GSAP tween. */
   const apply = useCallback(() => {
     const iris = irisRef.current;
     if (!iris) return;
-    gsap.set(iris.querySelectorAll('.iris-blade'), {
-      rotation: rotationForOpening(aperture.current.opening),
-    });
+    setIrisOpening(
+      iris.querySelectorAll('.iris-blade'),
+      aperture.current.opening,
+    );
   }, []);
 
-  /* Seat every blade on its pivot once; only rotation moves after that, the
-     same economy the intro relies on. */
   useEffect(() => {
     const iris = irisRef.current;
     if (!iris) return;
-    gsap.set(iris.querySelectorAll('.iris-blade'), {
-      svgOrigin: PIVOT_ORIGIN,
-      rotation: rotationForOpening(IRIS.radius),
-    });
+    setIrisOpening(iris.querySelectorAll('.iris-blade'), IRIS.radius);
   }, []);
 
   const open = useCallback(() => {
