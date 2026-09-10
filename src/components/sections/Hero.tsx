@@ -56,8 +56,17 @@ export function Hero() {
     // so it fills its container rather than the whole viewport. Its parent
     // always has a definite height for the percentage to resolve against.
     <section className="relative flex min-h-full flex-col overflow-hidden text-bone">
+      {/*
+        The poster is what the frame shows before the footage has decoded, and
+        it is doing real work here rather than being a nicety: the banner is a
+        large file streamed in ranges, so without it the hero's first paint is
+        a flat navy rectangle. It also carries the section outright for anyone
+        on reduced motion, where the video is deliberately held on its first
+        frame and never plays.
+      */}
       <BackgroundVideo
         src="/videos/banner-video.mp4"
+        poster="/images/hero-poster.jpg"
         overlay="linear-gradient(rgba(15,28,46,0.62), rgba(15,28,46,0.55))"
         active={revealed}
       />
