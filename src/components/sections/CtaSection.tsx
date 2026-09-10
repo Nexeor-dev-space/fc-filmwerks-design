@@ -96,6 +96,7 @@ export function CtaSection({
         fallbackClassName="bg-[#0F1C2E]"
         overlay="linear-gradient(rgba(15,28,46,0.38), rgba(10,19,31,0.48))"
         vignette={false}
+        lazy
       />
 
       {/* Radial key light — warm glow from upper-right, moves on scroll */}
