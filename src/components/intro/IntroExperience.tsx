@@ -9,6 +9,7 @@ import {
   setIrisOpening,
 } from '@/lib/aperture';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
+import { INTRO_LOADING_ATTR } from '@/lib/intro-gate';
 import { hasSeenIntro, markIntroSeen } from '@/lib/intro-seen';
 import { cn } from '@/lib/utils';
 import {
@@ -21,7 +22,10 @@ import { ApertureIris } from './ApertureIris';
 import { CinemaLens } from './CinemaLens';
 import { HeroRevealContext } from './HeroRevealContext';
 import { LensBackdrop } from './LensBackdrop';
+import { LensProgressRing } from './LensProgressRing';
+import { LoadingCue } from './LoadingCue';
 import { ScrollIndicator } from './ScrollIndicator';
+import { useIntroPreload } from './useIntroPreload';
 
 /**
  * Spans differ by device because the same scroll distance does not feel the
@@ -197,6 +201,21 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
    */
   const [introComplete, setIntroComplete] = useState(false);
 
+  /*
+   * Hold the opening until the hero footage can actually play.
+   *
+   * Without this the aperture could be scrolled open onto a hero that was
+   * still a flat navy rectangle, because the banner is a 30MB file streamed
+   * in ranges and the reveal takes only a second or two of scrolling to
+   * reach. Waiting is only defensible if the reader can see it happening and
+   * it cannot last forever, which is what the ring around the lens and the
+   * ceiling inside the hook are for.
+   *
+   * `skipIntro` is decided in a layout effect, before the first paint, so a
+   * returning visitor never sees a frame of this.
+   */
+  const { progress, ready } = useIntroPreload(!reduced && !skipIntro);
+
   /* The wrapper's height, read just before the swap shrinks it. The scroll
      remap below needs the before/after difference, and by the time the
      layout effect runs the new height is already in place. */
@@ -209,6 +228,48 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
   useIsomorphicLayoutEffect(() => {
     if (hasSeenIntro()) setSkipIntro(true);
   }, []);
+
+  /*
+   * Nothing scrolls until the opening is loaded.
+   *
+   * The whole sequence is driven by scroll position, so a reader who starts
+   * scrolling during the wait would spend the shot they are waiting for and
+   * arrive at a hero that still has nothing to show. The page is also sent
+   * back to the top, because a reload restores the previous scroll position
+   * and the opening has to start at its beginning.
+   *
+   * Both halves are needed: Lenis owns the wheel on desktop and has to be
+   * told directly, while on touch it is not mounted at all and the CSS rule
+   * keyed off this attribute is what actually holds the page.
+   */
+  useIsomorphicLayoutEffect(() => {
+    const html = document.documentElement;
+
+    /* Releasing is unconditional rather than left to the cleanup below: the
+       gate is set by a blocking script before this component exists, so for a
+       visitor with nothing to wait for — reduced motion, or a repeat visit —
+       there is a lock in place that no cleanup of ours would ever run to
+       remove. */
+    if (reduced || skipIntro || ready) {
+      html.removeAttribute(INTRO_LOADING_ATTR);
+      lenis?.start();
+      return;
+    }
+
+    html.setAttribute(INTRO_LOADING_ATTR, 'true');
+    /* A reload restores the previous scroll position, and the opening has to
+       start at its beginning. */
+    window.scrollTo(0, 0);
+    lenis?.stop();
+
+    return () => {
+      html.removeAttribute(INTRO_LOADING_ATTR);
+      lenis?.start();
+      /* Every trigger was measured while the page could not scroll, so they
+         are measured again now that it can. */
+      ScrollTrigger.refresh();
+    };
+  }, [reduced, skipIntro, ready, lenis]);
 
   /*
    * Swapping the layout drops the intro's scroll distance — the wrapper goes
@@ -706,12 +767,21 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="lens-scroll">
           <div className="lens-float">
-            <div className="lens-tilt">
-              <div className="lens-spin">
-                <div className="lens-breathe">
-                  <CinemaLens />
+            {/* This wrapper exists to give the ring a box to sit around. It
+                takes its size from the lens, since none of the transforms
+                below it affect layout, and it sits above `.lens-tilt` and
+                `.lens-spin` so the barrel turns inside a ring that holds
+                still. */}
+            <div className="relative">
+              <div className="lens-tilt">
+                <div className="lens-spin">
+                  <div className="lens-breathe">
+                    <CinemaLens />
+                  </div>
                 </div>
               </div>
+
+              <LensProgressRing progress={progress} active={!ready} />
             </div>
           </div>
         </div>
@@ -723,7 +793,36 @@ export function IntroExperience({ children, className }: IntroExperienceProps) {
           a short viewport (see the note in globals.css next to the old
           track-based cue's short-viewport rule) — no compaction needed here. */}
       <div className="absolute inset-x-0 bottom-12 flex justify-center text-[#222] md:bottom-16">
-        <ScrollIndicator className="intro-indicator" />
+        {/*
+         * One slot, two lines, stacked in a single grid cell so they occupy
+         * the same spot and crossfade in place.
+         *
+         * The cue is always mounted, at zero opacity while loading, because
+         * the scroll timeline is built on mount and takes `.intro-indicator`
+         * by selector — a cue that appeared later would leave that tween
+         * pointing at nothing. The wrapper owns the loading fade and GSAP
+         * owns the element's own opacity for the scroll fade, so the two
+         * never write to the same element.
+         */}
+        <div className="grid">
+          <div
+            className={cn(
+              'col-start-1 row-start-1 transition-opacity duration-500 ease-out',
+              ready ? 'opacity-0' : 'opacity-100',
+            )}
+          >
+            <LoadingCue progress={progress} />
+          </div>
+
+          <div
+            className={cn(
+              'col-start-1 row-start-1 transition-opacity duration-700 ease-out',
+              ready ? 'opacity-100 delay-200' : 'opacity-0',
+            )}
+          >
+            <ScrollIndicator className="intro-indicator" />
+          </div>
+        </div>
       </div>
     </>
   );

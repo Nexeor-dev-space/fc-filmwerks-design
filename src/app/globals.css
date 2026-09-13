@@ -113,6 +113,15 @@
      * changes for the horizontal edge swipes.
      */
     overscroll-behavior-y: contain;
+    /*
+     * The gutter is held open whether or not the page can scroll, so that
+     * locking the page during the opening load and releasing it afterwards
+     * does not resize the viewport by the width of a scrollbar. Costs nothing
+     * where scrollbars are overlays, which is every touch device and macOS by
+     * default; it earns its place on Windows and Linux, where that release
+     * would otherwise shift the whole layout sideways mid-animation.
+     */
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -425,6 +434,50 @@ html.lenis body {
 html[data-intro-seen='true']:not([data-intro-active]) .intro-layer,
 html[data-intro-seen='true']:not([data-intro-active]) .intro-iris {
   display: none;
+}
+
+/*
+ * The focus ring hunting round the lens before the first reading.
+ *
+ * `transform-box: fill-box` is what makes `transform-origin: center` mean the
+ * circle's own centre rather than the origin of the SVG's user space, which is
+ * the corner — without it the arc orbits off the side of the screen.
+ *
+ * The reduced-motion block above already neutralises this, and the loader is
+ * not shown under reduced motion at all.
+ */
+@keyframes lens-ring-seek {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.lens-ring-seek {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lens-ring-seek 1.5s linear infinite;
+}
+
+/*
+ * The page is held still while the opening sequence loads.
+ *
+ * Set by `IntroExperience` for as long as the hero footage is still arriving,
+ * and removed the moment the ring around the lens completes. The whole opening
+ * is driven by scroll position, so letting someone scroll during the wait
+ * would spend the shot before it could be shown.
+ *
+ * Both elements are needed. Lenis is told to stop directly and sets its own
+ * rule on the root, but it is not mounted on touch devices at all, and there
+ * the page is held by nothing else.
+ */
+html[data-intro-loading],
+html[data-intro-loading] body {
+  overflow: hidden;
+  /* Not `contain`, which still allows the gesture within the element. */
+  overscroll-behavior: none;
 }
 
 /*

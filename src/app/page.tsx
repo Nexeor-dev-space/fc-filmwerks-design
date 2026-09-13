@@ -12,6 +12,7 @@ import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
 import { TrustSection } from '@/components/sections/TrustSection';
 import { CtaSection } from '@/components/sections/CtaSection';
 import { homeChapters } from '@/config/home';
+import { INTRO_GATE_SCRIPT } from '@/lib/intro-gate';
 import { createMetadata } from '@/lib/seo';
 
 export const metadata = createMetadata({ path: '/' });
@@ -19,6 +20,10 @@ export const metadata = createMetadata({ path: '/' });
 export default function HomePage() {
   return (
     <>
+      {/* Holds the page still from the first paint, before React can. See the
+          note on the script itself for why this is a script and not a class. */}
+      <script dangerouslySetInnerHTML={{ __html: INTRO_GATE_SCRIPT }} />
+
       <FloatingNav />
 
       {/* The same fixed index the About page carries. Every section below the
