@@ -104,6 +104,24 @@
     -webkit-text-size-adjust: 100%;
     /* Lenis drives scrolling; native smooth behaviour would fight it. */
     scroll-behavior: auto;
+    /*
+     * No pull-to-refresh. The homepage opens on a full-screen scroll
+     * sequence, and a downward swipe at the top of it — the most natural
+     * thing to try when a page has not visibly moved yet — reloaded the site
+     * on Android. `contain` keeps the overscroll glow and the normal reload
+     * controls, and only withdraws the gesture. Vertical only, so nothing
+     * changes for the horizontal edge swipes.
+     */
+    overscroll-behavior-y: contain;
+    /*
+     * The gutter is held open whether or not the page can scroll, so that
+     * locking the page during the opening load and releasing it afterwards
+     * does not resize the viewport by the width of a scrollbar. Costs nothing
+     * where scrollbars are overlays, which is every touch device and macOS by
+     * default; it earns its place on Windows and Linux, where that release
+     * would otherwise shift the whole layout sideways mid-animation.
+     */
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -325,7 +343,9 @@ html.lenis body {
  * `animation-delay` on `.scroll-chevron-trail`), which is what makes the
  * pair read as motion flowing downward instead of two things bouncing in
  * place. Label and chevrons animate independently so nothing shares a
- * `transform` with another.
+ * `transform` with another. On touch screens `ScrollIndicator` rotates the
+ * chevron block so the same keyframe flows upward — the rotation lives on
+ * the container, so it never competes with these transforms.
  */
 @keyframes scroll-chevron-bounce {
   0%,
@@ -414,4 +434,73 @@ html.lenis body {
 html[data-intro-seen='true']:not([data-intro-active]) .intro-layer,
 html[data-intro-seen='true']:not([data-intro-active]) .intro-iris {
   display: none;
+}
+
+/*
+ * The focus ring hunting round the lens before the first reading.
+ *
+ * `transform-box: fill-box` is what makes `transform-origin: center` mean the
+ * circle's own centre rather than the origin of the SVG's user space, which is
+ * the corner — without it the arc orbits off the side of the screen.
+ *
+ * The reduced-motion block above already neutralises this, and the loader is
+ * not shown under reduced motion at all.
+ */
+@keyframes lens-ring-seek {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.lens-ring-seek {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lens-ring-seek 1.5s linear infinite;
+}
+
+/*
+ * The page is held still while the opening sequence loads.
+ *
+ * Set by `IntroExperience` for as long as the hero footage is still arriving,
+ * and removed the moment the ring around the lens completes. The whole opening
+ * is driven by scroll position, so letting someone scroll during the wait
+ * would spend the shot before it could be shown.
+ *
+ * Both elements are needed. Lenis is told to stop directly and sets its own
+ * rule on the root, but it is not mounted on touch devices at all, and there
+ * the page is held by nothing else.
+ */
+html[data-intro-loading],
+html[data-intro-loading] body {
+  overflow: hidden;
+  /* Not `contain`, which still allows the gesture within the element. */
+  overscroll-behavior: none;
+}
+
+/*
+ * The opening shot has played and will not play again this page view.
+ *
+ * Set by `IntroExperience` the moment the reveal lands, and it stays set until
+ * React removes the intro from the tree a beat later. The gap matters: GSAP
+ * owns the inline styles on these elements, and anything that reverts a
+ * timeline — killing it, refreshing ScrollTrigger, a matchMedia context being
+ * torn down — restores them to the values they held at the top of the intro.
+ * That put the gold ground, the lens and the scroll cue back on screen, over
+ * the hero, for as long as it took the swap to arrive.
+ *
+ * Expressing "spent" as an attribute and a rule rather than an inline style is
+ * what makes it stick, because no animation can revert it. `!important` on the
+ * transform for the same reason: it has to beat the inline `scale()` the
+ * reveal leaves behind, and the hero is at its natural size from here on.
+ */
+html[data-intro-spent] .intro-layer,
+html[data-intro-spent] .intro-iris {
+  display: none;
+}
+
+html[data-intro-spent] .hero-reveal {
+  transform: none !important;
 }

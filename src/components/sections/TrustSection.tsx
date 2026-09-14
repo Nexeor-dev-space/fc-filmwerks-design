@@ -95,9 +95,9 @@ function Figure({
  * That puts the band's top edge at the bottom of the viewport exactly at
  * `coverStart`, so the hero and its call to action hold for the whole `hold`
  * span after the iris opens, and the band arrives as the timeline hands off.
- * The intro retires its tree just before that point and swaps in a shorter
- * wrapper while keeping the band where the reader sees it, so the same margin
- * carries the hand-off in the post-intro layout as well. Pull the band up
+ * Once the reveal has played and the page comes to rest, the intro swaps in
+ * a shorter wrapper while keeping the band where the reader sees it, so the
+ * same margin carries the hand-off in the post-intro layout as well. Pull the band up
  * further and it covers the hero's buttons during the hold, which is what it
  * did before this was written down. Change the SPANS or the wrapper heights
  * in IntroExperience and this has to move with them.

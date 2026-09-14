@@ -22,7 +22,10 @@ const SIZE = IRIS.viewBox * 2;
  * Blade rotation runs from 0 (open) to `CLOSE_ANGLE_OVERSHOOT` (sealed).
  *
  * The SVG is a square of 160vmax so the disc always covers the viewport,
- * whatever its aspect ratio.
+ * whatever its aspect ratio. That figure is also `SCREEN_VMAX` in
+ * `lib/aperture.ts`, which needs it to work out where the blades meet the
+ * edge of the screen; a Tailwind class cannot read a constant, so the two
+ * have to be changed together.
  *
  * `id` prefixes the SVG's internal ids. Two irises share a document on the
  * homepage, the intro's and the route transition's, and `url(#…)` references
@@ -67,9 +70,10 @@ export const ApertureIris = forwardRef<
           /* Outer group fixes the blade's seat on the pivot ring; the inner
                group is what rotates, so GSAP never fights the ring angle. */
           <g key={index} transform={`rotate(${bladeAngle(index)})`}>
-            {/* Rotation and its pivot are set by GSAP via `svgOrigin`. At
-                  rest the blade sits at 0°, which is the fully open position,
-                  so the iris is invisible before the timeline runs. */}
+            {/* Rotation about the pivot is written straight to this group's
+                  `transform` attribute by `setIrisOpening`. At rest the blade
+                  sits at 0°, which is the fully open position, so the iris is
+                  invisible before the timeline runs. */}
             <g className="iris-blade">
               <path
                 d={PATH}
