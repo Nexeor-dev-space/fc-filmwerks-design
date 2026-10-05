@@ -66,6 +66,9 @@ export function Hero() {
       */}
       <BackgroundVideo
         src="/videos/banner-video.mp4"
+        sources={[
+          { src: '/videos/banner-video.webm', type: 'video/webm' },
+        ]}
         poster="/images/hero-poster.jpg"
         overlay="linear-gradient(rgba(15,28,46,0.62), rgba(15,28,46,0.55))"
         active={revealed}
