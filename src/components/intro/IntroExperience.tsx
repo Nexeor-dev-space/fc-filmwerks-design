@@ -9,7 +9,6 @@ import {
   setIrisOpening,
 } from '@/lib/aperture';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
-import { INTRO_LOADING_ATTR } from '@/lib/intro-gate';
 import { hasSeenIntro, markIntroSeen } from '@/lib/intro-seen';
 import { cn } from '@/lib/utils';
 import {
