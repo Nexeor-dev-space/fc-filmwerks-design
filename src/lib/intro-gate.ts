@@ -15,25 +15,9 @@ const RELEASE_MS = 12000;
 /**
  * Runs as a blocking inline script at the top of the homepage.
  *
- * The opening is driven entirely by scroll position, so scrolling during the
- * wait spends the shot before it can be shown. `IntroExperience` holds the
- * page for exactly this reason, but it can only do so once React has
- * hydrated, and on a cold cache over a slow line that is seconds after the
- * markup has painted — measured at 3.2s throttled to 4 Mbps, which is three
- * seconds during which the reader sees the lens sitting at "Loading 0%" and
- * can scroll straight past it.
- *
- * Setting the attribute here closes that window: it applies before the intro
- * markup is even parsed, and the CSS rule keyed off it does the rest.
- *
- * Deliberately a script rather than a class in the server-rendered markup or a
- * `<style>` block. Both of those would hold the page for a visitor whose
- * JavaScript never arrives, and there would be nothing left running to release
- * it. A script that cannot run cannot lock anything, and the timeout covers
- * the case where it runs but React never follows.
- *
- * Kept as a string with no dependencies so it can be inlined verbatim, and
- * wrapped in try/catch because this must never be the thing that breaks the
- * page.
+ * Neutralized for issue #53:
+ * The hero section should not block the page behind a loading screen or lock
+ * document scrolling while the video loads. Kept as a no-op string to satisfy
+ * existing imports and scripts without setting the locking attribute.
  */
-export const INTRO_GATE_SCRIPT = `(function(){try{var h=document.documentElement;h.setAttribute('${INTRO_LOADING_ATTR}','true');setTimeout(function(){h.removeAttribute('${INTRO_LOADING_ATTR}')},${RELEASE_MS})}catch(e){}})()`;
+export const INTRO_GATE_SCRIPT = '';
