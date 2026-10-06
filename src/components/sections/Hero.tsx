@@ -47,6 +47,9 @@ const fadeUpVariants: Variants = {
  * Entrances wait on `useHeroRevealed`, so they play when the aperture opens
  * rather than while the hero is still hidden beneath the intro.
  */
+
+const STORAGE_URL = process.env.NEXT_PUBLIC_STORAGE_URL || '/videos';
+
 export function Hero() {
   const revealed = useHeroRevealed();
   const animate = revealed ? 'visible' : 'hidden';
@@ -65,9 +68,12 @@ export function Hero() {
         frame and never plays.
       */}
       <BackgroundVideo
-        src="/videos/banner-video.mp4"
+        src={`${STORAGE_URL}/banner-video.mp4`}
         sources={[
-          { src: '/videos/banner-video.webm', type: 'video/webm' },
+          {
+            src: `${STORAGE_URL}/banner-video.webm`,
+            type: 'video/webm',
+          },
         ]}
         poster="/images/hero-poster.jpg"
         overlay="linear-gradient(rgba(15,28,46,0.62), rgba(15,28,46,0.55))"
