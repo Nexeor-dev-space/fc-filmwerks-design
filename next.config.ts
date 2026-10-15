@@ -24,6 +24,10 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
 
+  // Emits .next/standalone (server.js + only the traced node_modules) so the
+  // Docker runtime image does not ship the full dependency tree.
+  output: 'standalone',
+
   images: {
     formats: ['image/avif', 'image/webp'],
     // Add CDN / CMS hosts here as they are introduced.
